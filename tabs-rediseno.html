@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Tabs full-width v3 (a medida)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+  :root{--ova-primary:#006C9D;--ova-cyan:#19A7C9;--ova-cyan-2:#3FC6E0;--ova-deep:#0D2B35;--ova-muted:#6a8794;--ova-line:rgba(0,108,157,.12);--ova-orange:#EE3623;--ova-orange-2:#FF6E4D;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Poppins','Segoe UI',system-ui,sans-serif;color:var(--ova-deep);background:radial-gradient(1100px 520px at 88% -10%,rgba(25,167,201,.08),transparent 58%),#eef4f7;-webkit-font-smoothing:antialiased;}
+
+  .ova-top{display:flex;align-items:center;justify-content:space-between;padding:14px clamp(16px,3vw,38px);background:#fff;border-bottom:1px solid var(--ova-line);}
+  .ova-logo{display:flex;align-items:center;gap:11px;font-weight:900;font-size:19px;letter-spacing:-.5px;}
+  .ova-logo .mark{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--ova-primary),var(--ova-cyan));box-shadow:0 6px 14px rgba(0,108,157,.3);}
+  .ova-logo b{color:#fff;font-size:9.5px;font-weight:800;background:var(--ova-deep);border-radius:6px;padding:2px 6px;letter-spacing:1px;}
+  .ova-user{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;color:var(--ova-muted);}
+  .ova-user .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--ova-cyan),var(--ova-primary));}
+
+  .wrap{padding:26px clamp(16px,3vw,38px) 50px;}
+
+  /* ===== Tabs full-width ===== */
+  .ova-tabs{position:relative;display:flex;gap:5px;width:100%;background:#fff;border:1px solid var(--ova-line);border-radius:18px;padding:6px;box-shadow:0 12px 30px rgba(13,43,53,.08);}
+  .ova-pill{position:absolute;top:6px;bottom:6px;border-radius:14px;background:linear-gradient(135deg,var(--ova-primary),var(--ova-cyan));box-shadow:0 10px 22px rgba(0,108,157,.36),inset 0 1px 0 rgba(255,255,255,.3);transition:left .42s cubic-bezier(.3,.9,.3,1),width .42s cubic-bezier(.3,.9,.3,1);z-index:0;}
+  .ova-pill::after{content:"";position:absolute;inset:0;border-radius:14px;background:radial-gradient(120% 80% at 20% 0%,rgba(255,255,255,.18),transparent 60%);}
+  .ova-tab{position:relative;z-index:1;flex:1;min-width:0;display:flex;align-items:center;gap:13px;border:0;background:transparent;cursor:pointer;font:inherit;text-align:left;padding:14px 18px;border-radius:14px;transition:background .25s;}
+  .ova-tab:hover:not(.on){background:rgba(0,108,157,.05);}
+  .ova-ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex:0 0 auto;color:var(--ova-primary);background:rgba(0,108,157,.08);transition:.3s;}
+  .ova-ic svg{width:20px;height:20px;}
+  .ova-tab.on .ic{color:#fff;background:rgba(255,255,255,.18);}
+  .ova-tx{display:flex;flex-direction:column;min-width:0;line-height:1.15;}
+  .ova-nm{font-size:14.5px;font-weight:800;color:var(--ova-deep);transition:color .3s;white-space:nowrap;}
+  .ova-ds{font-size:10.5px;font-weight:600;color:var(--ova-muted);margin-top:2px;transition:color .3s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ova-tab:hover:not(.on) .ova-nm{color:var(--ova-primary);}
+  .ova-tab.on .ova-nm{color:#fff;}
+  .ova-tab.on .ova-ds{color:rgba(255,255,255,.85);}
+
+  /* ===== Barra de filtros (cambia por tab) ===== */
+  .ova-fbar{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap;}
+  .ova-filtros{display:inline-flex;align-items:center;gap:9px;border:0;cursor:pointer;font:inherit;font-size:13px;font-weight:700;color:#fff;padding:12px 18px;border-radius:13px;background:linear-gradient(135deg,var(--ova-orange-2),var(--ova-orange));box-shadow:0 9px 20px rgba(238,54,35,.28);transition:transform .25s,box-shadow .25s;white-space:nowrap;flex:0 0 auto;}
+  .ova-filtros:hover{transform:translateY(-2px);box-shadow:0 13px 26px rgba(238,54,35,.36);}
+  .ova-filtros .cnt{background:rgba(255,255,255,.25);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:800;}
+  .ova-chips{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-width:0;}
+  .ova-chips .lab{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--ova-muted);}
+  .ova-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ova-primary);background:#fff;border:1px solid var(--ova-line);border-radius:999px;padding:6px 12px;white-space:nowrap;box-shadow:0 2px 6px rgba(13,43,53,.04);animation:chipIn .3s ease both;}
+  .ova-chip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ova-cyan);flex:0 0 auto;}
+  @keyframes chipIn{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:none;}}
+
+  .ph{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  .ph .c{height:104px;border-radius:18px;background:linear-gradient(160deg,#fff,#f4fafd);border:1px solid rgba(255,255,255,.8);box-shadow:0 10px 24px rgba(13,43,53,.06);position:relative;overflow:hidden;}
+  .ph .c::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--ova-primary),var(--ova-cyan));}
+  .ph .c::after{content:attr(data-t);position:absolute;inset:0;display:grid;place-items:center;color:var(--ova-muted);font-size:12px;font-weight:600;padding:0 10px;text-align:center;}
+
+  /* responsive: en pantallas chicas, scroll horizontal y se ocultan las descripciones */
+  @media(max-width:760px){
+    .ova-tabs{overflow-x:auto;scrollbar-width:none;}
+    .ova-tabs::-webkit-scrollbar{display:none;}
+    .ova-tab{flex:0 0 auto;}
+    .ova-ds{display:none;}
+  }
+</style>
+</head>
+<body>
+
+  <header class="ova-top">
+    <div class="ova-logo"><span class="mark"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M20.5 12a8.5 8.5 0 0 1-17 0"/><circle cx="9" cy="10" r="1.2" fill="currentColor" stroke="none"/></svg></span>OVA <b>FIV</b></div>
+    <div class="ova-user"><span>juancamilobenjumea</span><span class="av"></span></div>
+  </header>
+
+  <div class="wrap">
+    <nav class="ova-tabs" id="ovaTabs">
+      <span class="ova-pill" id="ovaPill"></span>
+
+      <button type="button" class="ova-tab on" data-k="Período">
+        <span class="ova-ic ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span>
+        <span class="ova-tx"><span class="ova-nm">Período</span><span class="ova-ds">Indicadores y evolución</span></span>
+      </button>
+
+      <button type="button" class="ova-tab" data-k="Aspirador">
+        <span class="ova-ic ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2l4 4M17 3l4 4-9 9-5 1 1-5z"/><path d="M9 11l-6 6a2 2 0 0 0 0 3 2 2 0 0 0 3 0l6-6"/></svg></span>
+        <span class="ova-tx"><span class="ova-nm">Aspirador</span><span class="ova-ds">Eficiencia por operador</span></span>
+      </button>
+
+      <button type="button" class="ova-tab" data-k="Toro">
+        <span class="ova-ic ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4c2 0 4 1 5 3M21 4c-2 0-4 1-5 3"/><path d="M5 7a7 7 0 0 0 14 0"/><path d="M7 11a5 5 0 0 0 10 0"/><circle cx="9.5" cy="13" r=".6" fill="currentColor"/><circle cx="14.5" cy="13" r=".6" fill="currentColor"/></svg></span>
+        <span class="ova-tx"><span class="ova-nm">Toro</span><span class="ova-ds">Rendimiento por semental</span></span>
+      </button>
+
+      <button type="button" class="ova-tab" data-k="Ganaderías">
+        <span class="ova-ic ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l9-6 9 6v12"/><path d="M3 21h18M9 21v-6h6v6"/></svg></span>
+        <span class="ova-tx"><span class="ova-nm">Ganaderías</span><span class="ova-ds">Ranking y comparación</span></span>
+      </button>
+    </nav>
+
+    <div class="ova-fbar">
+      <button type="button" class="ova-filtros"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>Seleccionar filtros <span class="cnt"></span></button>
+      <div class="ova-chips" id="ovaChips"><span class="lab">Filtros de la tab:</span></div>
+    </div>
+
+    <div class="ph"><div class="c" data-t="Oocitos cultivables %"></div><div class="c" data-t="Tasa de producción %"></div><div class="c" data-t="Oocitos viables / donante"></div><div class="c" data-t="Donadoras / proceso"></div></div>
+  </div>
+
+<script>
+  var FILTERS={
+    'Período':['Período','Ganadería','Finca','Donante','Toro','Raza donante','Raza toro','Aspirador','Laboratorista'],
+    'Aspirador':['Período','Aspirador','Ganadería','Finca','Raza donante','Raza toro'],
+    'Toro':['Período','Toro','Raza toro','Donadora','Raza donadora','Finca'],
+    'Ganaderías':['Período','Ganadería','Comparar con']
+  };
+  var tabs=document.getElementById('ovaTabs'), pill=document.getElementById('ovaPill'), chipsBox=document.getElementById('ovaChips');
+  var cnt=document.querySelector('.ova-filtros .cnt'), btns=[].slice.call(tabs.querySelectorAll('.ova-tab'));
+  function move(b,anim){if(!anim)pill.style.transition='none';pill.style.left=b.offsetLeft+'px';pill.style.width=b.offsetWidth+'px';if(!anim)requestAnimationFrame(function(){pill.style.transition='';});}
+  function chips(k){chipsBox.innerHTML='<span class="lab">Filtros de la tab:</span>';(FILTERS[k]||[]).forEach(function(f){var s=document.createElement('span');s.className='ova-chip';s.textContent=f;chipsBox.appendChild(s);});if(cnt)cnt.textContent=(FILTERS[k]||[]).length;}
+  btns.forEach(function(b){b.addEventListener('click',function(){btns.forEach(function(x){x.classList.remove('on');});b.classList.add('on');move(b,true);chips(b.dataset.k);});});
+  function init(){var on=tabs.querySelector('.ova-tab.on')||btns[0];move(on,false);chips(on.dataset.k);}
+  window.addEventListener('load',init);window.addEventListener('resize',function(){move(tabs.querySelector('.ova-tab.on'),false);});init();
+</script>
+</body>
+</html>

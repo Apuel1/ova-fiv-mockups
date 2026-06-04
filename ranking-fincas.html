@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Ranking de Fincas (mockup premium)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+
+  #ovaRankF.ova-tot{
+    --ova-primary:#006C9D;--ova-cyan:#19A7C9;--ova-cyan-2:#3FC6E0;--ova-deep:#0D2B35;
+    --ova-text:#1d3a44;--ova-muted:#6a8794;--ova-line:rgba(0,108,157,.12);--ova-orange:#EE3623;--ova-orange-2:#FF6E4D;--ova-radius:22px;
+    font-family:'Poppins','Segoe UI',system-ui,-apple-system,sans-serif;color:var(--ova-text);text-align:left;-webkit-font-smoothing:antialiased;}
+  #ovaRankF.ova-tot, #ovaRankF.ova-tot *{box-sizing:border-box;}
+  body{margin:0;background:radial-gradient(1100px 520px at 88% -10%,rgba(25,167,201,.10),transparent 58%),#eef4f7;}
+  #ovaRankF.ova-tot{max-width:1080px;margin:0 auto;padding:34px 24px 80px;}
+
+  #ovaRankF .ova-card{position:relative;border-radius:var(--ova-radius);background:linear-gradient(160deg,#fff,#f4fafd);border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 30px rgba(13,43,53,.08);contain:layout;overflow:hidden;}
+  #ovaRankF .ova-topbar{position:absolute;top:0;left:0;right:0;height:3px;z-index:4;border-radius:var(--ova-radius) var(--ova-radius) 0 0;background:linear-gradient(90deg,var(--ova-primary),var(--ova-cyan));}
+
+  #ovaRankF .ovr-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:24px 26px 18px;}
+  #ovaRankF .ovr-tag{display:flex;align-items:center;gap:13px;min-width:0;}
+  #ovaRankF .ovr-ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;flex:0 0 auto;background:linear-gradient(135deg,var(--ova-primary),var(--ova-cyan));box-shadow:0 9px 20px rgba(0,108,157,.30);}
+  #ovaRankF .ovr-ttl{font-size:clamp(16px,1.9vw,20px);font-weight:900;letter-spacing:-.4px;color:var(--ova-deep);line-height:1.15;}
+  #ovaRankF .ovr-sub{font-size:12px;font-weight:500;color:var(--ova-muted);margin-top:4px;line-height:1.5;max-width:560px;}
+  #ovaRankF .ovr-chip{flex:0 0 auto;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--ova-primary);background:rgba(0,108,157,.08);border:1px solid var(--ova-line);border-radius:999px;padding:7px 13px;}
+
+  #ovaRankF .ovr-scroll{overflow-x:auto;}
+  #ovaRankF .ovr-table{width:100%;border-collapse:collapse;font-size:13px;min-width:680px;}
+  #ovaRankF .ovr-table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ova-muted);padding:6px 16px 13px;text-align:right;cursor:pointer;user-select:none;white-space:nowrap;transition:color .2s;}
+  #ovaRankF .ovr-table th.c-pos{text-align:center;width:54px;cursor:default;}
+  #ovaRankF .ovr-table th.c-name{text-align:left;}
+  #ovaRankF .ovr-table th:not(.c-pos):hover{color:var(--ova-primary);}
+  #ovaRankF .ovr-table th .ar{display:inline-block;font-size:8px;margin-left:4px;opacity:0;transform:translateY(-1px);transition:opacity .2s;}
+  #ovaRankF .ovr-table th.sorted{color:var(--ova-primary);}
+  #ovaRankF .ovr-table th.sorted .ar{opacity:1;}
+
+  #ovaRankF .ovr-table tbody td{padding:12px 16px;border-top:1px solid var(--ova-line);text-align:right;font-variant-numeric:tabular-nums;color:var(--ova-text);}
+  #ovaRankF .ovr-table td.c-pos{text-align:center;}
+  #ovaRankF .ovr-table td.c-name{text-align:left;font-weight:600;color:var(--ova-deep);white-space:nowrap;}
+  #ovaRankF .ovr-row{transition:background .18s;opacity:0;transform:translateY(6px);}
+  #ovaRankF .ovr-row.in{opacity:1;transform:none;transition:opacity .4s,transform .4s;}
+  #ovaRankF .ovr-row:hover{background:rgba(25,167,201,.06);}
+  #ovaRankF .ovr-row.r1{background:linear-gradient(90deg,rgba(245,162,1,.10),transparent 60%);}
+  #ovaRankF .ovr-row.r2{background:linear-gradient(90deg,rgba(159,177,189,.12),transparent 60%);}
+  #ovaRankF .ovr-row.r3{background:linear-gradient(90deg,rgba(197,123,60,.10),transparent 60%);}
+
+  #ovaRankF .ovr-medal{width:27px;height:27px;border-radius:50%;display:inline-grid;place-items:center;font-size:12px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;}
+  #ovaRankF .ovr-medal.m1{background:linear-gradient(145deg,#FFDD72,#F2A200);box-shadow:0 3px 9px rgba(242,162,0,.45);}
+  #ovaRankF .ovr-medal.m2{background:linear-gradient(145deg,#DBE5EC,#9DAFBC);box-shadow:0 3px 9px rgba(157,175,188,.45);}
+  #ovaRankF .ovr-medal.m3{background:linear-gradient(145deg,#E4A571,#C2782F);box-shadow:0 3px 9px rgba(194,120,47,.45);}
+  #ovaRankF .ovr-medal.mn{background:#eef3f6;color:var(--ova-muted);font-size:11px;font-weight:700;}
+
+  #ovaRankF .ovr-finca{display:inline-block;vertical-align:middle;}
+  #ovaRankF .ovr-warn{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--ova-orange);color:#fff;font-size:10px;font-weight:800;margin-left:7px;vertical-align:middle;cursor:help;}
+
+  #ovaRankF .c-conv{width:170px;}
+  #ovaRankF .ovr-conv{display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+  #ovaRankF .ovr-conv b{font-size:13.5px;font-weight:800;color:var(--ova-deep);}
+  #ovaRankF .ovr-bar{width:100%;height:5px;border-radius:3px;background:#e6eef3;overflow:hidden;}
+  #ovaRankF .ovr-bar i{display:block;height:100%;width:0;border-radius:3px;background:linear-gradient(90deg,var(--ova-cyan),var(--ova-primary));transition:width .9s cubic-bezier(.2,.8,.25,1);}
+  #ovaRankF .ovr-row.warn .ovr-bar i{background:linear-gradient(90deg,var(--ova-orange-2),var(--ova-orange));}
+  #ovaRankF .ovr-row.warn .ovr-conv b{color:var(--ova-orange);}
+
+  #ovaRankF .ovr-table tfoot td{padding:15px 16px;border-top:2px solid rgba(13,43,53,.16);font-weight:800;color:var(--ova-deep);background:rgba(0,108,157,.045);font-variant-numeric:tabular-nums;text-align:right;}
+  #ovaRankF .ovr-table tfoot td.lbl{text-align:left;text-transform:uppercase;font-size:11px;letter-spacing:.5px;color:var(--ova-primary);}
+
+  #ovaRankF .ovr-foot{padding:14px 26px 22px;font-size:11.5px;color:var(--ova-muted);display:flex;align-items:center;gap:8px;}
+  #ovaRankF .ovr-foot .dot{width:8px;height:8px;border-radius:50%;background:var(--ova-orange);flex:0 0 auto;}
+  .ova-legend{margin-top:30px;padding:18px 22px;border-radius:18px;background:rgba(255,255,255,.86);border:1px solid rgba(0,108,157,.12);font-size:13px;color:#6a8794;line-height:1.85;}
+  .ova-legend b{color:#0D2B35;}
+  /* iteración 2: columna activa, accent lateral (podio/hover), conversión protagonista */
+  #ovaRankF .ovr-table.sc-name th:nth-child(2),#ovaRankF .ovr-table.sc-name td:nth-child(2),
+  #ovaRankF .ovr-table.sc-conv th:nth-child(3),#ovaRankF .ovr-table.sc-conv td:nth-child(3),
+  #ovaRankF .ovr-table.sc-emb th:nth-child(4),#ovaRankF .ovr-table.sc-emb td:nth-child(4),
+  #ovaRankF .ovr-table.sc-ovo th:nth-child(5),#ovaRankF .ovr-table.sc-ovo td:nth-child(5),
+  #ovaRankF .ovr-table.sc-don th:nth-child(6),#ovaRankF .ovr-table.sc-don td:nth-child(6),
+  #ovaRankF .ovr-table.sc-proc th:nth-child(7),#ovaRankF .ovr-table.sc-proc td:nth-child(7){background:rgba(25,167,201,.055);}
+  #ovaRankF .ovr-row td:first-child{transition:box-shadow .18s,background .18s;}
+  #ovaRankF .ovr-row.r1 td:first-child{box-shadow:inset 3px 0 0 #F2A200;}
+  #ovaRankF .ovr-row.r2 td:first-child{box-shadow:inset 3px 0 0 #9DAFBC;}
+  #ovaRankF .ovr-row.r3 td:first-child{box-shadow:inset 3px 0 0 #C2782F;}
+  #ovaRankF .ovr-row:hover td:first-child{box-shadow:inset 3px 0 0 var(--ova-cyan);}
+  #ovaRankF .ovr-row.r1 .ovr-finca{font-weight:800;}
+  #ovaRankF .ovr-conv b{font-size:15px;}
+  #ovaRankF .ovr-bar{height:6px;}
+  @media(prefers-reduced-motion:reduce){#ovaRankF .ovr-row,#ovaRankF .ovr-bar i{transition:none;}}
+</style>
+</head>
+<body>
+<div class="ova-tot" id="ovaRankF">
+  <article class="ova-card">
+    <span class="ova-topbar"></span>
+    <div class="ovr-head">
+      <div class="ovr-tag">
+        <span class="ovr-ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v3a6 6 0 0 1-12 0z"/><path d="M6 5H4a2 2 0 0 0 0 4h2M18 5h2a2 2 0 0 1 0 4h-2"/><path d="M9 17h6M10 17l.4-3h3.2l.4 3M12 13v-1"/></svg></span>
+        <div>
+          <div class="ovr-ttl">Ranking de Fincas por Conversión</div>
+          <div class="ovr-sub">Conversión = Embriones &divide; Ovocitos (%) de las donadoras de cada finca. Tocá un encabezado para reordenar.</div>
+        </div>
+      </div>
+      <span class="ovr-chip">Top 10</span>
+    </div>
+
+    <div class="ovr-scroll">
+      <table class="ovr-table">
+        <thead>
+          <tr>
+            <th class="c-pos">#</th>
+            <th class="c-name" data-k="name" data-t="s">Finca<span class="ar">▼</span></th>
+            <th class="c-conv sorted" data-k="conv" data-t="n">Conversión<span class="ar">▼</span></th>
+            <th data-k="emb" data-t="n">Emb.<span class="ar">▼</span></th>
+            <th data-k="ovo" data-t="n">Ovocitos<span class="ar">▼</span></th>
+            <th data-k="don" data-t="n">Donadoras<span class="ar">▼</span></th>
+            <th data-k="proc" data-t="n">Procesos<span class="ar">▼</span></th>
+          </tr>
+        </thead>
+        <tbody id="ovrBody"></tbody>
+        <tfoot id="ovrFoot"></tfoot>
+      </table>
+    </div>
+
+    <div class="ovr-foot"><span class="dot"></span>El ⚠ marca conversión &gt; 100 % (imposible: más embriones que ovocitos) — dato a revisar.</div>
+  </article>
+
+  <div class="ova-legend">
+    <b>Mockup — qué probar:</b><br>
+    • <b>Medallas</b> oro/plata/bronce en el top-3 · <b>barra</b> de conversión (escala 0–100 %, el outlier "test" queda lleno + ⚠).<br>
+    • <b>Ordenable</b>: clic en cualquier encabezado (Conversión, Emb., Ovocitos, Donadoras, Procesos, Finca) — la medalla viaja con la finca.<br>
+    • <b>Fila resumen</b> abajo: totales + conversión global ponderada (Σemb ÷ Σovo).<br>
+    • Responsive (scroll horizontal en pantallas chicas), hover por fila, animación de entrada.<br><br>
+    <b>Datos reales del screenshot.</b> Al portear, mismo motor con la query del proceso.
+  </div>
+</div>
+
+<script>
+(function(){
+  var root=document.getElementById('ovaRankF'); if(!root) return;
+  var DATA=[
+    {pos:1, name:'test',          conv:3485.71, emb:488, ovo:14,   don:2,  proc:1},
+    {pos:2, name:'El rubi',       conv:50.00,   emb:10,  ovo:20,   don:1,  proc:1},
+    {pos:3, name:'Beneficiencia', conv:23.69,   emb:95,  ovo:401,  don:9,  proc:2},
+    {pos:4, name:'Rancho Eclipse',conv:19.80,   emb:20,  ovo:101,  don:4,  proc:1},
+    {pos:5, name:'La Luisa',      conv:16.89,   emb:64,  ovo:379,  don:10, proc:3},
+    {pos:6, name:'La Roca',       conv:12.43,   emb:46,  ovo:370,  don:14, proc:2},
+    {pos:7, name:'Samarcanda',    conv:12.24,   emb:18,  ovo:147,  don:5,  proc:2},
+    {pos:8, name:'San Cipriano',  conv:7.69,    emb:14,  ovo:182,  don:5,  proc:2},
+    {pos:9, name:'La Esterlina',  conv:6.46,    emb:219, ovo:3392, don:79, proc:12},
+    {pos:10,name:'Esperanza H&J', conv:0.00,    emb:0,   ovo:398,  don:12, proc:2}
+  ];
+  var nf=function(n,d){return Number(n).toLocaleString('es-CO',{minimumFractionDigits:d||0,maximumFractionDigits:d||0});};
+  var medal=function(p){return p<=3?'<span class="ovr-medal m'+p+'">'+p+'</span>':'<span class="ovr-medal mn">'+p+'</span>';};
+  var body=root.querySelector('#ovrBody'), foot=root.querySelector('#ovrFoot');
+
+  function rowHTML(d){
+    var warn=d.conv>100, w=Math.max(2,Math.min(d.conv,100));
+    return '<tr class="ovr-row'+(d.pos<=3?' r'+d.pos:'')+(warn?' warn':'')+'" data-name="'+d.name.toLowerCase()+'" data-conv="'+d.conv+'" data-emb="'+d.emb+'" data-ovo="'+d.ovo+'" data-don="'+d.don+'" data-proc="'+d.proc+'">'
+      +'<td class="c-pos">'+medal(d.pos)+'</td>'
+      +'<td class="c-name"><span class="ovr-finca">'+d.name+'</span>'+(warn?'<span class="ovr-warn" title="Conversión &gt; 100 %: dato a revisar">!</span>':'')+'</td>'
+      +'<td class="c-conv"><div class="ovr-conv"><b>'+nf(d.conv,2)+' %</b><span class="ovr-bar"><i data-w="'+w+'"></i></span></div></td>'
+      +'<td>'+nf(d.emb)+'</td><td>'+nf(d.ovo)+'</td><td>'+nf(d.don)+'</td><td>'+nf(d.proc)+'</td></tr>';
+  }
+  function render(rows){
+    body.innerHTML=rows.map(rowHTML).join('');
+    var bars=[].slice.call(body.querySelectorAll('.ovr-bar i'));
+    var trs=[].slice.call(body.querySelectorAll('.ovr-row'));
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      trs.forEach(function(t,i){setTimeout(function(){t.classList.add('in');},i*45);});
+      bars.forEach(function(b){b.style.width=b.dataset.w+'%';});
+    });});
+  }
+  // fila resumen (totales + conversión global ponderada)
+  var T=DATA.reduce(function(a,d){a.emb+=d.emb;a.ovo+=d.ovo;a.don+=d.don;a.proc+=d.proc;return a;},{emb:0,ovo:0,don:0,proc:0});
+  var convG=T.ovo>0?T.emb/T.ovo*100:0;
+  foot.innerHTML='<tr><td></td><td class="lbl">Total · '+DATA.length+' fincas</td>'
+    +'<td><b>'+nf(convG,2)+' %</b></td><td>'+nf(T.emb)+'</td><td>'+nf(T.ovo)+'</td><td>'+nf(T.don)+'</td><td>'+nf(T.proc)+'</td></tr>';
+
+  var table=root.querySelector('.ovr-table');
+  function setActiveCol(k){['name','conv','emb','ovo','don','proc'].forEach(function(x){table.classList.remove('sc-'+x);});table.classList.add('sc-'+k);}
+
+  render(DATA.slice());
+  setActiveCol('conv');
+
+  // ordenamiento
+  var cur='conv', dir=-1;
+  root.querySelectorAll('th[data-k]').forEach(function(th){
+    th.addEventListener('click',function(){
+      var k=th.dataset.k, type=th.dataset.t;
+      if(cur===k){dir=-dir;}else{cur=k;dir=(type==='s')?1:-1;}
+      root.querySelectorAll('th[data-k]').forEach(function(x){x.classList.remove('sorted');x.querySelector('.ar').textContent='▼';});
+      th.classList.add('sorted'); th.querySelector('.ar').textContent=dir<0?'▼':'▲';
+      setActiveCol(cur);
+      var rows=DATA.slice().sort(function(a,b){
+        var va=a[k], vb=b[k]; if(type==='s'){va=(''+va).toLowerCase();vb=(''+vb).toLowerCase();}
+        return va<vb?-1*dir:va>vb?1*dir:0;
+      });
+      render(rows);
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Mockup — Tab Aspirador premium (R9)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+:root{
+  --ova-primary:#006C9D;--ova-cyan:#19A7C9;--ova-cyan-2:#3FC6E0;--ova-deep:#0D2B35;
+  --ova-orange:#EE3623;--ova-orange-2:#FF6E4D;--ova-text:#1d3a44;--ova-muted:#6a8794;
+  --ova-line:rgba(0,108,157,.12);--ova-radius:22px;
+}
+body{margin:0;background:linear-gradient(160deg,#eef6fb,#f7fbfd);padding:26px;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1320px;margin:0 auto;font-family:'Poppins','Segoe UI',system-ui,sans-serif;}
+.mock-tag{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#fff;background:linear-gradient(135deg,var(--ova-orange),var(--ova-orange-2));padding:5px 12px;border-radius:999px;margin-bottom:12px;}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.head h1{margin:0;font-size:26px;font-weight:900;letter-spacing:-.6px;color:var(--ova-deep);}
+.head h1 b{background:linear-gradient(120deg,var(--ova-primary),var(--ova-cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.head p{margin:4px 0 0;color:var(--ova-muted);font-size:13.5px;}
+/* barra de filtros (mock) */
+.filters{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;background:#fff;border:1px solid var(--ova-line);border-radius:16px;box-shadow:0 10px 26px rgba(13,43,53,.07);padding:14px 18px;margin-bottom:22px;}
+.fl{display:flex;flex-direction:column;gap:6px;}
+.fl label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--ova-muted);}
+.fl .pick{font-size:13px;font-weight:600;color:var(--ova-deep);border:1px solid var(--ova-line);border-radius:10px;padding:8px 12px;background:#fff;min-width:140px;}
+.fl .seg{display:inline-flex;background:#e7f0f5;border-radius:11px;padding:3px;gap:2px;}
+.fl .seg button{font-size:12px;font-weight:700;color:var(--ova-muted);border:0;background:transparent;border-radius:8px;padding:7px 12px;cursor:pointer;}
+.fl .seg button.on{background:#fff;color:var(--ova-primary);box-shadow:0 2px 7px rgba(13,43,53,.12);}
+.apply{margin-left:auto;align-self:center;font-size:12.5px;font-weight:700;color:#fff;border:0;background:linear-gradient(135deg,var(--ova-primary),var(--ova-cyan));border-radius:11px;padding:11px 20px;cursor:pointer;box-shadow:0 8px 18px rgba(0,108,157,.3);}
+
+/* ===== componentes reales (copiados de ova-dashboard.css §3 barras + §4 líneas) ===== */
+.ova-tot{color:var(--ova-text);-webkit-font-smoothing:antialiased;text-align:left;}
+.ova-tot, .ova-tot *{box-sizing:border-box;font-family:'Poppins','Segoe UI',system-ui,-apple-system,sans-serif;}
+.ova-seclabel{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--ova-primary);margin:6px 0 14px 2px;display:flex;align-items:center;gap:9px;}
+.ova-seclabel::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--ova-line),transparent);}
+.ova-seclabel .n{color:var(--ova-muted);font-weight:600;letter-spacing:.4px;text-transform:none;}
+
+/* §3 · BARRAS */
+[id^="ovaIndic"]{padding:4px 2px 22px;}
+[id^="ovaIndic"] .ova-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;}
+[id^="ovaIndic"] .ova-card{position:relative;border-radius:var(--ova-radius);background:linear-gradient(160deg,#fff,#f4fafd);border:1px solid rgba(255,255,255,.8);box-shadow:0 10px 24px rgba(13,43,53,.07);contain:layout;transition:transform .4s cubic-bezier(.2,.8,.25,1),box-shadow .4s;}
+[id^="ovaIndic"] .ova-card:hover{transform:translateY(-4px);box-shadow:0 16px 32px rgba(0,108,157,.12);z-index:6;}
+[id^="ovaIndic"] .ova-topbar{position:absolute;top:0;left:0;right:0;height:3px;z-index:4;border-radius:var(--ova-radius) var(--ova-radius) 0 0;background:linear-gradient(90deg,var(--ova-primary),var(--ova-cyan));}
+[id^="ovaIndic"] .ova-chart{padding:22px 24px 18px;}
+[id^="ovaIndic"] .ova-ch-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:20px;}
+[id^="ovaIndic"] .ova-ch-tag{display:flex;align-items:center;gap:11px;}
+[id^="ovaIndic"] .ova-ch-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;flex:0 0 auto;background:linear-gradient(135deg,var(--ova-primary),var(--ova-cyan));box-shadow:0 7px 16px rgba(0,108,157,.26);}
+[id^="ovaIndic"] .ova-ch-ttl{font-size:14.5px;font-weight:800;color:var(--ova-deep);line-height:1.2;}
+[id^="ovaIndic"] .ova-ch-sub{font-size:11px;font-weight:600;color:var(--ova-muted);margin-top:2px;}
+[id^="ovaIndic"] .ova-ch-avg{text-align:right;flex:0 0 auto;}
+[id^="ovaIndic"] .ova-ch-avg b{font-size:26px;font-weight:900;letter-spacing:-1px;color:var(--ova-deep);line-height:1;font-variant-numeric:tabular-nums;}
+[id^="ovaIndic"] .ova-ch-avg span{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--ova-muted);margin-top:3px;}
+[id^="ovaIndic"] .ova-plot{position:relative;height:210px;padding-left:34px;}
+[id^="ovaIndic"] .ova-grid-l{position:absolute;left:34px;right:0;top:0;bottom:26px;z-index:0;}
+[id^="ovaIndic"] .ova-grid-l i{position:absolute;left:0;right:0;height:1px;background:var(--ova-line);}
+[id^="ovaIndic"] .ova-grid-l i:first-child{background:rgba(13,43,53,.22);}
+[id^="ovaIndic"] .ova-grid-l i b{position:absolute;left:-34px;top:-7px;font-size:9px;font-weight:600;color:var(--ova-muted);font-style:normal;font-variant-numeric:tabular-nums;}
+[id^="ovaIndic"] .ova-avg{position:absolute;left:0;right:0;bottom:0;z-index:3;height:0;border-top:1.5px dashed var(--ova-orange);transform-origin:left;transform:scaleX(0);transition:transform .8s .6s ease;}
+[id^="ovaIndic"] .ova-avg b{position:absolute;right:0;top:-8px;font-size:9px;font-weight:700;color:var(--ova-orange);background:rgba(255,248,240,.92);padding:0 5px;border-radius:5px;font-style:normal;font-variant-numeric:tabular-nums;}
+[id^="ovaIndic"] .ova-bars{position:absolute;left:34px;right:0;top:0;bottom:26px;display:flex;align-items:flex-end;gap:clamp(4px,1.4vw,14px);z-index:1;}
+[id^="ovaIndic"] .ova-bar{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative;cursor:default;}
+[id^="ovaIndic"] .ova-bar .fill{width:clamp(13px,55%,30px);height:0;border-radius:7px 7px 3px 3px;background:linear-gradient(180deg,var(--ova-cyan),var(--ova-primary));box-shadow:0 3px 8px rgba(0,108,157,.16);transition:height .9s cubic-bezier(.2,.8,.25,1),filter .25s;}
+[id^="ovaIndic"] .ova-bar:hover .fill{filter:brightness(1.04);}
+[id^="ovaIndic"] .ova-bar.peak .fill{background:linear-gradient(180deg,var(--ova-orange-2),var(--ova-orange));box-shadow:0 4px 10px rgba(238,54,35,.26);}
+[id^="ovaIndic"] .ova-bar.peak .val{color:var(--ova-orange);font-weight:800;}
+[id^="ovaIndic"] .ova-bar .val{position:absolute;top:0;transform:translateY(-128%);font-size:11px;font-weight:700;color:var(--ova-deep);font-variant-numeric:tabular-nums;opacity:0;transition:opacity .4s .55s;}
+[id^="ovaIndic"] .ova-bar.in .val{opacity:1;}
+[id^="ovaIndic"] .ova-bar .lbl{position:absolute;bottom:-22px;font-size:9.5px;font-weight:600;color:var(--ova-muted);white-space:nowrap;}
+[id^="ovaIndic"] .ova-bar .tip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ova-deep);color:#fff;font-size:11px;font-weight:600;padding:5px 9px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;z-index:7;box-shadow:0 8px 18px rgba(13,43,53,.3);}
+[id^="ovaIndic"] .ova-bar:first-child .tip{left:0;transform:none;}
+[id^="ovaIndic"] .ova-bar:last-child .tip{left:auto;right:0;transform:none;}
+[id^="ovaIndic"] .ova-bar:hover .tip{opacity:1;}
+
+/* §4 · LÍNEAS */
+[id^="ovaEvo"]{padding:4px 2px 22px;}
+[id^="ovaEvo"] .ova-duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px;}
+[id^="ovaEvo"] .ova-card{position:relative;border-radius:var(--ova-radius);background:linear-gradient(160deg,#fff,#f4fafd);border:1px solid rgba(255,255,255,.8);box-shadow:0 10px 24px rgba(13,43,53,.07);contain:layout;transition:transform .4s cubic-bezier(.2,.8,.25,1),box-shadow .4s;}
+[id^="ovaEvo"] .ova-card:hover{transform:translateY(-4px);box-shadow:0 16px 32px rgba(0,108,157,.12);z-index:6;}
+[id^="ovaEvo"] .ova-topbar{position:absolute;top:0;left:0;right:0;height:3px;z-index:4;border-radius:var(--ova-radius) var(--ova-radius) 0 0;background:linear-gradient(90deg,var(--ova-primary),var(--ova-cyan));}
+[id^="ovaEvo"] .ova-line{padding:22px 24px 18px;}
+[id^="ovaEvo"] .ova-l-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:20px;}
+[id^="ovaEvo"] .ova-l-tag{display:flex;align-items:center;gap:11px;}
+[id^="ovaEvo"] .ova-l-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;flex:0 0 auto;background:linear-gradient(135deg,var(--ova-primary),var(--ova-cyan));box-shadow:0 7px 16px rgba(0,108,157,.26);}
+[id^="ovaEvo"] .ova-l-ttl{font-size:15px;font-weight:800;color:var(--ova-deep);line-height:1.2;}
+[id^="ovaEvo"] .ova-l-sub{font-size:11.5px;font-weight:600;color:var(--ova-muted);margin-top:2px;}
+[id^="ovaEvo"] .ova-l-tot{text-align:right;flex:0 0 auto;}
+[id^="ovaEvo"] .ova-l-tot b{font-size:28px;font-weight:900;letter-spacing:-1px;color:var(--ova-deep);line-height:1;font-variant-numeric:tabular-nums;}
+[id^="ovaEvo"] .ova-l-tot span{display:block;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--ova-muted);margin-top:3px;}
+[id^="ovaEvo"] .ova-lplot{position:relative;height:214px;}
+[id^="ovaEvo"] .ova-glines,[id^="ovaEvo"] .ova-draw{position:absolute;left:34px;right:10px;top:8px;bottom:24px;}
+[id^="ovaEvo"] .ova-glines{z-index:0;}
+[id^="ovaEvo"] .ova-glines i{position:absolute;left:0;right:0;height:1px;background:var(--ova-line);}
+[id^="ovaEvo"] .ova-glines i:first-child{background:rgba(13,43,53,.22);}
+[id^="ovaEvo"] .ova-glines i b{position:absolute;left:-34px;top:-7px;font-size:9.5px;font-weight:600;color:var(--ova-muted);font-style:normal;font-variant-numeric:tabular-nums;}
+[id^="ovaEvo"] .ova-draw{z-index:1;}
+[id^="ovaEvo"] .ova-lsvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+[id^="ovaEvo"] .ova-lsvg .area{opacity:0;transition:opacity .8s .3s ease;}
+[id^="ovaEvo"] .ova-lsvg .line{fill:none;stroke:#0E8CBC;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
+[id^="ovaEvo"] .ova-dots{position:absolute;inset:0;z-index:2;}
+[id^="ovaEvo"] .ova-dot{position:absolute;width:9px;height:9px;border-radius:50%;background:#fff;border:2.4px solid var(--ova-primary);transform:translate(-50%,50%) scale(0);transition:transform .3s cubic-bezier(.2,1.5,.4,1);box-shadow:0 2px 5px rgba(0,108,157,.35);cursor:default;}
+[id^="ovaEvo"] .ova-dot.in{transform:translate(-50%,50%) scale(1);}
+[id^="ovaEvo"] .ova-dot:hover{background:var(--ova-cyan);}
+[id^="ovaEvo"] .ova-dot.peak{width:13px;height:13px;background:var(--ova-orange);border-color:#fff;box-shadow:0 3px 9px rgba(238,54,35,.5);}
+[id^="ovaEvo"] .ova-dot .pkval{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);font-size:11.5px;font-weight:800;color:var(--ova-orange);white-space:nowrap;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .4s .9s;}
+[id^="ovaEvo"] .ova-dot.peak.in .pkval{opacity:1;}
+[id^="ovaEvo"] .ova-dot .tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--ova-deep);color:#fff;font-size:11px;font-weight:600;padding:5px 9px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;z-index:6;box-shadow:0 8px 18px rgba(13,43,53,.3);}
+[id^="ovaEvo"] .ova-dot:hover .tip{opacity:1;}
+[id^="ovaEvo"] .ova-xlabels{position:absolute;left:34px;right:10px;bottom:0;height:20px;z-index:1;}
+[id^="ovaEvo"] .ova-xlabels span{position:absolute;transform:translateX(-50%);font-size:10px;font-weight:600;color:var(--ova-muted);white-space:nowrap;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="mock-tag">Mockup · Tab Aspirador (R9)</span>
+  <div class="head">
+    <div><h1>Análisis Productivo por <b>Aspirador</b></h1>
+      <p>4 charts JET viejos → 2 regiones premium: evolución (líneas) + promedios (barras). Datos de ejemplo.</p></div>
+  </div>
+
+  <!-- FILTROS (mock, no interactivos) -->
+  <div class="filters">
+    <div class="fl"><label>Aspirador</label><span class="pick">Juan Pérez</span></div>
+    <div class="fl"><label>Ganadería</label><span class="pick">Todas</span></div>
+    <div class="fl"><label>Finca</label><span class="pick">Todas</span></div>
+    <div class="fl"><label>Raza donante</label><span class="pick">Todas</span></div>
+    <div class="fl"><label>Raza toro</label><span class="pick">Todas</span></div>
+    <div class="fl"><label>Período</label><div class="seg"><button>Semana</button><button class="on">Mes</button><button>Año</button></div></div>
+    <button class="apply">Aplicar</button>
+  </div>
+
+  <!-- EVOLUCIÓN (líneas) -->
+  <div class="ova-tot" id="ovaEvoAsp"><div class="ova-seclabel">Evolución del aspirador</div><div class="ova-duo"></div></div>
+
+  <!-- PROMEDIOS (barras) -->
+  <div class="ova-tot" id="ovaIndicAsp"><div class="ova-seclabel">Promedios del aspirador <span class="n">· promedio ponderado</span></div><div class="ova-grid"></div></div>
+</div>
+
+<script>
+var LABELS=['2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06'];
+var IC_PROC='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>';
+var IC_OVO='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 4 6 7 6 10a6 6 0 0 1-12 0c0-3 2-6 6-10z"/></svg>';
+var IC_BOX='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v6l9 4 9-4V7"/></svg>';
+var IC_DROP='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 4 6 7 6 10a6 6 0 0 1-12 0c0-3 2-6 6-10z"/><circle cx="12" cy="13" r="2" fill="currentColor" stroke="none"/></svg>';
+var fmt=function(n,d){return Number(n).toLocaleString('es-CO',{minimumFractionDigits:d||0,maximumFractionDigits:d||0});};
+var niceStep=function(range,ticks){var rough=range/ticks;var exp=Math.floor(Math.log10(rough));var f=rough/Math.pow(10,exp);var nf=f<1.5?1:f<3?2:f<7?5:10;return nf*Math.pow(10,exp);};
+
+/* ----- datos fake ----- */
+var EVO=[
+  {ttl:'Cantidad de procesos', sub:'Aspiraciones (OPU) en cada período', unit:'procesos', icon:IC_PROC, vals:[9,11,12,13,29,30,3], ag:'AG1'},
+  {ttl:'Cantidad de oocitos', sub:'Ovocitos recolectados en cada período', unit:'oocitos', icon:IC_OVO, vals:[182,231,252,286,609,612,57], ag:'AG2'}
+];
+var IND=[
+  {ttl:'Oocitos / proceso', sub:'Ovocitos aspirados ÷ procesos', unit:'Oocitos', den:'Procesos', icon:IC_BOX,
+   num:[182,231,252,286,609,612,57], dn:[9,11,12,13,29,30,3]},
+  {ttl:'Oocitos / donadora', sub:'Ovocitos aspirados ÷ donadoras', unit:'Oocitos', den:'Donadoras', icon:IC_DROP,
+   num:[182,231,252,286,609,612,57], dn:[8,10,11,12,27,28,3]}
+];
+
+/* ----- construir cards de LÍNEA ----- */
+var duo=document.querySelector('#ovaEvoAsp .ova-duo');
+EVO.forEach(function(d){
+  var head='<div class="ova-l-head"><div class="ova-l-tag"><span class="ova-l-ic">'+d.icon+'</span><div><div class="ova-l-ttl">'+d.ttl+'</div><div class="ova-l-sub">'+d.sub+'</div></div></div><div class="ova-l-tot"><b class="tot">0</b><span>total período</span></div></div>';
+  var plot='<div class="ova-lplot"><div class="ova-glines"></div><div class="ova-draw"><svg class="ova-lsvg" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><linearGradient id="g'+d.ag+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#19A7C9" stop-opacity=".26"/><stop offset="1" stop-color="#19A7C9" stop-opacity="0"/></linearGradient></defs><path class="area" fill="url(#g'+d.ag+')"/><path class="line"/></svg><div class="ova-dots"></div></div><div class="ova-xlabels"></div></div>';
+  var a=document.createElement('article'); a.className='ova-card ova-line';
+  a.dataset.vals=d.vals.join(','); a.dataset.labels=LABELS.join(','); a.dataset.unit=d.unit;
+  a.innerHTML='<span class="ova-topbar"></span>'+head+plot; duo.appendChild(a);
+});
+/* ----- construir cards de BARRA ----- */
+var grid=document.querySelector('#ovaIndicAsp .ova-grid');
+IND.forEach(function(d){
+  var bars='';
+  for(var i=0;i<LABELS.length;i++){var v=d.dn[i]>0?Math.round(d.num[i]/d.dn[i]*100)/100:0;
+    bars+='<div class="ova-bar" data-v="'+v+'" data-num="'+d.num[i]+'" data-den="'+d.dn[i]+'"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">'+LABELS[i]+'</span></div>';}
+  var head='<div class="ova-ch-head"><div class="ova-ch-tag"><span class="ova-ch-ic">'+d.icon+'</span><div><div class="ova-ch-ttl">'+d.ttl+'</div><div class="ova-ch-sub">'+d.sub+'</div></div></div><div class="ova-ch-avg"><b class="avg">0</b><span>prom. período</span></div></div>';
+  var a=document.createElement('article'); a.className='ova-card ova-chart'; a.dataset.unit=d.unit; a.dataset.denlabel=d.den;
+  a.innerHTML='<span class="ova-topbar"></span>'+head+'<div class="ova-plot"><div class="ova-grid-l"></div><div class="ova-bars"><div class="ova-avg"><b></b></div>'+bars+'</div></div>';
+  grid.appendChild(a);
+});
+
+/* ----- motor de LÍNEAS ----- */
+(function(){
+  var root=document.getElementById('ovaEvoAsp');
+  root.querySelectorAll('.ova-line').forEach(function(card){
+    var vals=card.dataset.vals.split(',').map(Number), labels=card.dataset.labels.split(','), unit=card.dataset.unit||'';
+    var n=vals.length, mxv=Math.max.apply(null,vals), rawMax=mxv>0?mxv:1, step=niceStep(rawMax,4), max=Math.ceil(rawMax/step)*step, nLines=Math.max(2,Math.round(max/step)), maxIdx=vals.indexOf(mxv), ldec=step<1?1:0;
+    var gl=card.querySelector('.ova-glines');
+    for(var i=0;i<=nLines;i++){var ln=document.createElement('i');ln.style.bottom=(i/nLines*100)+'%';var b=document.createElement('b');b.textContent=fmt(step*i,ldec);ln.appendChild(b);gl.appendChild(ln);}
+    var draw=card.querySelector('.ova-draw'), svg=card.querySelector('.ova-lsvg'), lineEl=card.querySelector('.line'), areaEl=card.querySelector('.area'), dotsBox=card.querySelector('.ova-dots'), xl=card.querySelector('.ova-xlabels');
+    vals.forEach(function(v,i){var x=(n===1?50:i/(n-1)*100);var d=document.createElement('div');d.className='ova-dot'+(i===maxIdx?' peak':'');d.style.left=x+'%';d.style.bottom=(v/max)*100+'%';
+      d.innerHTML='<div class="tip">'+labels[i]+': '+fmt(v,0)+' '+unit+'</div>'+(i===maxIdx?'<div class="pkval">'+fmt(v,0)+'</div>':'');dotsBox.appendChild(d);
+      var sp=document.createElement('span');sp.style.left=x+'%';sp.textContent=labels[i];xl.appendChild(sp);});
+    function layout(){var W=draw.clientWidth,H=draw.clientHeight;if(!W||!H)return 0;svg.setAttribute('viewBox','0 0 '+W+' '+H);
+      var P=vals.map(function(v,i){return {x:(n===1?W/2:i/(n-1)*W),y:H-(v/max)*H};});
+      lineEl.setAttribute('d','M '+P.map(function(p){return p.x.toFixed(1)+','+p.y.toFixed(1);}).join(' L '));
+      areaEl.setAttribute('d','M '+P[0].x.toFixed(1)+','+H+' L '+P.map(function(p){return p.x.toFixed(1)+','+p.y.toFixed(1);}).join(' L ')+' L '+P[n-1].x.toFixed(1)+','+H+' Z');
+      return lineEl.getTotalLength();}
+    var totEl=card.querySelector('.tot'), total=vals.reduce(function(a,c){return a+c;},0);
+    var L=layout(); lineEl.style.strokeDasharray=L; lineEl.style.strokeDashoffset=L; lineEl.style.transition='stroke-dashoffset 1.3s cubic-bezier(.3,.8,.3,1)';
+    requestAnimationFrame(function(){requestAnimationFrame(function(){lineEl.style.strokeDashoffset=0;});});
+    areaEl.style.opacity=1;
+    card.querySelectorAll('.ova-dot').forEach(function(d,i){setTimeout(function(){d.classList.add('in');},300+i*90);});
+    var t0=performance.now();(function st(now){var p=Math.min((now-t0)/1200,1),e=1-Math.pow(1-p,3);totEl.textContent=fmt(total*e,0);if(p<1)requestAnimationFrame(st);})(performance.now());
+    window.addEventListener('resize',function(){var L=layout();lineEl.style.transition='none';lineEl.style.strokeDasharray=L;lineEl.style.strokeDashoffset=0;});
+  });
+})();
+/* ----- motor de BARRAS ----- */
+(function(){
+  var root=document.getElementById('ovaIndicAsp');
+  root.querySelectorAll('.ova-chart').forEach(function(card){
+    var bars=[].slice.call(card.querySelectorAll('.ova-bar'));
+    var unit=card.dataset.unit||'Total', denlabel=card.dataset.denlabel||'Total';
+    var vals=bars.map(function(b){return parseFloat(b.dataset.v)||0;});
+    var mx=Math.max.apply(null,vals), rawMax=mx>0?mx:1, step=niceStep(rawMax,4), max=Math.ceil(rawMax/step)*step, nLines=Math.max(2,Math.round(max/step)), dec=step<1?(step<0.1?2:1):0;
+    var totN=bars.reduce(function(a,b){return a+(parseFloat(b.dataset.num)||0);},0), totD=bars.reduce(function(a,b){return a+(parseFloat(b.dataset.den)||0);},0), avg=totD>0?totN/totD:0;
+    var gl=card.querySelector('.ova-grid-l');
+    for(var i=0;i<=nLines;i++){var ln=document.createElement('i');ln.style.bottom=(i/nLines*100)+'%';var bb=document.createElement('b');bb.textContent=fmt(step*i,dec);ln.appendChild(bb);gl.appendChild(ln);}
+    var peakIdx=mx>0?vals.indexOf(mx):-1;
+    bars.forEach(function(bar,bi){var v=parseFloat(bar.dataset.v)||0;if(bi===peakIdx)bar.classList.add('peak');
+      bar.querySelector('.tip').textContent=unit+': '+bar.dataset.num+' · '+denlabel+': '+bar.dataset.den;
+      bar.querySelector('.val').textContent=fmt(v,dec);});
+    var avgEl=card.querySelector('.avg'), avgLine=card.querySelector('.ova-avg');
+    avgLine.style.bottom=(avg/max)*100+'%'; avgLine.querySelector('b').textContent='prom '+fmt(avg,dec);
+    bars.forEach(function(bar,i){var v=parseFloat(bar.dataset.v)||0;setTimeout(function(){bar.querySelector('.fill').style.height=Math.max(2,(v/max)*100)+'%';bar.classList.add('in');},i*60);});
+    avgLine.style.transform='scaleX(1)';
+    var t0=performance.now();(function st(now){var p=Math.min((now-t0)/1100,1),e=1-Math.pow(1-p,3);avgEl.textContent=fmt(avg*e,dec);if(p<1)requestAnimationFrame(st);})(performance.now());
+  });
+})();
+</script>
+</body>
+</html>

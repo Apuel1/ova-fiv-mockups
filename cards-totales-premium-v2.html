@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Cards de Totales (Premium v2)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+
+  /* borde-halo animado (degrada elegante si el navegador no soporta @property) */
+  @property --ova-ang{ syntax:'<angle>'; initial-value:0deg; inherits:false; }
+
+  .ova-tot{
+    --ova-primary:#006C9D; --ova-primary-d:#005C9D; --ova-cyan:#19A7C9; --ova-cyan-2:#3FC6E0;
+    --ova-deep:#0D2B35; --ova-accent:#ED311D;
+    --ova-text:#1d3a44; --ova-muted:#6a8794; --ova-chip:#EAF4FA;
+    --ova-line:rgba(0,108,157,.12);
+    --ova-success:#0E9F6E; --ova-warn:#E8A23D; --ova-danger:#ED311D;
+    --ova-radius:22px; --ova-trans:.45s cubic-bezier(.2,.85,.25,1);
+  }
+
+  body{margin:0;background:
+      radial-gradient(1100px 520px at 88% -10%, rgba(25,167,201,.13), transparent 58%),
+      radial-gradient(820px 520px at -5% 110%, rgba(0,108,157,.09), transparent 55%),
+      #eef4f7;}
+  .ova-tot{font-family:'Poppins',Segoe UI,system-ui,-apple-system,sans-serif;color:var(--ova-text);
+    max-width:1200px;margin:0 auto;padding:42px 26px 80px;-webkit-font-smoothing:antialiased;box-sizing:border-box;}
+  .ova-tot *{box-sizing:border-box;}
+
+  .ova-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:26px;}
+  .ova-head h1{margin:0;font-size:clamp(22px,2.4vw,30px);font-weight:800;letter-spacing:-.6px;color:var(--ova-deep);}
+  .ova-head h1 .ac{background:linear-gradient(120deg,var(--ova-primary),var(--ova-cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .ova-head p{margin:4px 0 0;color:var(--ova-muted);font-size:14px;}
+  .ova-pill{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;padding:7px 15px;border-radius:30px;
+    color:#fff;background:linear-gradient(135deg,var(--ova-primary),var(--ova-primary-d));box-shadow:0 8px 20px rgba(0,108,157,.32);}
+  .ova-seclabel{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--ova-primary);
+    margin:0 0 14px 2px;display:flex;align-items:center;gap:9px;}
+  .ova-seclabel::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--ova-line),transparent);}
+
+  /* ===================== CARD BASE ===================== */
+  .ova-card{position:relative;border-radius:var(--ova-radius);overflow:hidden;isolation:isolate;
+    background:linear-gradient(155deg,#ffffff,#f1f8fc);
+    border:1px solid rgba(255,255,255,.75);
+    box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 20px 44px rgba(13,43,53,.10),0 6px 14px rgba(13,43,53,.05);
+    transition:transform var(--ova-trans),box-shadow var(--ova-trans);}
+  .ova-card::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .4s;
+    background:radial-gradient(460px circle at var(--mx,50%) var(--my,50%),rgba(25,167,201,.20),transparent 42%);}
+  .ova-card:hover::before{opacity:1;}
+  /* halo de borde que GIRA en hover */
+  .ova-card::after{content:"";position:absolute;inset:0;border-radius:var(--ova-radius);padding:1.2px;z-index:1;pointer-events:none;opacity:0;transition:opacity var(--ova-trans);
+    background:conic-gradient(from var(--ova-ang), transparent 0 52%, var(--ova-cyan-2) 66%, var(--ova-primary) 82%, transparent 100%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;}
+  .ova-card:hover::after{opacity:.95;animation:ovaSpin 3.6s linear infinite;}
+  @keyframes ovaSpin{to{--ova-ang:360deg;}}
+  .ova-card>*{position:relative;z-index:2;}
+  .ova-card:hover{transform:translateY(-8px);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 36px 74px rgba(0,108,157,.22),0 14px 28px rgba(13,43,53,.10);}
+
+  /* topbar con brillo que recorre */
+  .ova-topbar{position:absolute;top:0;left:0;right:0;height:4px;z-index:4;overflow:hidden;
+    background:linear-gradient(90deg,var(--ova-primary),var(--ova-cyan));}
+  .ova-topbar::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);
+    animation:ovaShine 4s ease-in-out infinite;}
+  @keyframes ovaShine{0%,100%{transform:translateX(-100%);}55%,75%{transform:translateX(100%);}}
+
+  /* ===================== HERO ===================== */
+  .ova-hero{display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,46px);align-items:center;
+    padding:clamp(22px,2.6vw,34px) clamp(24px,3vw,42px);}
+  @media(max-width:620px){.ova-hero{grid-template-columns:1fr;justify-items:center;text-align:center;}}
+
+  /* células flotando (temático FIV) */
+  .ova-bubbles{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .ova-bub{position:absolute;border-radius:50%;opacity:0;
+    background:radial-gradient(circle at 32% 30%,rgba(63,198,224,.22),rgba(0,108,157,.06) 58%,transparent 72%);
+    animation:ovaFloat linear infinite;}
+  @keyframes ovaFloat{
+    0%{transform:translateY(40px) scale(.9);opacity:0;}
+    18%{opacity:.85;} 82%{opacity:.7;}
+    100%{transform:translateY(-60px) scale(1.05);opacity:0;}}
+
+  .ova-gauge-wrap{position:relative;width:clamp(156px,17vw,200px);aspect-ratio:1;flex:0 0 auto;}
+  .ova-gauge-glow{position:absolute;inset:24%;border-radius:50%;z-index:0;filter:blur(12px);opacity:.22;
+    background:radial-gradient(circle,var(--ova-cyan),transparent 70%);transition:background .5s;}
+  .ova-gauge{position:relative;width:100%;height:100%;z-index:1;}
+  .ova-gauge-track{fill:none;stroke:#e6eef3;stroke-width:10.5;}
+  .ova-gauge-fill{fill:none;stroke-width:10.5;stroke-linecap:round;filter:drop-shadow(0 0 2px rgba(25,167,201,.32));}
+  .ova-gauge-dot{fill:#fff;stroke:var(--ova-cyan);stroke-width:2.4;filter:drop-shadow(0 0 3px rgba(25,167,201,.7));}
+  .ova-gauge-prev{stroke:var(--ova-muted);stroke-width:2.4;stroke-linecap:round;opacity:.55;}
+  .ova-gauge-ring{position:absolute;inset:0;border-radius:50%;border:2px solid var(--ova-cyan);opacity:0;z-index:0;}
+  .ova-gauge-wrap.done .ova-gauge-ring{animation:ovaPulse 1.1s ease-out;}
+  @keyframes ovaPulse{0%{opacity:.55;transform:scale(.86);}100%{opacity:0;transform:scale(1.18);}}
+  .ova-gauge-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center;z-index:2;}
+  .ova-gauge-pct{font-size:clamp(36px,4.6vw,50px);font-weight:900;letter-spacing:-1.6px;line-height:1;color:var(--ova-deep);font-variant-numeric:tabular-nums;}
+  .ova-gauge-pct small{font-size:.42em;font-weight:700;color:var(--ova-muted);vertical-align:super;margin-left:1px;}
+  .ova-gauge-cap{font-size:9.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--ova-muted);margin-top:3px;}
+
+  .ova-hero-body{min-width:0;}
+  .ova-hero-tag{display:inline-flex;align-items:center;gap:10px;margin-bottom:13px;}
+  .ova-hero-tag .ic{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;color:#fff;
+    background:linear-gradient(135deg,var(--ova-primary),var(--ova-primary-d));
+    box-shadow:0 10px 22px rgba(0,108,157,.38),0 0 0 1px rgba(255,255,255,.15) inset;}
+  .ova-hero-tag .lbl{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--ova-muted);}
+  .ova-hero h2{margin:0;font-size:clamp(20px,2.2vw,28px);font-weight:800;letter-spacing:-.5px;color:var(--ova-deep);line-height:1.15;}
+  .ova-hero h2 b{background:linear-gradient(120deg,var(--ova-primary),var(--ova-cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .ova-hero-sub{margin-top:11px;font-size:14px;color:var(--ova-text);font-weight:500;line-height:1.6;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .ova-trend{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:5px 11px;border-radius:30px;
+    background:rgba(14,159,110,.12);color:var(--ova-success);}
+  .ova-hero-foot{margin-top:18px;display:flex;gap:11px;flex-wrap:wrap;}
+  .ova-stat{flex:1 1 150px;background:linear-gradient(160deg,#f4fafd,#eaf5fb);border:1px solid var(--ova-line);border-radius:14px;padding:12px 16px;
+    transition:transform .3s,box-shadow .3s;}
+  .ova-stat:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,108,157,.12);}
+  .ova-stat .v{font-size:21px;font-weight:800;color:var(--ova-deep);font-variant-numeric:tabular-nums;letter-spacing:-.5px;}
+  .ova-stat .k{font-size:11px;font-weight:600;color:var(--ova-muted);margin-top:2px;letter-spacing:.3px;}
+
+  /* ===================== MINI ===================== */
+  .ova-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(218px,1fr));gap:16px;}
+  .ova-mini{padding:22px 22px 18px;}
+  .ova-mini-ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;margin-bottom:14px;
+    background:linear-gradient(135deg,var(--ova-primary),var(--ova-cyan));box-shadow:0 9px 20px rgba(0,108,157,.32);
+    transition:transform .45s cubic-bezier(.2,1.3,.35,1),box-shadow .45s;}
+  .ova-mini:hover .ova-mini-ic{transform:scale(1.1) rotate(-4deg);box-shadow:0 14px 26px rgba(0,108,157,.42);}
+  .ova-mini-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--ova-muted);margin-bottom:7px;}
+  .ova-mini-val{font-size:clamp(30px,3.4vw,38px);font-weight:800;letter-spacing:-1px;line-height:1;color:var(--ova-deep);font-variant-numeric:tabular-nums;}
+  .ova-mini-sub{margin-top:9px;font-size:12px;color:var(--ova-muted);font-weight:500;}
+  .ova-mini-spark{position:absolute;right:14px;top:18px;width:74px;height:34px;z-index:0;}
+  .ova-spark-dot{fill:var(--ova-cyan);filter:drop-shadow(0 0 4px rgba(25,167,201,.9));opacity:0;}
+  .ova-mini.in .ova-spark-dot{animation:ovaDot 1.6s ease-out forwards;}
+  @keyframes ovaDot{0%,70%{opacity:0;}100%{opacity:1;}}
+  .ova-spark-dot.beat{animation:ovaDot 1.6s ease-out forwards, ovaBeat 2.4s 1.6s ease-in-out infinite;}
+  @keyframes ovaBeat{0%,100%{r:2.4;}50%{r:3.6;}}
+
+  /* watermark sutil */
+  .ova-wm{position:absolute;right:-18px;bottom:-26px;width:130px;height:130px;z-index:0;opacity:.05;color:var(--ova-primary);pointer-events:none;}
+
+  .ova-legend{margin-top:40px;padding:20px 24px;border-radius:18px;background:rgba(255,255,255,.88);border:1px solid var(--ova-line);
+    font-size:13px;color:var(--ova-muted);line-height:1.9;box-shadow:0 8px 22px rgba(13,43,53,.05);}
+  .ova-legend b{color:var(--ova-deep);} .ova-legend code{background:#eaf4fa;padding:1px 6px;border-radius:6px;font-size:12px;color:var(--ova-primary);}
+
+  /* entrada cinematográfica */
+  .ova-card{animation:ovaRise .7s cubic-bezier(.2,.8,.2,1) both;}
+  #ovaHero{animation-delay:.02s;}
+  .ova-grid .ova-mini:nth-child(1){animation-delay:.10s;}
+  .ova-grid .ova-mini:nth-child(2){animation-delay:.17s;}
+  .ova-grid .ova-mini:nth-child(3){animation-delay:.24s;}
+  .ova-grid .ova-mini:nth-child(4){animation-delay:.31s;}
+  @keyframes ovaRise{from{opacity:0;transform:translateY(22px) scale(.985);filter:blur(7px);}to{opacity:1;transform:none;filter:blur(0);}}
+
+  @media(prefers-reduced-motion:reduce){
+    .ova-card,.ova-mini{animation:none!important;}
+    .ova-card{transition:none;}
+    .ova-topbar::after,.ova-bub,.ova-gauge-fill{animation:none!important;}
+    .ova-gauge-fill{transition:none;}
+    .ova-card:hover::after{animation:none;}
+  }
+</style>
+</head>
+<body>
+<div class="ova-tot">
+
+  <div class="ova-head">
+    <div>
+      <h1>Análisis Productivo <span class="ac">· Totales del período</span></h1>
+      <p>Indicadores del laboratorio — responden a los filtros (ganadería, finca, técnico, donante, toro, raza).</p>
+    </div>
+    <span class="ova-pill">OVA FIV · Dashboard</span>
+  </div>
+
+  <!-- ============ HERO: TASA (R8) ============ -->
+  <div class="ova-seclabel">Indicador de éxito del laboratorio</div>
+  <article class="ova-card ova-hero" id="ovaHero">
+    <span class="ova-topbar"></span>
+    <div class="ova-bubbles" id="ovaBubbles"></div>
+
+    <div class="ova-gauge-wrap" id="ovaGaugeWrap">
+      <div class="ova-gauge-glow" id="ovaGaugeGlow"></div>
+      <div class="ova-gauge-ring"></div>
+      <svg class="ova-gauge" viewBox="0 0 130 130">
+        <defs>
+          <linearGradient id="ovaGG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#3FC6E0"/><stop offset="1" stop-color="#006C9D"/>
+          </linearGradient>
+        </defs>
+        <circle class="ova-gauge-track" cx="65" cy="65" r="54"/>
+        <path class="ova-gauge-fill" id="ovaFill" data-pct="36" fill="none" stroke="url(#ovaGG)"/>
+        <line class="ova-gauge-prev" id="ovaPrev" x1="65" y1="11" x2="65" y2="25"/>
+        <circle class="ova-gauge-dot" id="ovaDot" cx="65" cy="11" r="5.4"/>
+      </svg>
+      <div class="ova-gauge-center">
+        <div class="ova-gauge-pct"><span id="ovaPct">0</span><small>%</small></div>
+        <div class="ova-gauge-cap">Conversión</div>
+      </div>
+    </div>
+
+    <div class="ova-hero-body">
+      <div class="ova-hero-tag">
+        <span class="ic">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="8.5"/><path d="M20.5 12a8.5 8.5 0 0 1-17 0"/>
+            <circle cx="9" cy="10" r="1.2" fill="currentColor" stroke="none"/><circle cx="14" cy="14" r=".9" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <span class="lbl">Tasa de producción de embriones</span>
+      </div>
+      <h2>Cada 100 oocitos cultivados, el laboratorio produce <b>36 embriones</b>.</h2>
+      <div class="ova-hero-sub">
+        Embriones producidos ÷ oocitos cultivados (CIV)
+        <span class="ova-trend">▲ +2.4 pts vs. período anterior</span>
+      </div>
+      <div class="ova-hero-foot">
+        <div class="ova-stat"><div class="v"><span class="num" data-to="1842">0</span></div><div class="k">Embriones producidos</div></div>
+        <div class="ova-stat"><div class="v"><span class="num" data-to="5114">0</span></div><div class="k">Oocitos cultivados (CIV)</div></div>
+        <div class="ova-stat"><div class="v"><span class="num" data-to="287">0</span></div><div class="k">Procesos en el período</div></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ MINICARDS ============ -->
+  <div class="ova-seclabel" style="margin-top:28px;">Volumen del período</div>
+  <div class="ova-grid">
+
+    <article class="ova-card ova-mini">
+      <span class="ova-topbar"></span>
+      <svg class="ova-mini-spark" viewBox="0 0 74 34" preserveAspectRatio="none">
+        <defs><linearGradient id="sp1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#19A7C9" stop-opacity=".28"/><stop offset="1" stop-color="#19A7C9" stop-opacity="0"/></linearGradient></defs>
+        <path class="area" d="M0,24 L13,19 L25,22 L37,13 L49,16 L61,8 L74,11 L74,34 L0,34 Z" fill="url(#sp1)"/>
+        <path class="line" d="M0,24 L13,19 L25,22 L37,13 L49,16 L61,8 L74,11" fill="none" stroke="#19A7C9" stroke-width="2.2"/>
+        <circle class="ova-spark-dot beat" cx="74" cy="11" r="2.4"/>
+      </svg>
+      <div class="ova-mini-ic">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 3c3 3 7 3 10 0"/><path d="M7 21c3-3 7-3 10 0"/><path d="M7 7c3 3 7 3 10 0"/><path d="M7 17c3-3 7-3 10 0"/><path d="M7 3v4M17 3v4M7 17v4M17 17v4"/>
+        </svg>
+      </div>
+      <div class="ova-mini-lbl">Procesos totales</div>
+      <div class="ova-mini-val"><span class="num" data-to="287">0</span></div>
+      <div class="ova-mini-sub">OPU procesados en el período</div>
+    </article>
+
+    <article class="ova-card ova-mini">
+      <span class="ova-topbar"></span>
+      <svg class="ova-mini-spark" viewBox="0 0 74 34" preserveAspectRatio="none">
+        <defs><linearGradient id="sp2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#19A7C9" stop-opacity=".28"/><stop offset="1" stop-color="#19A7C9" stop-opacity="0"/></linearGradient></defs>
+        <path class="area" d="M0,26 L13,22 L25,24 L37,16 L49,18 L61,11 L74,8 L74,34 L0,34 Z" fill="url(#sp2)"/>
+        <path class="line" d="M0,26 L13,22 L25,24 L37,16 L49,18 L61,11 L74,8" fill="none" stroke="#19A7C9" stroke-width="2.2"/>
+        <circle class="ova-spark-dot beat" cx="74" cy="8" r="2.4"/>
+      </svg>
+      <div class="ova-mini-ic">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="8.5"/><path d="M20.5 12a8.5 8.5 0 0 1-17 0"/>
+          <circle cx="9" cy="10" r="1.2" fill="currentColor" stroke="none"/><circle cx="14" cy="14" r=".9" fill="currentColor" stroke="none"/><circle cx="12" cy="8" r=".7" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <div class="ova-mini-lbl">Embriones totales</div>
+      <div class="ova-mini-val"><span class="num" data-to="1842">0</span></div>
+      <div class="ova-mini-sub">Empacados + congelados + descartados</div>
+    </article>
+
+    <article class="ova-card ova-mini">
+      <span class="ova-topbar"></span>
+      <svg class="ova-mini-spark" viewBox="0 0 74 34" preserveAspectRatio="none">
+        <defs><linearGradient id="sp3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#19A7C9" stop-opacity=".28"/><stop offset="1" stop-color="#19A7C9" stop-opacity="0"/></linearGradient></defs>
+        <path class="area" d="M0,20 L13,23 L25,16 L37,19 L49,12 L61,15 L74,9 L74,34 L0,34 Z" fill="url(#sp3)"/>
+        <path class="line" d="M0,20 L13,23 L25,16 L37,19 L49,12 L61,15 L74,9" fill="none" stroke="#19A7C9" stroke-width="2.2"/>
+        <circle class="ova-spark-dot beat" cx="74" cy="9" r="2.4"/>
+      </svg>
+      <div class="ova-mini-ic">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2c3.5 0 7 4.5 7 10s-3.1 10-7 10-7-4.5-7-10S8.5 2 12 2z"/><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <div class="ova-mini-lbl">Oocitos totales</div>
+      <div class="ova-mini-val"><span class="num" data-to="6390">0</span></div>
+      <div class="ova-mini-sub">Madurados (MIV) en el período</div>
+    </article>
+
+    <article class="ova-card ova-mini">
+      <span class="ova-topbar"></span>
+      <svg class="ova-mini-spark" viewBox="0 0 74 34" preserveAspectRatio="none">
+        <defs><linearGradient id="sp4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#19A7C9" stop-opacity=".28"/><stop offset="1" stop-color="#19A7C9" stop-opacity="0"/></linearGradient></defs>
+        <path class="area" d="M0,18 L13,16 L25,19 L37,13 L49,15 L61,11 L74,12 L74,34 L0,34 Z" fill="url(#sp4)"/>
+        <path class="line" d="M0,18 L13,16 L25,19 L37,13 L49,15 L61,11 L74,12" fill="none" stroke="#19A7C9" stroke-width="2.2"/>
+        <circle class="ova-spark-dot beat" cx="74" cy="12" r="2.4"/>
+      </svg>
+      <div class="ova-mini-ic">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11h18v6a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/><path d="M3 11V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v4"/>
+          <circle cx="8" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="15" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <div class="ova-mini-lbl">Donadoras totales</div>
+      <div class="ova-mini-val"><span class="num" data-to="642">0</span></div>
+      <div class="ova-mini-sub">Vacas aspiradas (bovino)</div>
+    </article>
+
+  </div>
+
+  <div class="ova-legend">
+    <b>Novedades de la v2 (sobre lo que ya te gustó):</b><br>
+    • <b>Gauge cinematográfico</b>: el número del centro sube <b>sincronizado</b> con el arco, un <b>punto luminoso</b> recorre la punta, hay un <b>glow</b> del color del rango detrás, una <b>marca del período anterior</b> (verás el dot pasarla), y un <b>anillo de pulso</b> al completar.<br>
+    • <b>Fondo del hero con células flotando</b> (sutil, temático FIV) + <b>brillo que recorre</b> la barra superior de cada card.<br>
+    • <b>Halo de borde que gira</b> en hover, ícono con micro-giro, sparklines con <b>área + punto que late</b>.<br>
+    • Entrada con <b>blur→focus</b> escalonado. Todo sigue <code>prefers-reduced-motion</code> y scopeado <code>ova-</code>.<br><br>
+    <b>Para cerrar:</b> umbrales de color del gauge (qué % es bueno/regular/bajo) y si la hero va arriba o en fila con las 4. Con tu OK lo bajo a Dynamic Content.
+  </div>
+
+</div>
+
+<script>
+  const root=document.querySelector('.ova-tot');
+
+  /* burbujas */
+  const bw=document.getElementById('ovaBubbles');
+  if(bw){[[26,8,'12%',13],[40,0,'30%',17],[18,5,'52%',11],[52,9,'70%',20],[22,3,'85%',14],[32,6,'94%',16]]
+    .forEach(([d,delay,left,dur])=>{const b=document.createElement('div');b.className='ova-bub';
+      b.style.cssText=`width:${d}px;height:${d}px;left:${left};bottom:-40px;animation-duration:${dur}s;animation-delay:-${delay}s;`;bw.appendChild(b);});}
+
+  /* spotlight */
+  root.querySelectorAll('.ova-card').forEach(c=>{
+    c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();
+      c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px');});});
+
+  /* count-up genérico */
+  const fmt=n=>Math.round(n).toLocaleString('es-CO');
+  const countUp=(el,to,dur=1300)=>{const t0=performance.now();
+    const s=now=>{const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3);el.textContent=fmt(to*e);if(p<1)requestAnimationFrame(s);};requestAnimationFrame(s);};
+
+  /* sparklines: dibujo de línea */
+  root.querySelectorAll('.ova-mini-spark .line').forEach(p=>{const len=p.getTotalLength();
+    p.style.strokeDasharray=len;p.style.strokeDashoffset=len;p.style.transition='stroke-dashoffset 1.5s cubic-bezier(.3,.8,.3,1)';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{p.style.strokeDashoffset=0;}));});
+
+  /* GAUGE: número + arco + dot + marca previa, todo sincronizado */
+  const gauge=()=>{
+    const fill=document.getElementById('ovaFill'), pctEl=document.getElementById('ovaPct'),
+          dot=document.getElementById('ovaDot'), glow=document.getElementById('ovaGaugeGlow'),
+          wrap=document.getElementById('ovaGaugeWrap'), prevT=document.getElementById('ovaPrev');
+    const pct=+fill.dataset.pct, prev=33.6, cx=65, cy=65, r=54;
+    // punto sobre el aro a un % dado (horario desde arriba)
+    const ptOnRing=(valPct,rad)=>{const a=valPct*3.6*Math.PI/180;return [cx+rad*Math.sin(a), cy-rad*Math.cos(a)];};
+    // arco (path) del 0% al valor — MISMA base trig que el punto
+    const arcPath=(valPct)=>{const v=Math.min(valPct,99.999);const [x0,y0]=ptOnRing(0,r),[x1,y1]=ptOnRing(v,r);
+      return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 ${v>50?1:0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;};
+    // umbrales DEMO: >=30 bueno, 15-30 regular, <15 bajo
+    let col='url(#ovaGG)', glowc='var(--ova-cyan)';
+    if(pct<15){col='#ED311D';glowc='#ED311D';} else if(pct<30){col='#E8A23D';glowc='#E8A23D';}
+    fill.setAttribute('stroke',col); glow.style.background=`radial-gradient(circle,${glowc},transparent 70%)`;
+    // marca del período anterior: línea radial que cruza el aro
+    const [px1,py1]=ptOnRing(prev,47), [px2,py2]=ptOnRing(prev,61);
+    prevT.setAttribute('x1',px1.toFixed(2));prevT.setAttribute('y1',py1.toFixed(2));
+    prevT.setAttribute('x2',px2.toFixed(2));prevT.setAttribute('y2',py2.toFixed(2));
+    const dur=1700,t0=performance.now();
+    const step=now=>{const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3),cur=pct*e;
+      fill.setAttribute('d',arcPath(cur));
+      pctEl.textContent=Math.round(cur);
+      const [dx,dy]=ptOnRing(cur,r); dot.setAttribute('cx',dx.toFixed(2)); dot.setAttribute('cy',dy.toFixed(2));
+      if(p<1)requestAnimationFrame(step); else wrap.classList.add('done');};
+    requestAnimationFrame(step);
+  };
+
+  /* dispara en viewport */
+  const io=new IntersectionObserver(es=>{es.forEach(en=>{if(!en.isIntersecting)return;
+    const t=en.target;
+    if(t.id==='ovaGaugeWrap'){gauge();}
+    else if(t.classList.contains('num')){countUp(t,+t.dataset.to);}
+    else if(t.classList.contains('ova-mini')){t.classList.add('in');}
+    io.unobserve(t);});},{threshold:.35});
+  io.observe(document.getElementById('ovaGaugeWrap'));
+  root.querySelectorAll('.num').forEach(n=>io.observe(n));
+  root.querySelectorAll('.ova-mini').forEach(m=>io.observe(m));
+</script>
+</body>
+</html>

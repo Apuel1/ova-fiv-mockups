@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Charts de evolución (línea/área) v2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+
+  .ova-tot{
+    --ova-primary:#006C9D;--ova-cyan:#19A7C9;--ova-cyan-2:#3FC6E0;--ova-deep:#0D2B35;
+    --ova-text:#1d3a44;--ova-muted:#6a8794;--ova-line:rgba(0,108,157,.12);--ova-radius:22px;
+    font-family:'Poppins','Segoe UI',system-ui,-apple-system,sans-serif;color:var(--ova-text);text-align:left;-webkit-font-smoothing:antialiased;}
+  .ova-tot, .ova-tot *{box-sizing:border-box;}
+  body{margin:0;background:radial-gradient(1100px 520px at 88% -10%,rgba(25,167,201,.10),transparent 58%),#eef4f7;}
+  .ova-tot{max-width:1200px;margin:0 auto;padding:42px 26px 80px;}
+  .ova-seclabel{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--ova-primary);margin:0 0 14px 2px;display:flex;align-items:center;gap:9px;}
+  .ova-seclabel::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--ova-line),transparent);}
+  .ova-duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:18px;}
+
+  .ova-card{position:relative;border-radius:var(--ova-radius);overflow:hidden;background:linear-gradient(160deg,#fff,#f4fafd);border:1px solid rgba(255,255,255,.8);box-shadow:0 14px 34px rgba(13,43,53,.08),0 4px 10px rgba(13,43,53,.04);transition:transform .4s cubic-bezier(.2,.8,.25,1),box-shadow .4s;}
+  .ova-card:hover{transform:translateY(-4px);box-shadow:0 22px 48px rgba(0,108,157,.13),0 8px 18px rgba(13,43,53,.07);}
+  .ova-topbar{position:absolute;top:0;left:0;right:0;height:3px;z-index:4;background:linear-gradient(90deg,var(--ova-primary),var(--ova-cyan));}
+
+  .ova-line{padding:22px 24px 18px;}
+  .ova-l-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:20px;}
+  .ova-l-tag{display:flex;align-items:center;gap:11px;}
+  .ova-l-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;flex:0 0 auto;background:linear-gradient(135deg,var(--ova-primary),var(--ova-cyan));box-shadow:0 7px 16px rgba(0,108,157,.26);}
+  .ova-l-ttl{font-size:15px;font-weight:800;color:var(--ova-deep);line-height:1.2;}
+  .ova-l-sub{font-size:11.5px;font-weight:600;color:var(--ova-muted);margin-top:2px;}
+  .ova-l-tot{text-align:right;flex:0 0 auto;}
+  .ova-l-tot b{font-size:28px;font-weight:900;letter-spacing:-1px;color:var(--ova-deep);line-height:1;font-variant-numeric:tabular-nums;}
+  .ova-l-tot span{display:block;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--ova-muted);margin-top:3px;}
+
+  /* plot: eje Y (34px) + area de dibujo (.ova-draw) + labels X (24px) */
+  .ova-lplot{position:relative;height:214px;}
+  .ova-glines,.ova-draw{position:absolute;left:34px;right:10px;top:8px;bottom:24px;}
+  .ova-glines{z-index:0;}
+  .ova-glines i{position:absolute;left:0;right:0;height:1px;background:var(--ova-line);}
+  .ova-glines i:first-child{background:rgba(13,43,53,.22);}
+  .ova-glines i b{position:absolute;left:-34px;top:-7px;font-size:9.5px;font-weight:600;color:var(--ova-muted);font-style:normal;font-variant-numeric:tabular-nums;}
+  .ova-draw{z-index:1;}
+  .ova-lsvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+  .ova-lsvg .area{opacity:0;transition:opacity .8s .3s ease;}
+  .ova-lsvg .line{fill:none;stroke:url(#ovaLG);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 3px 4px rgba(0,108,157,.22));}
+  .ova-dots{position:absolute;inset:0;z-index:2;}
+  .ova-dot{position:absolute;width:9px;height:9px;border-radius:50%;background:#fff;border:2.4px solid var(--ova-primary);transform:translate(-50%,50%) scale(0);transition:transform .3s cubic-bezier(.2,1.5,.4,1);box-shadow:0 2px 5px rgba(0,108,157,.35);cursor:default;}
+  .ova-dot.in{transform:translate(-50%,50%) scale(1);}
+  .ova-dot:hover{background:var(--ova-cyan);}
+  .ova-dot.peak{width:13px;height:13px;background:var(--ova-primary);border-color:#fff;box-shadow:0 3px 9px rgba(0,108,157,.5);}
+  .ova-dot .pkval{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);font-size:11.5px;font-weight:800;color:var(--ova-deep);white-space:nowrap;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .4s .9s;}
+  .ova-dot.peak.in .pkval{opacity:1;}
+  .ova-dot .tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--ova-deep);color:#fff;font-size:11px;font-weight:600;padding:5px 9px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;z-index:6;box-shadow:0 8px 18px rgba(13,43,53,.3);}
+  .ova-dot:hover .tip{opacity:1;}
+  .ova-xlabels{position:absolute;left:34px;right:10px;bottom:0;height:20px;z-index:1;}
+  .ova-xlabels span{position:absolute;transform:translateX(-50%);font-size:10px;font-weight:600;color:var(--ova-muted);white-space:nowrap;}
+
+  .ova-legend{margin-top:38px;padding:18px 22px;border-radius:18px;background:rgba(255,255,255,.86);border:1px solid var(--ova-line);font-size:13px;color:var(--ova-muted);line-height:1.85;}
+  .ova-legend b{color:var(--ova-deep);}
+  .ova-card{animation:ovaRise .55s cubic-bezier(.2,.8,.2,1) both;}
+  .ova-duo .ova-card:nth-child(2){animation-delay:.1s;}
+  @keyframes ovaRise{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+  @media(prefers-reduced-motion:reduce){.ova-card{animation:none;}.ova-lsvg .area,.ova-dot,.ova-dot .pkval{transition:none;}}
+</style>
+</head>
+<body>
+<div class="ova-tot" id="ovaEvo">
+
+  <div class="ova-seclabel">Evolución por período</div>
+  <div class="ova-duo">
+
+    <article class="ova-card ova-line" data-vals="9,11,12,13,29,30,3" data-labels="25-12,26-01,26-02,26-03,26-04,26-05,26-06" data-unit="procesos">
+      <span class="ova-topbar"></span>
+      <div class="ova-l-head"><div class="ova-l-tag"><span class="ova-l-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span><div><div class="ova-l-ttl">Procesos por período</div><div class="ova-l-sub">OPU procesados en cada período</div></div></div><div class="ova-l-tot"><b class="tot">0</b><span>total período</span></div></div>
+      <div class="ova-lplot"><div class="ova-glines"></div>
+        <div class="ova-draw"><svg class="ova-lsvg" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><linearGradient id="ovaLG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#19A7C9"/><stop offset="1" stop-color="#006C9D"/></linearGradient><linearGradient id="ovaAG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#19A7C9" stop-opacity=".26"/><stop offset="1" stop-color="#19A7C9" stop-opacity="0"/></linearGradient></defs><path class="area" fill="url(#ovaAG)"/><path class="line"/></svg><div class="ova-dots"></div></div>
+        <div class="ova-xlabels"></div>
+      </div>
+    </article>
+
+    <article class="ova-card ova-line" data-vals="0,0,0,0,398,88,0" data-labels="25-12,26-01,26-02,26-03,26-04,26-05,26-06" data-unit="embriones">
+      <span class="ova-topbar"></span>
+      <div class="ova-l-head"><div class="ova-l-tag"><span class="ova-l-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M20.5 12a8.5 8.5 0 0 1-17 0"/><circle cx="9" cy="10" r="1.2" fill="currentColor" stroke="none"/><circle cx="14" cy="14" r=".9" fill="currentColor" stroke="none"/></svg></span><div><div class="ova-l-ttl">Embriones producidos</div><div class="ova-l-sub">Empacados + congelados + descartados, por período</div></div></div><div class="ova-l-tot"><b class="tot">0</b><span>total período</span></div></div>
+      <div class="ova-lplot"><div class="ova-glines"></div>
+        <div class="ova-draw"><svg class="ova-lsvg" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><linearGradient id="ovaAG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#19A7C9" stop-opacity=".26"/><stop offset="1" stop-color="#19A7C9" stop-opacity="0"/></linearGradient></defs><path class="area" fill="url(#ovaAG2)"/><path class="line" stroke="url(#ovaLG)"/></svg><div class="ova-dots"></div></div>
+        <div class="ova-xlabels"></div>
+      </div>
+    </article>
+
+  </div>
+
+  <div class="ova-legend">
+    <b>v2 — corregido + pico:</b><br>
+    • <b>Fix del corte</b>: la línea ahora llena exactamente el área de dibujo (sin el `calc` que la recortaba) y los extremos tienen margen para no cortarse.<br>
+    • <b>Pico resaltado</b>: el período máximo lleva un punto más grande con su valor encima (informativo, no tautológico).<br>
+    • Área con degradé, línea que se dibuja, tooltip en los puntos, total del período (count-up), eje Y con grilla y rango. Sobrio.<br><br>
+    <b>Datos de muestra.</b> Al portear, mismo motor con queries reales.
+  </div>
+
+</div>
+
+<script>
+  var root=document.getElementById('ovaEvo');
+  var fmt=function(n){return Math.round(n).toLocaleString('es-CO');};
+  root.querySelectorAll('.ova-line').forEach(function(card){
+    var vals=card.dataset.vals.split(',').map(Number);
+    var labels=card.dataset.labels.split(',');
+    var unit=card.dataset.unit||'';
+    var n=vals.length, mxv=Math.max.apply(null,vals), max=mxv>0?mxv*1.12:1;
+    var maxIdx=vals.indexOf(mxv);
+    var gl=card.querySelector('.ova-glines');
+    for(var i=0;i<=4;i++){var y=i/4;var ln=document.createElement('i');ln.style.bottom=(y*100)+'%';var b=document.createElement('b');b.textContent=fmt(max*y);ln.appendChild(b);gl.appendChild(ln);}
+    var pts=vals.map(function(v,i){return {x:(n===1?50:i/(n-1)*100), y:100-(v/max)*100};});
+    var lineD='M '+pts.map(function(p){return p.x.toFixed(2)+','+p.y.toFixed(2);}).join(' L ');
+    var areaD='M '+pts[0].x.toFixed(2)+',100 L '+pts.map(function(p){return p.x.toFixed(2)+','+p.y.toFixed(2);}).join(' L ')+' L '+pts[n-1].x.toFixed(2)+',100 Z';
+    var lineEl=card.querySelector('.line'), areaEl=card.querySelector('.area');
+    lineEl.setAttribute('d',lineD); areaEl.setAttribute('d',areaD);
+    var dotsBox=card.querySelector('.ova-dots'), xl=card.querySelector('.ova-xlabels');
+    pts.forEach(function(p,i){
+      var d=document.createElement('div'); d.className='ova-dot'+(i===maxIdx?' peak':'');
+      d.style.left=p.x+'%'; d.style.bottom=(vals[i]/max)*100+'%';
+      d.innerHTML='<div class="tip">'+labels[i]+': '+fmt(vals[i])+' '+unit+'</div>'+(i===maxIdx?'<div class="pkval">'+fmt(vals[i])+'</div>':'');
+      dotsBox.appendChild(d);
+      var s=document.createElement('span'); s.style.left=p.x+'%'; s.textContent=labels[i]; xl.appendChild(s);
+    });
+    var totEl=card.querySelector('.tot'), total=vals.reduce(function(a,c){return a+c;},0);
+    var io=new IntersectionObserver(function(es){es.forEach(function(en){if(!en.isIntersecting)return;
+      var len=lineEl.getTotalLength();
+      lineEl.style.strokeDasharray=len; lineEl.style.strokeDashoffset=len;
+      lineEl.style.transition='stroke-dashoffset 1.3s cubic-bezier(.3,.8,.3,1)';
+      requestAnimationFrame(function(){requestAnimationFrame(function(){lineEl.style.strokeDashoffset=0;});});
+      areaEl.style.opacity=1;
+      card.querySelectorAll('.ova-dot').forEach(function(d,i){setTimeout(function(){d.classList.add('in');},300+i*90);});
+      var t0=performance.now(),dur=1200;(function s(now){var p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3);totEl.textContent=fmt(total*e);if(p<1)requestAnimationFrame(s);})(performance.now());
+      io.disconnect();
+    });},{threshold:.35});
+    io.observe(card);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA FIV · Mockups del dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+:root{--primary:#006C9D;--cyan:#19A7C9;--deep:#0D2B35;--muted:#6a8794;--line:rgba(0,108,157,.12);--orange:#EE3623;--orange2:#FF6E4D;}
+*{box-sizing:border-box;font-family:'Poppins','Segoe UI',system-ui,sans-serif;}
+body{margin:0;background:linear-gradient(160deg,#eef6fb,#f7fbfd);color:#1d3a44;-webkit-font-smoothing:antialiased;padding:clamp(20px,4vw,40px);}
+.wrap{max-width:1180px;margin:0 auto;}
+.tag{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#fff;background:linear-gradient(135deg,var(--orange),var(--orange2));padding:5px 12px;border-radius:999px;margin-bottom:14px;}
+h1{font-size:clamp(24px,4vw,32px);font-weight:900;letter-spacing:-.6px;color:var(--deep);margin:0 0 6px;}
+.lead{color:var(--muted);font-size:14px;margin:0 0 30px;max-width:680px;line-height:1.55;}
+.lead b{color:var(--deep);}
+
+/* featured */
+a.feat{display:grid;grid-template-columns:1.3fr 1fr;gap:0;text-decoration:none;border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.85);box-shadow:0 20px 50px rgba(13,43,53,.13);margin-bottom:30px;background:#fff;transition:transform .25s ease,box-shadow .25s ease;}
+a.feat:hover{transform:translateY(-3px);box-shadow:0 28px 64px rgba(13,43,53,.2);}
+.feat-txt{padding:clamp(22px,3vw,34px);display:flex;flex-direction:column;justify-content:center;gap:12px;}
+.feat-badge{align-self:flex-start;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--primary);background:rgba(0,108,157,.09);border:1px solid rgba(0,108,157,.2);padding:4px 11px;border-radius:999px;}
+.feat-txt h2{font-size:clamp(20px,2.6vw,26px);font-weight:900;color:var(--deep);margin:0;letter-spacing:-.4px;line-height:1.15;}
+.feat-txt p{font-size:13.5px;color:var(--muted);margin:0;line-height:1.55;}
+.feat-go{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--primary),var(--cyan));padding:11px 20px;border-radius:12px;box-shadow:0 10px 22px rgba(0,108,157,.3);margin-top:4px;}
+.feat-art{position:relative;background:linear-gradient(150deg,#0D2B35,#0a3f52 55%,#006C9D);overflow:hidden;min-height:230px;}
+.feat-art::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 75% 20%,rgba(63,198,224,.35),transparent 55%);}
+.feat-art .panel{position:absolute;top:50%;right:24px;transform:translateY(-50%);width:64%;max-width:260px;background:rgba(255,255,255,.96);border-radius:16px;box-shadow:-16px 22px 50px rgba(0,0,0,.3);padding:15px;}
+.feat-art .panel .pl{height:9px;border-radius:5px;background:linear-gradient(90deg,var(--primary),var(--cyan));width:46%;margin-bottom:11px;}
+.feat-art .panel .row{height:34px;border-radius:9px;border:1px solid var(--line);background:#fff;margin-bottom:8px;}
+.feat-art .panel .row.sm{width:70%;}
+.feat-art .panel .chips{display:flex;gap:5px;margin-top:10px;}
+.feat-art .panel .chips span{height:16px;border-radius:999px;background:rgba(0,108,157,.12);}
+.feat-art .panel .chips span:nth-child(1){width:48px;}.feat-art .panel .chips span:nth-child(2){width:36px;}
+
+/* grid */
+.gtitle{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin:0 0 14px;display:flex;align-items:center;gap:10px;}
+.gtitle::after{content:"";flex:1;height:1px;background:var(--line);}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:16px;}
+a.card{position:relative;text-decoration:none;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:7px;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;}
+a.card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--cyan));transform:scaleX(0);transform-origin:left;transition:transform .25s ease;}
+a.card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(13,43,53,.12);border-color:rgba(0,108,157,.28);}
+a.card:hover::before{transform:none;}
+a.card h3{font-size:14.5px;font-weight:800;color:var(--deep);margin:0;letter-spacing:-.2px;line-height:1.25;}
+a.card p{font-size:12px;color:var(--muted);margin:0;line-height:1.45;flex:1;}
+a.card .file{font-size:10.5px;font-weight:600;color:#9fb2bc;font-family:'Consolas',monospace;display:inline-flex;align-items:center;gap:6px;}
+a.card .file::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--cyan);}
+.foot{margin-top:34px;font-size:12px;color:var(--muted);line-height:1.6;border-top:1px solid var(--line);padding-top:16px;}
+.foot b{color:var(--deep);}
+@media (max-width:680px){a.feat{grid-template-columns:1fr;}.feat-art{min-height:180px;order:-1;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="tag">Mockups · datos ficticios</span>
+  <h1>OVA FIV — Rediseño del dashboard</h1>
+  <p class="lead">Prototipos del rediseño de la página <b>Home</b> (app APEX 146). Todos con <b>datos de muestra</b>, abribles en el navegador para iterar diseño antes de portarlos a APEX. Empezá por el destacado 👇</p>
+
+  <a class="feat" href="filtros-dinamicos.html">
+    <div class="feat-txt">
+      <span class="feat-badge">★ Nuevo · v4</span>
+      <h2>Filtros dinámicos — drawer adaptativo</h2>
+      <p>Una sola región de filtros que cambia de tamaño según el tab activo: el ancho crece con la cantidad de filtros y los campos fluyen a 1 o 2 columnas solos. Cambiá el tab demo con el drawer abierto para verlo morfear.</p>
+      <span class="feat-go">Abrir mockup →</span>
+    </div>
+    <div class="feat-art"><div class="panel"><div class="pl"></div><div class="row"></div><div class="row"></div><div class="row sm"></div><div class="chips"><span></span><span></span></div></div></div>
+  </a>
+
+  <p class="gtitle">Otros mockups</p>
+  <div class="grid">
+    <a class="card" href="comparacion-periodos.html"><h3>Comparación de períodos</h3><p>Período A vs B superpuestos, con month-picker propio y KPIs.</p><span class="file">comparacion-periodos.html</span></a>
+    <a class="card" href="tab-aspirador.html"><h3>Tab Aspirador</h3><p>Evolución (líneas) + indicadores (barras) + ranking premium.</p><span class="file">tab-aspirador.html</span></a>
+    <a class="card" href="tab-periodo-unificada.html"><h3>Tab Período unificada</h3><p>Pila de gráficos de la pestaña Período consolidada.</p><span class="file">tab-periodo-unificada.html</span></a>
+    <a class="card" href="indicadores-comparados.html"><h3>Indicadores comparados A/B</h3><p>Barras agrupadas azul (período A) vs naranja (período B).</p><span class="file">indicadores-comparados.html</span></a>
+    <a class="card" href="cards-totales-premium-v2.html"><h3>Cards de totales · v2</h3><p>KPIs premium con gauge de tasa de conversión.</p><span class="file">cards-totales-premium-v2.html</span></a>
+    <a class="card" href="cards-totales-premium.html"><h3>Cards de totales</h3><p>Primera versión de los recuadros de totales.</p><span class="file">cards-totales-premium.html</span></a>
+    <a class="card" href="charts-evolucion-periodo.html"><h3>Evolución por período</h3><p>Gráfico de líneas CSS/SVG propio, ejes legibles.</p><span class="file">charts-evolucion-periodo.html</span></a>
+    <a class="card" href="charts-promedio-donante-v2.html"><h3>Promedio por donante · v2</h3><p>Oocitos/embriones por donadora respetando filtros.</p><span class="file">charts-promedio-donante-v2.html</span></a>
+    <a class="card" href="charts-promedio-donante.html"><h3>Promedio por donante</h3><p>Primera versión de promedios por donadora.</p><span class="file">charts-promedio-donante.html</span></a>
+    <a class="card" href="ranking-fincas.html"><h3>Ranking de fincas</h3><p>Tabla ordenable tipo Excel con toggle ranking/tabla.</p><span class="file">ranking-fincas.html</span></a>
+    <a class="card" href="tabs-rediseno.html"><h3>Rediseño de tabs</h3><p>Contenedor de pestañas premium de la página.</p><span class="file">tabs-rediseno.html</span></a>
+  </div>
+
+  <p class="foot"><b>Cómo discutir el diseño:</b> abrí el mockup, probá los filtros y dejá comentarios. Estos prototipos usan <b>datos ficticios</b> — no hay información real del laboratorio. Hechos para el rediseño del dashboard <b>OVA FIV</b>.</p>
+</div>
+</body>
+</html>

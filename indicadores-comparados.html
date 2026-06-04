@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Mockup — Indicadores comparados A vs B</title>
+<style>
+  /* ===== MOCKUP (idea Manuel jun-2026): los 6 indicadores de barras (§3) pasan a
+     comparar 2 períodos con BARRAS AGRUPADAS por posición — azul = Rango A,
+     naranja = Rango B — compartiendo los mismos controles de rango/filtros que R7.
+     Datos fake, solo para validar el concepto. Estética: Poppins + paleta OVA. ===== */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+  :root{
+    --primary:#006C9D;--cyan:#19A7C9;--cyan2:#3FC6E0;--deep:#0D2B35;--text:#1d3a44;
+    --muted:#6a8794;--line:rgba(0,108,157,.12);--orange:#EE3623;--orange2:#FF6E4D;--radius:22px;
+  }
+  *{box-sizing:border-box;font-family:'Poppins','Segoe UI',system-ui,sans-serif;}
+  body{margin:0;background:linear-gradient(160deg,#eef6fb,#f7fbfd);color:var(--text);padding:26px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1320px;margin:0 auto;}
+  .mock-tag{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#fff;background:linear-gradient(135deg,var(--orange),var(--orange2));padding:5px 12px;border-radius:999px;margin-bottom:12px;}
+  h1{font-size:24px;font-weight:900;letter-spacing:-.5px;color:var(--deep);margin:0 0 4px;}
+  .lead{color:var(--muted);font-size:13.5px;margin:0 0 22px;max-width:760px;line-height:1.5;}
+
+  /* ---- barra de controles (igual lenguaje que R7) ---- */
+  .panel{background:linear-gradient(160deg,#fff,#f4fafd);border:1px solid rgba(255,255,255,.85);border-radius:var(--radius);box-shadow:0 14px 36px rgba(13,43,53,.09);padding:18px 22px;margin-bottom:20px;position:relative;overflow:hidden;}
+  .panel::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--cyan) 55%,var(--orange));}
+  .controls{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;}
+  .field{display:flex;flex-direction:column;gap:7px;}
+  .field>label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);display:inline-flex;align-items:center;gap:7px;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .dot.a{background:var(--primary);box-shadow:0 0 0 3px rgba(0,108,157,.14);}
+  .dot.b{background:var(--orange);box-shadow:0 0 0 3px rgba(238,54,35,.13);}
+  .range{display:flex;align-items:center;gap:8px;}
+  .pick{font-size:13px;font-weight:600;color:var(--deep);border:1px solid var(--line);border-radius:11px;padding:9px 13px;background:#fff;min-width:128px;}
+  .range>span{color:var(--muted);}
+  .auto{font-size:13px;font-weight:700;color:var(--orange);padding:9px 12px;background:rgba(238,54,35,.07);border:1px solid rgba(238,54,35,.22);border-radius:11px;}
+  .seg{display:inline-flex;background:#e7f0f5;border-radius:12px;padding:3px;gap:2px;}
+  .seg button{font-size:12px;font-weight:700;color:var(--muted);border:0;background:transparent;border-radius:9px;padding:8px 13px;cursor:pointer;}
+  .seg button.on{background:#fff;color:var(--primary);box-shadow:0 2px 7px rgba(13,43,53,.12);}
+  .legend{margin-left:auto;display:flex;gap:16px;align-items:center;font-size:12px;font-weight:700;color:var(--muted);}
+  .legend i{width:13px;height:13px;border-radius:4px;display:inline-block;margin-right:6px;vertical-align:-2px;}
+  .legend .la{background:linear-gradient(180deg,var(--cyan),var(--primary));}
+  .legend .lb{background:linear-gradient(180deg,var(--orange2),var(--orange));}
+
+  /* ---- grid de indicadores ---- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:18px;}
+  .card{position:relative;border-radius:var(--radius);background:linear-gradient(160deg,#fff,#f4fafd);border:1px solid rgba(255,255,255,.8);box-shadow:0 10px 24px rgba(13,43,53,.07);padding:20px 22px 16px;overflow:hidden;}
+  .card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--cyan));}
+  .ch-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px;}
+  .ch-tag{display:flex;align-items:center;gap:11px;}
+  .ch-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;flex:0 0 auto;background:linear-gradient(135deg,var(--primary),var(--cyan));box-shadow:0 7px 16px rgba(0,108,157,.26);}
+  .ch-ttl{font-size:14.5px;font-weight:800;color:var(--deep);line-height:1.2;}
+  .ch-sub{font-size:11px;font-weight:600;color:var(--muted);margin-top:2px;}
+  .ch-delta{text-align:right;flex:0 0 auto;}
+  .ch-delta b{font-size:22px;font-weight:900;letter-spacing:-.6px;color:var(--deep);line-height:1;font-variant-numeric:tabular-nums;}
+  .ch-delta .pill{display:inline-block;margin-top:4px;font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:999px;}
+  .pill.up{color:#0f7b52;background:rgba(31,170,110,.14);}
+  .pill.down{color:#b5341f;background:rgba(238,54,35,.12);}
+  .ch-delta span{display:block;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-top:4px;}
+
+  .plot{position:relative;height:200px;padding-left:36px;}
+  .glines{position:absolute;left:36px;right:0;top:0;bottom:24px;}
+  .glines i{position:absolute;left:0;right:0;height:1px;background:var(--line);}
+  .glines i:first-child{background:rgba(13,43,53,.2);}
+  .glines i b{position:absolute;left:-36px;top:-7px;font-size:9px;font-weight:600;color:var(--muted);font-style:normal;font-variant-numeric:tabular-nums;}
+  .groups{position:absolute;left:36px;right:0;top:0;bottom:24px;display:flex;align-items:flex-end;gap:clamp(6px,2vw,18px);}
+  .group{flex:1;height:100%;display:flex;align-items:flex-end;justify-content:center;gap:5px;position:relative;}
+  .group .lbl{position:absolute;bottom:-22px;left:0;right:0;text-align:center;font-size:9.5px;font-weight:600;color:var(--muted);white-space:nowrap;}
+  .bar{width:clamp(12px,30%,26px);border-radius:6px 6px 2px 2px;position:relative;animation:rise .8s cubic-bezier(.2,.8,.25,1) both;}
+  .bar.a{background:linear-gradient(180deg,var(--cyan),var(--primary));box-shadow:0 3px 8px rgba(0,108,157,.16);}
+  .bar.b{background:linear-gradient(180deg,var(--orange2),var(--orange));box-shadow:0 3px 8px rgba(238,54,35,.18);}
+  .bar .v{position:absolute;top:-17px;left:50%;transform:translateX(-50%);font-size:9.5px;font-weight:700;color:var(--deep);white-space:nowrap;opacity:0;animation:fade .4s .5s forwards;}
+  .bar.b .v{color:var(--orange);}
+  @keyframes rise{from{height:0 !important;}}
+  @keyframes fade{to{opacity:1;}}
+  .foot{margin-top:18px;font-size:12px;color:var(--muted);text-align:center;}
+  @media(max-width:520px){.legend{margin-left:0;width:100%;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="mock-tag">Mockup · idea</span>
+  <h1>Indicadores comparados — Rango A vs Rango B</h1>
+  <p class="lead">Los 6 indicadores de barras pasan a comparar dos períodos: por cada posición (1.º de A vs 1.º de B…) se muestran <b>dos barras</b> — <b style="color:#006C9D">azul = Rango A</b> y <b style="color:#EE3623">naranja = Rango B</b> — con los mismos controles y filtros que la Comparación de períodos.</p>
+
+  <!-- CONTROLES (mock, no interactivos) -->
+  <div class="panel">
+    <div class="controls">
+      <div class="field"><label><span class="dot a"></span>Rango A</label>
+        <div class="range"><span class="pick">Enero 2026</span><span>&rarr;</span><span class="pick">Abril 2026</span></div></div>
+      <div class="field"><label><span class="dot b"></span>Rango B · mismo largo que A</label>
+        <div class="range"><span class="pick">Septiembre 2025</span><span>&rarr;</span><span class="auto">🔒 Diciembre 2025</span></div></div>
+      <div class="field"><label>Agrupar por</label>
+        <div class="seg"><button>Semana</button><button class="on">Mes</button><button>Trim.</button><button>Año</button></div></div>
+      <div class="legend"><span><i class="la"></i>Período A</span><span><i class="lb"></i>Período B</span></div>
+    </div>
+  </div>
+
+  <!-- GRID DE INDICADORES -->
+  <div class="grid" id="grid"></div>
+
+  <p class="foot">Mockup con datos de ejemplo · aplica a los 6 indicadores (Oocitos cultivables %, Tasa de producción %, Oocitos viables/donante, Embriones/donante, Embriones/proceso, Donadoras/proceso).</p>
+</div>
+
+<script>
+  var ICON='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="13" y="7" width="3" height="10"/></svg>';
+  var LABELS_A=['Ene 26','Feb 26','Mar 26','Abr 26'];
+  var LABELS_B=['Sep 25','Oct 25','Nov 25','Dic 25'];
+  var IND=[
+    {ttl:'Oocitos cultivables %', sub:'Cultivados (CIV) ÷ viables (MIV)', u:'%', a:[94,95,94,70], b:[88,91,86,74]},
+    {ttl:'Tasa de producción %', sub:'Embriones ÷ oocitos cultivados', u:'%', a:[31,28,35,22], b:[24,26,21,19]},
+    {ttl:'Oocitos viables / donante', sub:'Viables (MIV) ÷ donadoras aspiradas', u:'', a:[28,22,24,26], b:[23,21,20,22]},
+    {ttl:'Embriones / donante', sub:'Embriones producidos ÷ donadoras', u:'', a:[1.8,1.2,2.1,0.9], b:[1.1,0.8,1.4,0.6]},
+    {ttl:'Embriones / proceso', sub:'Embriones producidos ÷ procesos', u:'', a:[14,9,11,6], b:[8,6,9,4]},
+    {ttl:'Donadoras / proceso', sub:'Donadoras aspiradas ÷ procesos', u:'', a:[9,5,6,8], b:[7,5,6,6]}
+  ];
+  function niceStep(r,t){var ro=r/t;var e=Math.floor(Math.log10(ro));var f=ro/Math.pow(10,e);var nf=f<1.5?1:f<3?2:f<7?5:10;return nf*Math.pow(10,e);}
+  function fmt(n,u){return (Math.round(n*10)/10).toLocaleString('es-CO')+(u||'');}
+  function sum(a){return a.reduce(function(x,y){return x+y;},0);}
+
+  var grid=document.getElementById('grid');
+  IND.forEach(function(d){
+    var all=d.a.concat(d.b), mx=Math.max.apply(null,all);
+    var step=niceStep(mx>0?mx:1,4), max=Math.ceil(mx/step)*step, nL=Math.max(2,Math.round(max/step));
+    var promA=sum(d.a)/d.a.length, promB=sum(d.b)/d.b.length;
+    var diffPct=promB>0||promA>0? Math.round((promA-promB)/(promB||1)*100):0;
+    var up=promA>=promB;
+    var gl='';
+    for(var i=0;i<=nL;i++){var y=i/nL;gl+='<i style="bottom:'+(y*100)+'%"><b>'+fmt(step*i,d.u)+'</b></i>';}
+    var groups='';
+    for(var i=0;i<d.a.length;i++){
+      var ha=(d.a[i]/max)*100, hb=(d.b[i]/max)*100;
+      groups+='<div class="group">'
+        +'<div class="bar a" style="height:'+ha+'%"><span class="v">'+fmt(d.a[i],d.u)+'</span></div>'
+        +'<div class="bar b" style="height:'+hb+'%"><span class="v">'+fmt(d.b[i],d.u)+'</span></div>'
+        +'<span class="lbl">'+LABELS_A[i]+' / '+LABELS_B[i]+'</span></div>';
+    }
+    var card=document.createElement('div');
+    card.className='card';
+    card.innerHTML='<div class="ch-head"><div class="ch-tag"><span class="ch-ic">'+ICON+'</span>'
+      +'<div><div class="ch-ttl">'+d.ttl+'</div><div class="ch-sub">'+d.sub+'</div></div></div>'
+      +'<div class="ch-delta"><b>'+fmt(promA,d.u)+'</b><span class="pill '+(up?'up':'down')+'">'+(up?'+':'')+diffPct+'% vs B</span><span>Prom. A</span></div></div>'
+      +'<div class="plot"><div class="glines">'+gl+'</div><div class="groups">'+groups+'</div></div>';
+    grid.appendChild(card);
+  });
+</script>
+</body>
+</html>

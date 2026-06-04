@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Charts promedio/donante (R2 + R3) v2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+
+  .ova-tot{
+    --ova-primary:#006C9D;--ova-primary-d:#005C9D;--ova-cyan:#19A7C9;--ova-cyan-2:#3FC6E0;
+    --ova-deep:#0D2B35;--ova-text:#1d3a44;--ova-muted:#6a8794;--ova-line:rgba(0,108,157,.12);
+    --ova-bar-soft:#c3d8e3;--ova-radius:22px;--ova-trans:.4s cubic-bezier(.2,.8,.25,1);
+    font-family:'Poppins','Segoe UI',system-ui,-apple-system,sans-serif;color:var(--ova-text);text-align:left;-webkit-font-smoothing:antialiased;}
+  .ova-tot, .ova-tot *{box-sizing:border-box;}
+
+  body{margin:0;background:radial-gradient(1100px 520px at 88% -10%,rgba(25,167,201,.10),transparent 58%),#eef4f7;}
+  .ova-tot{max-width:1200px;margin:0 auto;padding:42px 26px 80px;}
+
+  .ova-seclabel{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--ova-primary);margin:0 0 14px 2px;display:flex;align-items:center;gap:9px;}
+  .ova-seclabel::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--ova-line),transparent);}
+
+  .ova-duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:18px;}
+
+  .ova-card{position:relative;border-radius:var(--ova-radius);overflow:hidden;isolation:isolate;
+    background:linear-gradient(160deg,#fff,#f4fafd);border:1px solid rgba(255,255,255,.8);
+    box-shadow:0 14px 34px rgba(13,43,53,.08),0 4px 10px rgba(13,43,53,.04);
+    transition:transform var(--ova-trans),box-shadow var(--ova-trans);}
+  .ova-card:hover{transform:translateY(-4px);box-shadow:0 22px 48px rgba(0,108,157,.13),0 8px 18px rgba(13,43,53,.07);}
+  .ova-topbar{position:absolute;top:0;left:0;right:0;height:3px;z-index:4;background:linear-gradient(90deg,var(--ova-primary),var(--ova-cyan));}
+
+  .ova-chart{padding:22px 24px 18px;}
+  .ova-ch-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:20px;}
+  .ova-ch-tag{display:flex;align-items:center;gap:11px;}
+  .ova-ch-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--ova-primary),var(--ova-cyan));box-shadow:0 7px 16px rgba(0,108,157,.26);}
+  .ova-ch-ttl{font-size:15px;font-weight:800;color:var(--ova-deep);line-height:1.2;}
+  .ova-ch-sub{font-size:11.5px;font-weight:600;color:var(--ova-muted);margin-top:2px;}
+  .ova-ch-avg{text-align:right;flex:0 0 auto;}
+  .ova-ch-avg b{font-size:28px;font-weight:900;letter-spacing:-1px;color:var(--ova-deep);line-height:1;font-variant-numeric:tabular-nums;}
+  .ova-ch-avg span{display:block;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--ova-muted);margin-top:3px;}
+
+  .ova-plot{position:relative;height:228px;padding-left:34px;}
+  .ova-grid-l{position:absolute;left:34px;right:0;top:0;bottom:26px;z-index:0;}
+  .ova-grid-l i{position:absolute;left:0;right:0;height:1px;background:var(--ova-line);}
+  .ova-grid-l i:first-child{background:rgba(13,43,53,.22);}            /* baseline eje X más marcado */
+  .ova-grid-l i b{position:absolute;left:-34px;top:-7px;font-size:9.5px;font-weight:600;color:var(--ova-muted);font-style:normal;font-variant-numeric:tabular-nums;}
+
+  /* línea de promedio */
+  .ova-avg{position:absolute;left:0;right:0;bottom:0;z-index:3;height:0;border-top:1.5px dashed rgba(0,108,157,.5);
+    transform-origin:left;transform:scaleX(0);transition:transform .8s .6s ease;}
+  .ova-avg b{position:absolute;right:0;top:-8px;font-size:9.5px;font-weight:700;color:var(--ova-primary);
+    background:rgba(244,250,253,.9);padding:0 5px;border-radius:5px;font-style:normal;font-variant-numeric:tabular-nums;}
+
+  .ova-bars{position:absolute;left:34px;right:0;top:0;bottom:26px;display:flex;align-items:flex-end;gap:clamp(4px,1.4vw,14px);z-index:1;}
+  .ova-bar{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative;cursor:default;}
+  .ova-bar .fill{width:clamp(13px,55%,30px);height:0;border-radius:7px 7px 3px 3px;
+    background:linear-gradient(180deg,var(--ova-cyan),var(--ova-primary));
+    box-shadow:0 3px 8px rgba(0,108,157,.16);transition:height .9s cubic-bezier(.2,.8,.25,1),filter .25s;}
+  .ova-bar.below .fill{background:linear-gradient(180deg,#d3e3ec,var(--ova-bar-soft));box-shadow:none;}
+  .ova-bar:hover .fill{filter:brightness(1.04);}
+  .ova-bar .val{position:absolute;top:0;transform:translateY(-128%);font-size:11.5px;font-weight:700;color:var(--ova-deep);font-variant-numeric:tabular-nums;opacity:0;transition:opacity .4s .55s;}
+  .ova-bar.below .val{color:var(--ova-muted);}
+  .ova-bar.in .val{opacity:1;}
+  .ova-bar .lbl{position:absolute;bottom:-22px;font-size:10px;font-weight:600;color:var(--ova-muted);white-space:nowrap;}
+  .ova-bar .tip{position:absolute;bottom:calc(100% + 6px);background:var(--ova-deep);color:#fff;font-size:11px;font-weight:600;padding:5px 9px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;z-index:5;box-shadow:0 8px 18px rgba(13,43,53,.3);}
+  .ova-bar:hover .tip{opacity:1;}
+
+  .ova-legend{margin-top:38px;padding:18px 22px;border-radius:18px;background:rgba(255,255,255,.86);border:1px solid var(--ova-line);font-size:13px;color:var(--ova-muted);line-height:1.85;}
+  .ova-legend b{color:var(--ova-deep);}
+
+  .ova-card{animation:ovaRise .55s cubic-bezier(.2,.8,.2,1) both;}
+  .ova-duo .ova-card:nth-child(2){animation-delay:.1s;}
+  @keyframes ovaRise{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+  @media(prefers-reduced-motion:reduce){.ova-card{animation:none;}.ova-bar .fill,.ova-avg{transition:none;}}
+</style>
+</head>
+<body>
+<div class="ova-tot">
+
+  <div class="ova-seclabel">Promedios por donante · por período</div>
+  <div class="ova-duo">
+
+    <!-- R2 -->
+    <article class="ova-card ova-chart" data-max="20">
+      <span class="ova-topbar"></span>
+      <div class="ova-ch-head">
+        <div class="ova-ch-tag">
+          <span class="ova-ch-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c3.5 0 7 4.5 7 10s-3.1 10-7 10-7-4.5-7-10S8.5 2 12 2z"/><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/></svg></span>
+          <div><div class="ova-ch-ttl">Oocitos viables / donante</div><div class="ova-ch-sub">Viables (MIV) ÷ donadoras aspiradas</div></div>
+        </div>
+        <div class="ova-ch-avg"><b class="avg">0</b><span>prom. período</span></div>
+      </div>
+      <div class="ova-plot">
+        <div class="ova-grid-l"></div>
+        <div class="ova-bars">
+          <div class="ova-avg"><b></b></div>
+          <div class="ova-bar" data-v="14.2" data-ooc="312" data-don="22"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">25-12</span></div>
+          <div class="ova-bar" data-v="16.8" data-ooc="571" data-don="34"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">26-01</span></div>
+          <div class="ova-bar" data-v="11.5" data-ooc="207" data-don="18"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">26-02</span></div>
+          <div class="ova-bar" data-v="13.1" data-ooc="367" data-don="28"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">26-03</span></div>
+          <div class="ova-bar" data-v="15.4" data-ooc="385" data-don="25"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">26-04</span></div>
+          <div class="ova-bar" data-v="12.9" data-ooc="426" data-don="33"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">26-05</span></div>
+          <div class="ova-bar" data-v="10.7" data-ooc="150" data-don="14"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">26-06</span></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- R3 -->
+    <article class="ova-card ova-chart" data-max="2.2">
+      <span class="ova-topbar"></span>
+      <div class="ova-ch-head">
+        <div class="ova-ch-tag">
+          <span class="ova-ch-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M20.5 12a8.5 8.5 0 0 1-17 0"/><circle cx="9" cy="10" r="1.2" fill="currentColor" stroke="none"/><circle cx="14" cy="14" r=".9" fill="currentColor" stroke="none"/></svg></span>
+          <div><div class="ova-ch-ttl">Embriones / donante</div><div class="ova-ch-sub">Embriones producidos ÷ donadoras aspiradas</div></div>
+        </div>
+        <div class="ova-ch-avg"><b class="avg">0</b><span>prom. período</span></div>
+      </div>
+      <div class="ova-plot">
+        <div class="ova-grid-l"></div>
+        <div class="ova-bars">
+          <div class="ova-avg"><b></b></div>
+          <div class="ova-bar" data-v="0.8" data-ooc="18" data-don="22"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">25-12</span></div>
+          <div class="ova-bar" data-v="1.2" data-ooc="41" data-don="34"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">26-01</span></div>
+          <div class="ova-bar" data-v="0.5" data-ooc="9" data-don="18"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">26-02</span></div>
+          <div class="ova-bar" data-v="0.9" data-ooc="25" data-don="28"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">26-03</span></div>
+          <div class="ova-bar" data-v="1.8" data-ooc="45" data-don="25"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">26-04</span></div>
+          <div class="ova-bar" data-v="0.4" data-ooc="13" data-don="33"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">26-05</span></div>
+          <div class="ova-bar" data-v="0.7" data-ooc="10" data-don="14"><div class="tip"></div><span class="val"></span><span class="fill"></span><span class="lbl">26-06</span></div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+  <div class="ova-legend">
+    <b>v2 — refinada, sin sobrecargar:</b><br>
+    • <b>Línea de promedio</b> punteada: las barras que la superan van en color pleno, las que quedan debajo en tono apagado → lectura inmediata.<br>
+    • Saqué el brillo de la topbar y bajé sombras/hover. Queda solo la animación de crecimiento.<br>
+    • Eje X con baseline marcado, tipografía y aire más prolijos. Tooltip al pasar el mouse.<br><br>
+    <b>Datos de muestra.</b> Al portear van las queries reales (CTEs separados). "Viable" = MIV salvo que definas otra columna.
+  </div>
+
+</div>
+
+<script>
+  const root=document.querySelector('.ova-tot');
+  const fmt=(n,d)=>Number(n).toLocaleString('es-CO',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+  root.querySelectorAll('.ova-chart').forEach(card=>{
+    const max=parseFloat(card.dataset.max);
+    const gl=card.querySelector('.ova-grid-l');
+    for(let i=0;i<=4;i++){
+      const y=i/4;
+      const ln=document.createElement('i'); ln.style.bottom=(y*100)+'%';
+      const b=document.createElement('b'); b.textContent=fmt(max*y, max<5?1:0); ln.appendChild(b);
+      gl.appendChild(ln);
+    }
+    const bars=[...card.querySelectorAll('.ova-bar')];
+    const vals=bars.map(b=>parseFloat(b.dataset.v));
+    const avg=vals.reduce((a,c)=>a+c,0)/vals.length;
+
+    bars.forEach(bar=>{
+      const v=parseFloat(bar.dataset.v);
+      bar.querySelector('.tip').textContent='Oocitos: '+bar.dataset.ooc+' · Donadoras: '+bar.dataset.don;
+      bar.querySelector('.val').textContent=fmt(v,1);
+    });
+
+    const avgEl=card.querySelector('.avg');
+    const avgLine=card.querySelector('.ova-avg');
+    avgLine.style.bottom=(avg/max)*100+'%';
+    avgLine.querySelector('b').textContent='prom '+fmt(avg,1);
+
+    const io=new IntersectionObserver(es=>es.forEach(en=>{
+      if(!en.isIntersecting)return;
+      bars.forEach((bar,i)=>{
+        const v=parseFloat(bar.dataset.v);
+        setTimeout(()=>{ bar.querySelector('.fill').style.height=Math.max(2,(v/max)*100)+'%'; bar.classList.add('in'); }, i*65);
+      });
+      avgLine.style.transform='scaleX(1)';
+      const t0=performance.now(),dur=1100;
+      (function s(now){const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3);avgEl.textContent=fmt(avg*e,1);if(p<1)requestAnimationFrame(s);})(performance.now());
+      io.disconnect();
+    }),{threshold:.35});
+    io.observe(card);
+  });
+</script>
+</body>
+</html>
