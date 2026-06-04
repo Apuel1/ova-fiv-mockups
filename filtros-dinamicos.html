@@ -197,8 +197,8 @@ var IC={
   ganaderias:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>'
 };
 var OPTS={
-  ganaderia:[['1','Hacienda La Esperanza'],['2','Ganadería El Rodeo'],['3','Finca Santa Marta'],['4','Agropecuaria Los Andes'],['5','Hato Grande']],
-  finca:{ '1':[['11','Lote Norte'],['12','Lote Sur']], '2':[['21','Potrero 1'],['22','Potrero 2']], '3':[['31','Sede Central']], '4':[['41','La Pradera']], '5':[['51','El Vergel'],['52','La Loma']] },
+  ganaderia:[['1','Hacienda La Esperanza'],['2','Ganadería El Rodeo'],['3','Finca Santa Marta'],['4','Agropecuaria Los Andes'],['5','Hato Grande'],['6','Hacienda San José'],['7','Ganadería La Pradera'],['8','Finca El Paraíso'],['9','Agropecuaria Villa María'],['10','Hato La Fortuna'],['11','Hacienda El Encanto'],['12','Ganadería Los Robles'],['13','Finca La Esmeralda'],['14','Hato El Diamante'],['15','Hacienda Buenavista'],['16','Ganadería El Triunfo']],
+  finca:{ '1':[['11','Lote Norte'],['12','Lote Sur']], '2':[['21','Potrero 1'],['22','Potrero 2']], '3':[['31','Sede Central']], '4':[['41','La Pradera']], '5':[['51','El Vergel'],['52','La Loma']], '6':[['61','Potrero Alto']], '7':[['71','Lote A'],['72','Lote B']], '8':[['81','Sede Norte']], '9':[['91','Finca Baja']], '10':[['101','Potrero Sur']], '11':[['111','Lote Central']], '12':[['121','La Colina']], '13':[['131','El Llano']], '14':[['141','Potrero 3']], '15':[['151','La Vega']], '16':[['161','Lote Este']] },
   aspirador:[['101','Andrés Gómez'],['102','Juan Pérez'],['103','María Restrepo'],['104','Carlos Díaz']],
   toro:[['201','Magnum 4521'],['202','Titán 8890'],['203','Emperador 102']],
   donadora:[['301','Vaca 0455'],['302','Vaca 0888'],['303','Vaca 1203']],
@@ -269,12 +269,15 @@ function fillMenu(q){
 }
 function positionMenu(){
   if(!curBtn)return;
-  var r=curBtn.getBoundingClientRect(),vw=window.innerWidth,vh=window.innerHeight,M=8;
+  var r=curBtn.getBoundingClientRect(),vw=window.innerWidth,vh=window.innerHeight,M=8,CAP=280,CHROME=58;
   cbMenu.style.width=r.width+'px';
   cbMenu.style.left=Math.max(M,Math.min(r.left,vw-r.width-M))+'px';
-  var mh=cbMenu.offsetHeight||260,below=vh-r.bottom-M,above=r.top-M;
-  if(below>=mh||below>=above){cbMenu.classList.remove('up');mList.style.maxHeight=Math.max(120,below-58)+'px';cbMenu.style.top=(r.bottom+6)+'px';}
-  else{cbMenu.classList.add('up');mList.style.maxHeight=Math.max(120,above-58)+'px';cbMenu.style.top=(r.top-cbMenu.offsetHeight-6)+'px';}
+  var below=vh-r.bottom-M,above=r.top-M;
+  var down=below>=(CAP+CHROME)||below>=above;          /* abajo si entra cómodo o hay más lugar abajo */
+  var space=down?below:above;
+  mList.style.maxHeight=Math.min(CAP,Math.max(120,space-CHROME))+'px';  /* tope absoluto → scroll inline si hay muchos valores */
+  if(down){cbMenu.classList.remove('up');cbMenu.style.top=(r.bottom+6)+'px';}
+  else{cbMenu.classList.add('up');cbMenu.style.top=(r.top-cbMenu.offsetHeight-6)+'px';}
 }
 function openMenu(field,btn){
   curField=field;curBtn=btn;
