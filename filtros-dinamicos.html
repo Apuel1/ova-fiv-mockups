@@ -124,8 +124,9 @@ h1{font-size:24px;font-weight:900;letter-spacing:-.5px;color:var(--deep);margin:
 .fsection>.shead{display:flex;align-items:center;gap:9px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);}
 .fsection>.shead::after{content:"";flex:1;height:1px;background:var(--line);}
 .fsection-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;}
-.fd-foot{flex:0 0 auto;padding:13px 18px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.72);}
-.fd-foot .fcount{font-size:11.5px;}
+.fd-foot{flex:0 0 auto;padding:13px 18px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:rgba(255,255,255,.72);}
+.fd-foot .fcount{flex:1 1 100%;min-width:0;font-size:11.5px;}
+.fd-foot .btn{flex:1 1 0;justify-content:center;}
 
 /* mobile → bottom sheet */
 @media (max-width:560px){
@@ -164,7 +165,7 @@ h1{font-size:24px;font-weight:900;letter-spacing:-.5px;color:var(--deep);margin:
   <!-- contenido simulado del tab -->
   <div class="fake"><div class="fakecard"></div><div class="fakecard"></div></div>
 
-  <p class="note"><b>En APEX</b> es UNA región Dynamic Content que detecta el tab activo y renderiza solo sus filtros — <b>no toca tus pestañas</b>. <b>Aplicar</b> setea los <code>P1_*</code> + Submit (sin error JSON).</p>
+  <p class="note"><b>En APEX</b> es UNA región Dynamic Content que detecta el tab activo y renderiza solo sus filtros — <b>no toca tus pestañas</b>. <b>Aplicar</b> setea los <code>P1_*</code> + Submit (sin error JSON). En producción el drawer queda <b>atado al tab activo</b>: para cambiar de filtros se cierra y se cambia de pestaña. Acá en el prototipo dejo el cambio de tab con el drawer abierto <b>a propósito</b>, para que pruebes cómo se adapta el tamaño.</p>
 </div>
 
 <!-- DRAWER LATERAL -->
