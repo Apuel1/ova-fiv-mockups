@@ -14,7 +14,7 @@ body{margin:0;background:linear-gradient(160deg,#eef6fb,#f7fbfd);padding:26px;co
 h1{font-size:24px;font-weight:900;letter-spacing:-.5px;color:var(--deep);margin:0 0 4px;}
 .lead{color:var(--muted);font-size:13.5px;margin:0 0 18px;max-width:860px;line-height:1.55;}
 .lead b{color:var(--deep);}
-.bars{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:18px;position:relative;z-index:95;}
+.bars{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:18px;position:relative;z-index:92;}
 .demo-bar{display:flex;align-items:center;gap:11px;flex-wrap:wrap;padding:9px 13px;background:rgba(255,255,255,.6);border:1px dashed rgba(0,108,157,.3);border-radius:14px;}
 .demo-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);}
 .demo-lbl b{color:var(--orange);}
@@ -66,8 +66,10 @@ h1{font-size:24px;font-weight:900;letter-spacing:-.5px;color:var(--deep);margin:
 .cb.has .cb-btn{border-color:rgba(0,108,157,.4);background:linear-gradient(160deg,#fff,#f1f8fc);}
 .cb.open .cb-btn{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(25,167,201,.15);}
 .cb.open .cb-btn .chev{transform:rotate(180deg);color:var(--cyan);}
-.cb-pop{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:50;background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 18px 40px rgba(13,43,53,.18);padding:8px;opacity:0;transform:translateY(-6px) scale(.98);transform-origin:top;pointer-events:none;transition:opacity .16s,transform .2s cubic-bezier(.2,.9,.3,1);}
-.cb.open .cb-pop{opacity:1;transform:none;pointer-events:auto;}
+/* combobox flotante: portal a <body> con position:fixed → escapa overflow/clipping del drawer */
+.cb-menu{position:fixed;z-index:1000;background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 18px 44px rgba(13,43,53,.2);padding:8px;display:none;opacity:0;transform:translateY(-6px) scale(.98);transform-origin:top;transition:opacity .16s,transform .2s cubic-bezier(.2,.9,.3,1);}
+.cb-menu.up{transform-origin:bottom;}
+.cb-menu.show{display:block;opacity:1;transform:none;}
 .cb-search{width:100%;border:1px solid var(--line);border-radius:9px;padding:8px 10px 8px 30px;font-size:12.5px;font-family:inherit;margin-bottom:6px;outline:none;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236a8794' stroke-width='2.2' stroke-linecap='round'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4-4'/></svg>") no-repeat 9px center;}
 .cb-search:focus{border-color:var(--cyan);}
 .cb-list{max-height:210px;overflow-y:auto;}
@@ -100,7 +102,7 @@ h1{font-size:24px;font-weight:900;letter-spacing:-.5px;color:var(--deep);margin:
 /* ===== DRAWER LATERAL — inspector adaptativo ===== */
 .overlay{position:fixed;inset:0;background:rgba(13,43,53,.46);opacity:0;pointer-events:none;transition:opacity .26s ease;z-index:90;}
 .overlay.show{opacity:1;pointer-events:auto;}
-.fdrawer{position:fixed;inset:0;display:flex;align-items:center;justify-content:flex-end;padding:18px;pointer-events:none;z-index:91;transform:translateX(112%);transition:transform .36s cubic-bezier(.3,.86,.32,1);will-change:transform;}
+.fdrawer{position:fixed;inset:0;display:flex;align-items:center;justify-content:flex-end;padding:18px;pointer-events:none;z-index:100;transform:translateX(112%);transition:transform .36s cubic-bezier(.3,.86,.32,1);will-change:transform;}
 .fdrawer.show{transform:none;}
 /* ancho CONTINUO según nº de filtros del tab (--n lo setea el JS) */
 .fd-card{--w:clamp(322px,calc(280px + var(--n,5) * 42px),600px);width:var(--w);max-width:calc(100vw - 36px);max-height:100%;pointer-events:auto;position:relative;display:flex;flex-direction:column;background:linear-gradient(165deg,#fff,#f4fafd);border:1px solid rgba(255,255,255,.85);border-radius:22px;box-shadow:-22px 24px 60px rgba(13,43,53,.22),0 4px 14px rgba(13,43,53,.08);overflow:hidden;opacity:0;transform:translateX(26px) scale(.97);transition:opacity .3s ease .04s,transform .36s cubic-bezier(.3,.86,.32,1) .04s,width .34s cubic-bezier(.3,.86,.32,1);}
@@ -235,9 +237,10 @@ document.getElementById('disp').querySelectorAll('button').forEach(function(b){b
 function comboFieldNode(field){
   var dv=dispVal(field),has=dv!=null;
   var node=el('<div class="field"><label>'+F[field].label+'</label>'+
-    '<div class="cb'+(has?' has':'')+'"><button class="cb-btn" type="button"><span class="v'+(has?'':' ph')+'">'+(dv||'Todos')+'</span><span class="clr" title="Quitar">&times;</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>'+
-    '<div class="cb-pop"><input class="cb-search" placeholder="Buscar..."><div class="cb-list"></div></div></div></div>');
-  setupCombo(node.querySelector('.cb'),field);
+    '<div class="cb'+(has?' has':'')+'"><button class="cb-btn" type="button"><span class="v'+(has?'':' ph')+'">'+(dv||'Todos')+'</span><span class="clr" title="Quitar">&times;</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></div></div>');
+  var cb=node.querySelector('.cb'),btn=node.querySelector('.cb-btn'),clr=node.querySelector('.clr');
+  clr.addEventListener('click',function(e){e.stopPropagation();state[field]=null;if(field==='ganaderia')state.finca=null;closeMenu();render();});
+  btn.addEventListener('click',function(e){e.stopPropagation();if(cb.classList.contains('open')){closeMenu();}else{openMenu(field,btn);}});
   return node;
 }
 function dateFieldNode(field){return el('<div class="field"><label>'+F[field].label+'</label><input class="date" type="date"></div>');}
@@ -247,17 +250,47 @@ function periodFieldNode(){
   node.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){node.querySelectorAll('.seg button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');state.periodo=b.textContent;});});
   return node;
 }
-function setupCombo(cb,field){var btn=cb.querySelector('.cb-btn'),clr=cb.querySelector('.clr'),search=cb.querySelector('.cb-search'),list=cb.querySelector('.cb-list');
-  function fill(q){var opts=optlist(field);q=(q||'').toLowerCase();var html='<div class="cb-opt all" data-r="">Todos</div>';
-    var filt=opts.filter(function(o){return o[1].toLowerCase().indexOf(q)>=0;});
-    if(!opts.length){html+='<div class="cb-empty">'+(F[field].cascade?'Elegí primero la Ganadería':'Sin opciones')+'</div>';}else if(!filt.length){html+='<div class="cb-empty">Sin coincidencias</div>';}
-    filt.forEach(function(o){html+='<div class="cb-opt'+(state[field]===o[0]?' sel':'')+'" data-r="'+o[0]+'">'+o[1]+'</div>';});
-    list.innerHTML=html;list.querySelectorAll('.cb-opt').forEach(function(op){op.addEventListener('click',function(){state[field]=op.dataset.r||null;if(field==='ganaderia'){state.finca=null;}cb.classList.remove('open');render();});});}
-  clr.addEventListener('click',function(e){e.stopPropagation();state[field]=null;if(field==='ganaderia'){state.finca=null;}render();});
-  btn.addEventListener('click',function(e){e.stopPropagation();var wasOpen=cb.classList.contains('open');document.querySelectorAll('.cb.open').forEach(function(o){o.classList.remove('open');});
-    if(!wasOpen){cb.classList.add('open');list.innerHTML='<div class="cb-load"><span class="cb-spin"></span>Cargando opciones…</div>';search.value='';setTimeout(function(){if(cb.classList.contains('open')){fill('');search.focus();}},260);}});
-  search.addEventListener('input',function(){fill(search.value);});search.addEventListener('click',function(e){e.stopPropagation();});}
-document.addEventListener('click',function(){document.querySelectorAll('.cb.open').forEach(function(o){o.classList.remove('open');});});
+/* ---------- menú flotante ÚNICO (portal a <body>) ----------
+   Un solo desplegable reutilizado por todos los combos. Al estar fuera del drawer
+   (sin overflow/transform ancestro) NUNCA se clippea; se posiciona fixed desde el
+   trigger con flip arriba/abajo según el espacio. Escalable a cualquier nº de filtros. */
+var cbMenu=el('<div class="cb-menu"><input class="cb-search" placeholder="Buscar..."><div class="cb-list"></div></div>');
+document.body.appendChild(cbMenu);
+var mSearch=cbMenu.querySelector('.cb-search'),mList=cbMenu.querySelector('.cb-list'),curField=null,curBtn=null;
+function fillMenu(q){
+  var opts=optlist(curField);q=(q||'').toLowerCase();
+  var html='<div class="cb-opt all" data-r="">Todos</div>';
+  var filt=opts.filter(function(o){return o[1].toLowerCase().indexOf(q)>=0;});
+  if(!opts.length){html+='<div class="cb-empty">'+(F[curField].cascade?'Elegí primero la Ganadería':'Sin opciones')+'</div>';}
+  else if(!filt.length){html+='<div class="cb-empty">Sin coincidencias</div>';}
+  filt.forEach(function(o){html+='<div class="cb-opt'+(state[curField]===o[0]?' sel':'')+'" data-r="'+o[0]+'">'+o[1]+'</div>';});
+  mList.innerHTML=html;
+  mList.querySelectorAll('.cb-opt').forEach(function(op){op.addEventListener('click',function(){var f=curField;state[f]=op.dataset.r||null;if(f==='ganaderia')state.finca=null;closeMenu();render();});});
+}
+function positionMenu(){
+  if(!curBtn)return;
+  var r=curBtn.getBoundingClientRect(),vw=window.innerWidth,vh=window.innerHeight,M=8;
+  cbMenu.style.width=r.width+'px';
+  cbMenu.style.left=Math.max(M,Math.min(r.left,vw-r.width-M))+'px';
+  var mh=cbMenu.offsetHeight||260,below=vh-r.bottom-M,above=r.top-M;
+  if(below>=mh||below>=above){cbMenu.classList.remove('up');mList.style.maxHeight=Math.max(120,below-58)+'px';cbMenu.style.top=(r.bottom+6)+'px';}
+  else{cbMenu.classList.add('up');mList.style.maxHeight=Math.max(120,above-58)+'px';cbMenu.style.top=(r.top-cbMenu.offsetHeight-6)+'px';}
+}
+function openMenu(field,btn){
+  curField=field;curBtn=btn;
+  document.querySelectorAll('.cb.open').forEach(function(o){o.classList.remove('open');});
+  btn.closest('.cb').classList.add('open');
+  mSearch.value='';mList.innerHTML='<div class="cb-load"><span class="cb-spin"></span>Cargando opciones…</div>';
+  cbMenu.classList.add('show');positionMenu();
+  setTimeout(function(){if(curField===field){fillMenu('');positionMenu();mSearch.focus();}},260);
+}
+function closeMenu(){cbMenu.classList.remove('show');document.querySelectorAll('.cb.open').forEach(function(o){o.classList.remove('open');});curField=null;curBtn=null;}
+mSearch.addEventListener('input',function(){fillMenu(mSearch.value);positionMenu();});
+mSearch.addEventListener('click',function(e){e.stopPropagation();});
+cbMenu.addEventListener('click',function(e){e.stopPropagation();});
+document.addEventListener('click',function(){if(curField)closeMenu();});
+window.addEventListener('resize',function(){if(curField)positionMenu();});
+window.addEventListener('scroll',function(){if(curField)positionMenu();},true);
 
 /* ---------- contadores + chips ---------- */
 function setCount(eln){var n=nActive();if(n===0){eln.className='fcount empty';eln.innerHTML='<span class="dot"></span>Sin filtros &middot; mostrando todos';}else{eln.className='fcount';eln.innerHTML='<span class="dot"></span><b>'+n+'</b> filtro'+(n>1?'s':'')+' activo'+(n>1?'s':'');}}
@@ -306,6 +339,7 @@ function renderDrawer(){
 
 /* ---------- render maestro ---------- */
 function render(){
+  closeMenu();
   renderTop();
   renderDrawer();
   var n=nActive(),cnt=document.getElementById('fbtnCnt');cnt.textContent=n;cnt.className='cnt'+(n===0?' zero':'');
@@ -319,7 +353,7 @@ function closeDrawer(){document.getElementById('overlay').classList.remove('show
 document.getElementById('fbtn').addEventListener('click',openDrawer);
 document.getElementById('fdX').addEventListener('click',closeDrawer);
 document.getElementById('overlay').addEventListener('click',closeDrawer);
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDrawer();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(curField){closeMenu();}else{closeDrawer();}}});
 document.querySelectorAll('[data-clear]').forEach(function(b){b.addEventListener('click',function(){if(this.disabled)return;var p=state.periodo;state={};if(p)state.periodo=p;render();});});
 document.querySelectorAll('[data-apply]').forEach(function(b){b.addEventListener('click',function(){
   var msg=curTab.fields.filter(function(f){return state[f]!=null;}).map(function(f){return F[f].label+'='+(F[f].type==='seg'?state[f]:dispVal(f)||state[f]);});
