@@ -107,6 +107,7 @@ h1{font-size:24px;font-weight:900;letter-spacing:-.5px;color:var(--deep);margin:
 /* ancho CONTINUO según nº de filtros del tab (--n lo setea el JS) */
 .fd-card{--w:clamp(322px,calc(280px + var(--n,5) * 42px),600px);width:var(--w);max-width:calc(100vw - 36px);max-height:100%;pointer-events:auto;position:relative;display:flex;flex-direction:column;background:linear-gradient(165deg,#fff,#f4fafd);border:1px solid rgba(255,255,255,.85);border-radius:22px;box-shadow:-22px 24px 60px rgba(13,43,53,.22),0 4px 14px rgba(13,43,53,.08);overflow:hidden;opacity:0;transform:translateX(26px) scale(.97);transition:opacity .3s ease .04s,transform .36s cubic-bezier(.3,.86,.32,1) .04s,width .34s cubic-bezier(.3,.86,.32,1);}
 .fdrawer.show .fd-card{opacity:1;transform:none;}
+.fd-card.morphing,.fd-card.morphing .fd-body{overflow:hidden;}
 .fd-head{position:relative;flex:0 0 auto;padding:16px 18px 13px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(244,250,253,0));}
 .fd-head::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--cyan) 60%,var(--orange));}
 .fd-top{display:flex;align-items:center;gap:11px;}
@@ -319,6 +320,7 @@ function renderTop(){
 function renderDrawer(){
   var combos=combosOf(curTab),dates=datesOf(curTab),hasP=curTab.fields.indexOf('periodo')>=0;
   var card=document.getElementById('fdCard');
+  var openH=document.getElementById('fdrawer').classList.contains('show')?card.offsetHeight:0;  /* alto ANTES del cambio */
   card.style.setProperty('--n',combos.length);
   document.getElementById('ficS').innerHTML=IC[curTab.id];
   document.getElementById('fsubS').textContent=curTab.nombre+' · '+combos.length+(combos.length===1?' filtro':' filtros');
@@ -338,6 +340,16 @@ function renderDrawer(){
     body.appendChild(s2);
   }
   setCount(document.getElementById('fcountS'));
+  morphHeight(card,openH);
+}
+/* anima el cambio de alto del drawer (chips activos, 1↔2 filas) en vez del salto tosco */
+function morphHeight(card,h0){
+  if(!h0||!card.animate)return;
+  var h1=card.offsetHeight;
+  if(Math.abs(h1-h0)<2)return;
+  card.classList.add('morphing');
+  var a=card.animate([{height:h0+'px'},{height:h1+'px'}],{duration:260,easing:'cubic-bezier(.25,.85,.3,1)'});
+  a.onfinish=a.oncancel=function(){card.classList.remove('morphing');};
 }
 
 /* ---------- render maestro ---------- */
