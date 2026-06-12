@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<title>Generador isotipo OVA (radial paramétrico)</title>
+<style>
+  body{margin:0;background:#f4f8fb;font-family:'Segoe UI',system-ui,sans-serif;color:#0D2B35;padding:24px;}
+  h1{font-size:16px;margin:0 0 16px;}
+  .row{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;}
+  .panel{background:#fff;border:1px solid rgba(0,108,157,.14);border-radius:14px;padding:18px;}
+  .ctrls{display:grid;gap:11px;min-width:240px;}
+  .ctrls label{font-size:12px;font-weight:700;display:flex;flex-direction:column;gap:4px;color:#43616d;}
+  .ctrls input[type=range]{width:100%;}
+  .ctrls .v{font-weight:800;color:#006C9D;}
+  .sizes{display:flex;gap:22px;align-items:flex-end;flex-wrap:wrap;}
+  .sz{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;color:#6a8794;font-weight:600;}
+  .chip-demo{display:inline-flex;align-items:center;gap:9px;background:#fff;border:1px solid rgba(0,108,157,.14);border-radius:12px;padding:8px 14px 8px 10px;box-shadow:0 8px 22px rgba(13,43,53,.08);}
+  .chip-demo .wm{font-size:19px;font-weight:900;letter-spacing:-1.2px;color:#0D2B35;font-family:Poppins,system-ui;}
+  textarea{width:100%;height:120px;font-family:monospace;font-size:11px;border:1px solid rgba(0,108,157,.2);border-radius:8px;padding:8px;margin-top:12px;}
+  .seg{display:inline-flex;background:#e7f0f5;border-radius:8px;padding:3px;gap:2px;}
+  .seg button{border:0;background:transparent;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:700;color:#6a8794;cursor:pointer;}
+  .seg button.on{background:#fff;color:#006C9D;box-shadow:0 2px 6px rgba(0,0,0,.1);}
+</style></head>
+<body>
+<h1>Generador isotipo OVA — pétalo base rotado (simetría radial)</h1>
+<div class="row">
+  <div class="panel ctrls" id="ctrls">
+    <label>Pétalos <span class="v" id="vcount">8</span><input type="range" id="count" min="5" max="12" step="1" value="8"></label>
+    <label>Radio interno (hueco) <span class="v" id="vinner">26</span><input type="range" id="inner" min="8" max="50" step="1" value="26"></label>
+    <label>Radio externo (largo) <span class="v" id="vouter">86</span><input type="range" id="outer" min="60" max="96" step="1" value="86"></label>
+    <label>Ancho pétalo <span class="v" id="vwidth">19</span><input type="range" id="width" min="5" max="40" step="1" value="19"></label>
+    <label>Giro (molinillo) <span class="v" id="vtwist">14</span><input type="range" id="twist" min="-40" max="40" step="1" value="14"></label>
+    <label>Curvatura puntas <span class="v" id="vbow">38</span><input type="range" id="bow" min="0" max="70" step="1" value="38"></label>
+    <label>Estilo<div class="seg" id="style"><button data-s="fill" class="on">Relleno</button><button data-s="stroke">Trazo</button></div></label>
+    <label>Grosor trazo <span class="v" id="vsw">7</span><input type="range" id="sw" min="2" max="16" step="1" value="7"></label>
+  </div>
+
+  <div class="panel">
+    <div class="sizes">
+      <div class="sz"><div id="big"></div>120 px</div>
+      <div class="sz"><div id="m64"></div>64 px</div>
+      <div class="sz"><div id="m34"></div>34 px (barra)</div>
+      <div class="sz"><div class="chip-demo"><span id="m34b"></span><span class="wm">ova</span></div>en contexto</div>
+    </div>
+    <textarea id="out" readonly></textarea>
+  </div>
+</div>
+
+<script>
+var P={count:8,inner:26,outer:86,width:19,twist:14,bow:38,style:'fill',sw:7};
+function petal(cx,cy,p){
+  var iR=p.inner,oR=p.outer,w=p.width,tw=p.twist,bow=p.bow;
+  // punta interna (cerca del centro) y externa (con giro lateral)
+  var ix=cx, iy=cy-iR;
+  var ox=cx+tw, oy=cy-oR;
+  // controles bezier: ensanchan a los lados y curvan
+  var c1x=cx+w, c1y=cy-iR-bow;
+  var c2x=cx+tw+w*0.45, c2y=cy-oR+bow;
+  var d1x=cx-tw-w*0.45, d1y=cy-oR+bow;
+  var d2x=cx-w, d2y=cy-iR-bow;
+  return 'M'+ix+','+iy+' C'+c1x+','+c1y+' '+c2x+','+c2y+' '+ox+','+oy+
+         ' C'+d1x+','+d1y+' '+d2x+','+d2y+' '+ix+','+iy+' Z';
+}
+function svg(p,size){
+  var cx=100,cy=100,paths='';
+  var step=360/p.count;
+  for(var i=0;i<p.count;i++){
+    var ang=i*step;
+    var attrs = p.style==='stroke'
+      ? 'fill="none" stroke="url(#g)" stroke-width="'+p.sw+'" stroke-linecap="round" stroke-linejoin="round"'
+      : 'fill="url(#g)"';
+    paths+='<path d="'+petal(cx,cy,p)+'" '+attrs+' transform="rotate('+ang+' '+cx+' '+cy+')"/>';
+  }
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">'+
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'+
+    '<stop offset="0" stop-color="#19A7C9"/><stop offset="1" stop-color="#006C9D"/></linearGradient></defs>'+
+    paths+'</svg>';
+}
+function render(){
+  document.getElementById('big').innerHTML=svg(P,120);
+  document.getElementById('m64').innerHTML=svg(P,64);
+  document.getElementById('m34').innerHTML=svg(P,34);
+  document.getElementById('m34b').innerHTML=svg(P,34);
+  document.getElementById('out').value=svg(P,200).replace(/></g,'>\n<');
+}
+['count','inner','outer','width','twist','bow','sw'].forEach(function(id){
+  var el=document.getElementById(id);
+  el.addEventListener('input',function(){ P[id]=+el.value; document.getElementById('v'+id).textContent=el.value; render(); });
+});
+document.getElementById('style').querySelectorAll('button').forEach(function(b){
+  b.addEventListener('click',function(){ document.getElementById('style').querySelectorAll('button').forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); P.style=b.dataset.s; render(); });
+});
+render();
+window.__svg=function(){return svg(P,200);};
+</script>
+</body></html>

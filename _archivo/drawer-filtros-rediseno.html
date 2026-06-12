@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Drawer · zonas colapsables (v4)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+:root{--primary:#006C9D;--cyan:#19A7C9;--deep:#0D2B35;--muted:#5B7480;--line:#D7E3E8;--orange:#EE3623;--ph:#9BB0B8;--soft:#E3F1F6;--bg:#eef3f7;
+  --ease:cubic-bezier(.4,0,.2,1);}
+*{box-sizing:border-box;font-family:'Poppins','Segoe UI',system-ui,sans-serif;}
+body{margin:0;background:linear-gradient(160deg,#dce8ef,var(--bg));min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:26px 16px;color:var(--deep);}
+
+.dw{width:min(540px,100%);background:#fff;border-radius:20px;box-shadow:0 30px 70px rgba(13,43,53,.28);overflow:hidden;display:flex;flex-direction:column;max-height:calc(100vh - 52px);}
+.dw-head{position:relative;display:flex;align-items:center;gap:11px;padding:15px 18px 12px;border-bottom:1px solid #eef3f6;}
+.dw-head::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--cyan) 60%,var(--orange));}
+.dw-head .ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--primary),var(--cyan));box-shadow:0 6px 14px rgba(0,108,157,.24);}
+.dw-head .tt{font-size:15.5px;font-weight:800;letter-spacing:-.2px;line-height:1.1;}
+.dw-head .sub{font-size:11px;font-weight:600;color:var(--muted);}
+.dw-head .x{margin-left:auto;width:32px;height:32px;border-radius:9px;border:0;background:#eef3f6;color:var(--deep);font-size:16px;cursor:pointer;display:grid;place-items:center;transition:.18s;}
+.dw-head .x:hover{background:var(--orange);color:#fff;}
+.dw-body{padding:0 18px 12px;overflow-y:auto;}
+
+/* ===== ZONA colapsable ===== */
+.zone.params{background:linear-gradient(180deg,rgba(0,108,157,.05),rgba(25,167,201,.018));margin:0 -18px;padding:0 18px;}
+.zone-h{display:flex;align-items:center;gap:9px;width:100%;padding:15px 0 12px;background:none;border:0;cursor:pointer;text-align:left;color:inherit;}
+.zone.params .zone-h{padding-top:13px;}
+.zone-h .zic{flex:0 0 auto;color:var(--primary);display:grid;place-items:center;}
+.zone-h .zic svg{width:17px;height:17px;}
+.zone-h .znm{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--deep);white-space:nowrap;}
+.zone-h .zhint{font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0;}
+.zone-h .zrule{flex:1;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--primary),var(--cyan) 45%,transparent);}
+.zone-h .zchev{flex:0 0 auto;color:var(--muted);display:grid;place-items:center;transition:transform .4s var(--ease);}
+.zone-h .zchev svg{width:17px;height:17px;}
+.zone-h:hover .zchev{color:var(--primary);}
+.zone.collapsed .zone-h .zchev{transform:rotate(-90deg);}
+/* el cuerpo colapsa con grid-template-rows (fluido, sin medir) */
+.zone-body{display:grid;grid-template-rows:1fr;transition:grid-template-rows .42s var(--ease);}
+.zone.collapsed .zone-body{grid-template-rows:0fr;}
+.zone-inner{overflow:hidden;min-height:0;padding-bottom:14px;transition:opacity .3s var(--ease);}
+.zone.collapsed .zone-inner{opacity:0;}
+.zone:not(.params)+.zone, .zone.params{position:relative;}
+.zone:not(.params){border-top:1px solid #eef3f6;margin-top:2px;}
+
+/* ===== período (plano) ===== */
+.qlabel{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--primary);display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+.qlabel svg{width:13px;height:13px;}
+.shorts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;}
+.shorts button{font-size:10.5px;font-weight:500;color:var(--primary);background:#fff;border:1px solid var(--line);border-radius:30px;padding:5px 11px;cursor:pointer;transition:.18s;}
+.shorts button.on{background:linear-gradient(135deg,var(--primary),var(--cyan));color:#fff;border-color:transparent;}
+.rlabel{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;align-items:center;gap:6px;margin:11px 0 6px;}
+.rlabel .dotA{width:8px;height:8px;border-radius:50%;background:var(--primary);flex:0 0 auto;}
+.rlabel .dotB{width:8px;height:8px;border-radius:50%;background:var(--orange);flex:0 0 auto;}
+.rlabel .aux{font-weight:500;text-transform:none;letter-spacing:0;color:var(--ph);}
+.range{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:7px;}
+.dp{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fff;font-size:12.5px;font-weight:600;cursor:pointer;transition:border-color .18s;}
+.dp:hover{border-color:#b9ccd4;}
+.dp svg{width:14px;height:14px;color:var(--primary);flex:0 0 auto;}
+.dp.locked{opacity:.6;background:#eef2f4;cursor:not-allowed;color:var(--muted);}
+.dp.locked svg{color:var(--ph)!important;}
+.sep{color:var(--muted);font-weight:700;text-align:center;}
+.seg-row{display:flex;align-items:center;gap:10px;margin-top:12px;}
+.seg-row .lbl{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);white-space:nowrap;}
+.seg{display:inline-flex;background:#e7f0f5;border-radius:9px;padding:3px;gap:2px;flex:1;}
+.seg button{flex:1;font-size:12px;font-weight:700;color:var(--muted);border:0;background:transparent;border-radius:7px;padding:7px 8px;cursor:pointer;transition:.2s;}
+.seg button.on{background:linear-gradient(135deg,var(--primary),var(--cyan));color:#fff;box-shadow:0 3px 8px rgba(0,108,157,.25);}
+
+/* ===== sub-grupos de FILTROS (sin colapso individual) ===== */
+.fg{padding:11px 0 2px;}
+.fg+.fg{border-top:1px solid #eef3f6;}
+.fg-h{display:flex;align-items:center;gap:9px;margin-bottom:11px;}
+.fg-h .chip{width:24px;height:24px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;color:#fff;background:var(--cyan);}
+.fg-h .chip svg{width:13px;height:13px;}
+.fg-h .nm{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--deep);white-space:nowrap;}
+.fg-h .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent);}
+.fg-h .badge{flex:0 0 auto;font-size:10.5px;font-weight:600;color:var(--primary);background:var(--soft);padding:3px 9px;border-radius:30px;white-space:nowrap;}
+.fg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(160px,45%,225px),1fr));gap:clamp(.45rem,1vw,.8rem);}
+
+/* combos */
+.field{display:flex;flex-direction:column;gap:4px;min-width:0;}
+.field>label{font-size:10.5px;font-weight:500;color:var(--muted);display:flex;align-items:center;gap:5px;line-height:1;}
+.field>label .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);display:none;}
+.field.full>label .dot{display:inline-block;}
+.field>label .lk{margin-left:auto;color:var(--ph);display:flex;}
+.combo{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;cursor:pointer;transition:border-color .18s,box-shadow .18s,background .18s;}
+.combo .pre{flex:0 0 auto;color:var(--muted);display:grid;place-items:center;}
+.combo .pre svg{width:16px;height:16px;}
+.combo .v{flex:1;font-size:13px;color:var(--ph);font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.combo .chev{flex:0 0 auto;color:var(--muted);}
+.combo .clr{flex:0 0 auto;display:none;width:18px;height:18px;border-radius:50%;background:rgba(238,54,35,.1);color:var(--orange);align-items:center;justify-content:center;font-size:11px;font-weight:800;cursor:pointer;}
+.combo:hover{border-color:#b9ccd4;}
+.combo:focus-within{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(25,167,201,.18);}
+.field.full .combo{border-left:3px solid var(--cyan);background:rgba(25,167,201,.06);padding-left:9px;}
+.field.full .combo .v{color:var(--deep);font-weight:600;font-style:normal;}
+.field.full .combo .pre{color:var(--primary);}
+.field.full .combo .chev{display:none;}
+.field.full .combo .clr{display:inline-flex;}
+.field.locked .combo{opacity:.55;cursor:not-allowed;background:#f6f9fa;}
+
+/* footer */
+.dw-foot{flex:0 0 auto;padding:12px 18px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.9);}
+.dw-foot .cnt{font-size:12px;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:7px;}
+.dw-foot .cnt b{color:var(--primary);font-weight:800;}
+.dw-foot .cnt .d{width:7px;height:7px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 3px rgba(0,108,157,.14);}
+.dw-foot .sp{flex:1;}
+.dw-foot .bt{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;border:0;border-radius:11px;padding:11px 18px;cursor:pointer;transition:.18s;}
+.dw-foot .clear{color:var(--orange);background:transparent;}
+.dw-foot .clear:hover{background:rgba(238,54,35,.07);}
+.dw-foot .apply{color:#fff;background:linear-gradient(135deg,var(--primary),var(--cyan));box-shadow:0 8px 18px rgba(0,108,157,.3);}
+.dw-foot .apply:hover{transform:translateY(-1px);}
+.tagn{position:fixed;top:13px;left:13px;font-size:11px;font-weight:700;color:var(--primary);background:#fff;border:1px solid var(--line);border-radius:9px;padding:6px 11px;box-shadow:0 8px 20px rgba(13,43,53,.12);}
+@media(prefers-reduced-motion:reduce){.zone-body,.zone-h .zchev,.zone-inner{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="tagn">Drawer v4 · zonas colapsables (clic en el rótulo)</div>
+
+<div class="dw">
+  <div class="dw-head">
+    <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M6 12h12M10 19h4"/></svg></span>
+    <div><div class="tt">Filtros</div><div class="sub">Período</div></div>
+    <button class="x">&times;</button>
+  </div>
+
+  <div class="dw-body">
+
+    <!-- ZONA 1 · PARÁMETROS (colapsable) -->
+    <div class="zone params">
+      <button class="zone-h"><span class="zic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span><span class="znm">Período y vista</span><span class="zrule"></span><span class="zchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></button>
+      <div class="zone-body"><div class="zone-inner">
+        <div class="qlabel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>Comparaciones rápidas</div>
+        <div class="shorts"><button class="on">6 meses vs previos</button><button>Este año vs anterior</button><button>4 trim. vs previos</button><button>3 años vs previos</button></div>
+        <div class="rlabel"><span class="dotA"></span>Rango A</div>
+        <div class="range"><span class="dp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>Ene 2026</span><span class="sep">→</span><span class="dp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>Jun 2026</span></div>
+        <div class="rlabel"><span class="dotB"></span>Rango B <span class="aux">· mismo largo que A</span></div>
+        <div class="range"><span class="dp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>Jul 2025</span><span class="sep">→</span><span class="dp locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Dic 2025</span></div>
+        <div class="seg-row"><span class="lbl">Agrupar</span><div class="seg"><button>Semana</button><button class="on">Mes</button><button>Trim.</button><button>Año</button></div></div>
+      </div></div>
+    </div>
+
+    <!-- ZONA 2 · FILTROS (colapsable) -->
+    <div class="zone">
+      <button class="zone-h"><span class="zic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg></span><span class="znm">Filtros</span><span class="zhint">acotan los datos</span><span class="zrule"></span><span class="zchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></button>
+      <div class="zone-body"><div class="zone-inner">
+
+        <div class="fg">
+          <div class="fg-h"><span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span><span class="nm">Ubicación</span><span class="rule"></span></div>
+          <div class="fg-grid">
+            <div class="field full"><label><span class="dot"></span>Ganadería</label><div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l9-6 9 6v12"/><path d="M3 21h18M9 21v-6h6v6"/></svg></span><span class="v">La Esperanza</span><span class="clr">&times;</span></div></div>
+            <div class="field locked"><label>Finca <span class="lk"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></label><div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span><span class="v">Elegí ganadería primero</span></div></div>
+          </div>
+        </div>
+
+        <div class="fg">
+          <div class="fg-h"><span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 3c0 6 16 6 16 12M20 3c0 6-16 6-16 12M5 7h14M5 17h14"/></svg></span><span class="nm">Genética y biología</span><span class="rule"></span><span class="badge">1 activo</span></div>
+          <div class="fg-grid">
+            <div class="field full"><label><span class="dot"></span>Donante</label><div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5c2 0 3 1 4 3M20 5c-2 0-3 1-4 3"/><path d="M5 8a7 7 0 0 0 14 0"/></svg></span><span class="v">BR-045 · Brahman</span><span class="clr">&times;</span></div></div>
+            <div class="field"><label>Raza donante</label><div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2"/></svg></span><span class="v">Todos</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div>
+            <div class="field"><label>Toro</label><div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5c2 0 3 1 4 3M20 5c-2 0-3 1-4 3"/><path d="M5 8a7 7 0 0 0 14 0"/><circle cx="9.5" cy="11" r=".6" fill="currentColor"/><circle cx="14.5" cy="11" r=".6" fill="currentColor"/></svg></span><span class="v">Todos</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div>
+            <div class="field"><label>Raza toro</label><div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2"/></svg></span><span class="v">Todos</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div>
+          </div>
+        </div>
+
+        <div class="fg">
+          <div class="fg-h"><span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="nm">Equipo</span><span class="rule"></span></div>
+          <div class="fg-grid">
+            <div class="field"><label>Técnico OPU</label><div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></span><span class="v">Todos</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div>
+            <div class="field"><label>Técnico buscador</label><div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></span><span class="v">Todos</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div>
+            <div class="field"><label>Técnico lab</label><div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></span><span class="v">Todos</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div>
+          </div>
+        </div>
+
+      </div></div>
+    </div>
+
+  </div>
+
+  <div class="dw-foot">
+    <span class="cnt"><span class="d"></span><b>2</b>&nbsp;filtros activos</span>
+    <span class="sp"></span>
+    <button class="bt clear"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>Limpiar todo</button>
+    <button class="bt apply"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Aplicar filtros</button>
+  </div>
+</div>
+
+<script>
+// colapsar/expandir por ZONA (clic en el rótulo)
+document.querySelectorAll('.zone-h').forEach(function(h){h.addEventListener('click',function(){h.closest('.zone').classList.toggle('collapsed');});});
+// chips de atajo + segmented
+document.querySelectorAll('.shorts, .seg').forEach(function(g){g.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();g.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');});});});
+</script>
+</body>
+</html>

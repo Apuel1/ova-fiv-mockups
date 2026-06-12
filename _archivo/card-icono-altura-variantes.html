@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Comparativo a la altura del ícono — 3 alternativas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+:root{--primary:#006C9D;--cyan:#19A7C9;--deep:#0D2B35;--muted:#5B7480;--line:#D7E3E8;--orange:#EE3623;--ph:#9BB0B8;--bg:#eef3f7;--up:#0E9F6E;}
+*{box-sizing:border-box;font-family:'Poppins','Segoe UI',system-ui,sans-serif;}
+body{margin:0;background:linear-gradient(160deg,#e7f0f5,var(--bg));color:var(--deep);padding:26px 20px 60px;}
+.wrap{max-width:1120px;margin:0 auto;}
+h1{font-size:18px;margin:0 0 4px;letter-spacing:-.4px;}
+.lead{color:var(--muted);font-size:12.5px;margin:0 0 26px;line-height:1.5;max-width:700px;}
+.variant{margin-bottom:30px;}
+.vh{display:flex;align-items:center;gap:10px;margin-bottom:13px;}
+.vh .n{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;background:linear-gradient(135deg,var(--primary),var(--cyan));flex:0 0 auto;}
+.vh .t{font-size:13.5px;font-weight:800;}
+.vh .t small{font-weight:500;color:var(--muted);font-size:11.5px;margin-left:6px;}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:620px;}
+
+.tot{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px 18px;box-shadow:0 12px 30px rgba(13,43,53,.07);}
+.tic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--primary),var(--cyan));flex:0 0 auto;}
+.tic svg{width:21px;height:21px;}
+.num{font-weight:800;letter-spacing:-1.4px;line-height:1;color:var(--deep);font-size:32px;}
+.lab{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:9px;}
+.sub{font-size:10.5px;color:var(--ph);margin-top:2px;}
+
+/* la FILA del ícono */
+.irow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
+
+/* delta pill */
+.delta{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:800;border-radius:30px;padding:3px 9px;}
+.delta.up{color:var(--up);background:rgba(14,159,110,.1);}
+.delta.down{color:var(--orange);background:rgba(238,54,35,.1);}
+.delta svg{width:11px;height:11px;}
+
+/* ---- A · comparativo completo apilado a la derecha del ícono ---- */
+.vA .cmp{text-align:right;line-height:1;}
+.vA .cmp .pv{font-size:10.5px;color:var(--muted);margin-top:6px;}
+.vA .cmp .pv b{color:var(--deep);font-weight:700;}
+
+/* ---- B · solo delta a la altura del ícono, valor al pie ---- */
+.vB .foot{display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:11px;border-top:1px solid #f0f5f8;font-size:11.5px;color:var(--muted);}
+.vB .foot .pv{margin-left:auto;font-weight:700;color:var(--deep);}
+
+/* ---- C · sparkline + delta a la altura del ícono ---- */
+.vC .spark{display:flex;align-items:center;gap:9px;}
+.vC .spark svg.tr{width:60px;height:26px;}
+.vC .foot{display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:11px;border-top:1px solid #f0f5f8;font-size:11.5px;color:var(--muted);}
+.vC .foot .pv{margin-left:auto;font-weight:700;color:var(--deep);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Comparativo a la altura del ícono — 3 alternativas</h1>
+  <p class="lead">Aprovechar la fila del ícono para la comparación (Embriones <b>486</b> vs <b>402</b> ↑ · Oocitos <b>19.316</b> vs <b>20.880</b> ↓). El número grande queda limpio abajo; arriba va el contexto. Decime el número.</p>
+
+  <!-- A -->
+  <div class="variant vA">
+    <div class="vh"><span class="n">1</span><span class="t">Delta + anterior, apilados<small>todo el comparativo arriba a la derecha</small></span></div>
+    <div class="pair">
+      <div class="tot"><div class="irow"><span class="tic" id="iA1"></span><div class="cmp"><span class="delta up" id="dA1"></span><div class="pv">desde <b>402</b></div></div></div><div class="num">486</div><div class="lab">Embriones totales</div><div class="sub">Empacados + congelados</div></div>
+      <div class="tot"><div class="irow"><span class="tic" id="iA2"></span><div class="cmp"><span class="delta down" id="dA2"></span><div class="pv">desde <b>20.880</b></div></div></div><div class="num">19.316</div><div class="lab">Oocitos totales</div><div class="sub">Madurados (MIV)</div></div>
+    </div>
+  </div>
+
+  <!-- B -->
+  <div class="variant vB">
+    <div class="vh"><span class="n">2</span><span class="t">Solo delta arriba, valor al pie<small>el % a la altura del ícono; el dato completo abajo</small></span></div>
+    <div class="pair">
+      <div class="tot"><div class="irow"><span class="tic" id="iB1"></span><span class="delta up" id="dB1"></span></div><div class="num">486</div><div class="lab">Embriones totales</div><div class="sub">Empacados + congelados</div><div class="foot"><span>Período anterior</span><span class="pv">402</span></div></div>
+      <div class="tot"><div class="irow"><span class="tic" id="iB2"></span><span class="delta down" id="dB2"></span></div><div class="num">19.316</div><div class="lab">Oocitos totales</div><div class="sub">Madurados (MIV)</div><div class="foot"><span>Período anterior</span><span class="pv">20.880</span></div></div>
+    </div>
+  </div>
+
+  <!-- C -->
+  <div class="variant vC">
+    <div class="vh"><span class="n">3</span><span class="t">Mini-tendencia + delta<small>sparkline del período a la altura del ícono</small></span></div>
+    <div class="pair">
+      <div class="tot"><div class="irow"><span class="tic" id="iC1"></span><div class="spark"><svg class="tr" id="sC1" viewBox="0 0 60 26" fill="none" preserveAspectRatio="none"></svg><span class="delta up" id="dC1"></span></div></div><div class="num">486</div><div class="lab">Embriones totales</div><div class="sub">Empacados + congelados</div><div class="foot"><span>Período anterior</span><span class="pv">402</span></div></div>
+      <div class="tot"><div class="irow"><span class="tic" id="iC2"></span><div class="spark"><svg class="tr" id="sC2" viewBox="0 0 60 26" fill="none" preserveAspectRatio="none"></svg><span class="delta down" id="dC2"></span></div></div><div class="num">19.316</div><div class="lab">Oocitos totales</div><div class="sub">Madurados (MIV)</div><div class="foot"><span>Período anterior</span><span class="pv">20.880</span></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var EMB='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="10" r="1.3" fill="currentColor" stroke="none"/></svg>';
+var OOC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>';
+var UP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
+var DN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
+function ic(id,svg){document.getElementById(id).innerHTML=svg;}
+function dl(id,up,v){document.getElementById(id).innerHTML=(up?UP:DN)+v;}
+['A1','B1','C1'].forEach(function(k){ic('i'+k,EMB);dl('d'+k,true,'21%');});
+['A2','B2','C2'].forEach(function(k){ic('i'+k,OOC);dl('d'+k,false,'7%');});
+/* sparklines */
+function spark(id,vals,color){
+  var max=Math.max.apply(null,vals),min=Math.min.apply(null,vals),rng=(max-min)||1;
+  var pts=vals.map(function(v,i){return [i/(vals.length-1)*60, 24-(v-min)/rng*22-1];});
+  var d='M '+pts.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' L ');
+  document.getElementById(id).innerHTML='<path d="'+d+'" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+    +'<circle cx="'+pts[pts.length-1][0].toFixed(1)+'" cy="'+pts[pts.length-1][1].toFixed(1)+'" r="2.4" fill="'+color+'"/>';
+}
+spark('sC1',[60,66,63,71,68,78],'#0E9F6E');
+spark('sC2',[84,80,82,77,79,72],'#EE3623');
+</script>
+</body>
+</html>

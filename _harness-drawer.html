@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Harness motor REAL — drawer v4 (zonas + grupos livianos)</title>
+<!-- carga el CSS y el motor REALES (los que se deployan), servidos por 'ova-root' (8767) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="/apex/ova-dashboard.css">
+<style>
+  /* mocks mínimos del entorno APEX (NO forman parte del deploy) */
+  body{margin:0;background:linear-gradient(160deg,#dce8ef,#eef3f7);min-height:200vh;font-family:'Poppins',system-ui,sans-serif;}
+  .t-Header{position:fixed;top:0;left:0;right:0;height:48px;background:#0D2B35;color:#fff;display:flex;align-items:center;padding:0 18px;font-weight:800;letter-spacing:.5px;z-index:50;}
+  .page{max-width:1180px;margin:0 auto;padding:64px 18px 40px;}
+  /* tabs mock con la estructura del Universal Theme (t-Tabs / t-Tabs-item / is-active) */
+  ul.t-Tabs{list-style:none;display:flex;margin:0;padding:6px;background:#fff;border:1px solid rgba(0,108,157,.12);border-radius:18px;}
+  ul.t-Tabs > li{flex:1;}
+  ul.t-Tabs > li > a{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;color:#6a8794;text-decoration:none;font-weight:700;border-radius:12px;}
+  ul.t-Tabs > li.is-active > a{color:#006C9D;}
+  #ovaHero{height:120px;border-radius:20px;background:linear-gradient(135deg,#006C9D,#19A7C9);margin-bottom:16px;display:grid;place-items:center;color:#fff;font-weight:800;}
+  .mockblock{height:520px;border-radius:18px;border:1px dashed rgba(0,108,157,.3);background:rgba(255,255,255,.5);margin-top:16px;display:grid;place-items:center;color:#6a8794;font-weight:600;}
+  .tagn{position:fixed;bottom:13px;left:13px;font-size:11px;font-weight:700;color:#006C9D;background:#fff;border:1px solid #D7E3E8;border-radius:9px;padding:6px 11px;box-shadow:0 8px 20px rgba(13,43,53,.12);z-index:60;}
+</style>
+</head>
+<body>
+<div class="t-Header">OVA DATA · (mock navbar APEX)</div>
+<div class="page">
+  <div id="ovaHero">HERO (se oculta · variante D)</div>
+
+  <!-- la región region_filtros.sql ahora SOLO pinta esto -->
+  <button type="button" class="ovaf-btn" id="ovafBtn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
+    Filtros<span class="ovaf-cnt ovaf-zero" id="ovafCnt">0</span>
+  </button>
+
+  <ul class="t-Tabs">
+    <li class="t-Tabs-item is-active"><a href="#">Análisis Productivo por Periodo</a></li>
+    <li class="t-Tabs-item"><a href="#">Análisis Productivo por Aspirador</a></li>
+    <li class="t-Tabs-item"><a href="#">Análisis Productivo por Toro</a></li>
+    <li class="t-Tabs-item"><a href="#">Análisis Productivo por Ganaderías</a></li>
+  </ul>
+
+  <div class="mockblock">contenido del tab (mock)</div>
+</div>
+<div class="tagn">Harness · motor REAL (ova-dashboard.js §2) + apex mockeado · clic en el FAB Filtros</div>
+
+<script>
+/* ===== mock de APEX (debe existir ANTES de cargar el motor) ===== */
+(function(){
+  var store={ P1_GANADERIA:'1', P1_PERIODO_TIPO:'MES' };   /* pre-seteo: Período con Ganadería elegida */
+  var LOV={
+    ganaderia:[{r:'1',d:'La Esperanza'},{r:'2',d:'El Roble'},{r:'3',d:'Santa Rita'}],
+    finca:[{r:'10',d:'Finca Norte'},{r:'11',d:'Finca Sur'}],
+    toro:[{r:'t1',d:'Bravo'},{r:'t2',d:'Trueno'}],
+    donadora:[{r:'d1',d:'BR-045 · Brahman'},{r:'d2',d:'GY-012 · Gyr'}],
+    razadon:[{r:'rb',d:'Brahman'},{r:'rg',d:'Gyr'}],
+    razatoro:[{r:'rg2',d:'Gyr'},{r:'rn',d:'Nelore'}],
+    tecnico_opu:[{r:'p1',d:'Juan P.'},{r:'p2',d:'María L.'}],
+    tecnico_buscador:[{r:'b1',d:'Ana G.'}],
+    tecnico_lab:[{r:'l1',d:'Luis R.'}]
+  };
+  window.apex={
+    jQuery:function(x){ if(typeof x==='function'){ if(document.readyState!=='loading'){ x(); } else { document.addEventListener('DOMContentLoaded',x); } } return {off:function(){return this;},on:function(){return this;}}; },
+    item:function(id){ return { getValue:function(){ return store[id]!=null?store[id]:''; }, setValue:function(v){ store[id]=v; } }; },
+    server:{ process:function(proc,opts){ var kind=(opts&&opts.x01)||''; return Promise.resolve({options:(LOV[kind]||[])}); } },
+    page:{ submit:function(){ try{console.log('[mock] apex.page.submit()');}catch(e){} } }
+  };
+})();
+</script>
+<script src="/apex/ova-dashboard.js"></script>
+</body>
+</html>

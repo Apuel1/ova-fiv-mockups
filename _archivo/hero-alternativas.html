@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Alternativas de hero (A/B/C/D)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+:root{--primary:#006C9D;--cyan:#19A7C9;--deep:#0D2B35;--muted:#6a8794;--line:rgba(0,108,157,.12);--orange:#EE3623;--bg1:#eef6fb;--bg2:#f7fbfd;--navblue:#0a64b0;}
+*{box-sizing:border-box;font-family:'Poppins','Segoe UI',system-ui,sans-serif;}
+body{margin:0;background:linear-gradient(160deg,var(--bg1),var(--bg2));color:#1d3a44;-webkit-font-smoothing:antialiased;}
+
+/* navbar APEX real (azul) */
+.topnav{height:50px;background:var(--navblue);display:flex;align-items:center;gap:12px;padding:0 20px;color:#fff;box-shadow:0 2px 8px rgba(10,60,100,.25);}
+.topnav .mnu{width:20px;height:2px;background:#fff;position:relative;}
+.topnav .mnu::before,.topnav .mnu::after{content:"";position:absolute;left:0;width:20px;height:2px;background:#fff;}
+.topnav .mnu::before{top:-6px;}.topnav .mnu::after{top:6px;}
+.topnav .logo{width:22px;height:22px;border-radius:6px;background:radial-gradient(circle at 35% 30%,#7fd4e8,#0a64b0);}
+.topnav b{font-size:14px;font-weight:700;}
+.topnav .user{margin-left:auto;font-size:12.5px;opacity:.9;display:flex;align-items:center;gap:7px;}
+
+.page{max-width:1180px;margin:0 auto;padding:0 22px 40px;}
+
+/* ===== LOGO reutilizable (isotipo + wordmark) ===== */
+.iso{flex:0 0 auto;display:grid;place-items:center;border-radius:12px;background:radial-gradient(circle at 35% 30%,var(--cyan),var(--primary));color:#fff;}
+.iso svg{width:58%;height:58%;}
+.wm{font-size:26px;font-weight:900;letter-spacing:-1.5px;color:var(--deep);line-height:1;}
+.fiv{font-size:10px;font-weight:800;color:#fff;background:var(--deep);border-radius:5px;padding:2px 6px;letter-spacing:.5px;}
+
+/* ===== HERO base ===== */
+.hero{display:none;}
+.hero.on{display:flex;}
+
+/* A · actual (logo grande, fondo blanco, mucho aire) */
+.hero-A{align-items:center;gap:16px;background:#fff;border-bottom:1px solid var(--line);padding:30px 26px;margin:0 -22px;}
+.hero-A .iso{width:48px;height:48px;}
+.hero-A .wm{font-size:30px;}
+
+/* B · resumen ejecutivo (logo + título + KPIs + fecha) */
+.hero-B{flex-direction:column;gap:18px;background:linear-gradient(135deg,#fff,#f1f8fc);border:1px solid var(--line);border-radius:20px;padding:22px 24px;margin-top:18px;box-shadow:0 12px 30px rgba(13,43,53,.07);}
+.hero-B .top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.hero-B .iso{width:46px;height:46px;}
+.hero-B .htitle{display:flex;flex-direction:column;gap:2px;}
+.hero-B .htitle .t{font-size:18px;font-weight:800;color:var(--deep);letter-spacing:-.4px;}
+.hero-B .htitle .s{font-size:12.5px;color:var(--muted);font-weight:500;}
+.hero-B .when{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 13px;}
+.hero-B .when b{color:var(--primary);font-weight:700;}
+.hero-B .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
+.kpi{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 15px;overflow:hidden;}
+.kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--cyan));}
+.kpi.acc::before{background:linear-gradient(90deg,var(--orange),#ff8a6b);}
+.kpi .kl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+.kpi .kl svg{width:13px;height:13px;color:var(--primary);}
+.kpi.acc .kl svg{color:var(--orange);}
+.kpi .kv{font-size:25px;font-weight:900;letter-spacing:-1px;color:var(--deep);margin-top:5px;line-height:1;font-variant-numeric:tabular-nums;}
+.kpi .kv small{font-size:.5em;font-weight:700;color:var(--muted);margin-left:2px;}
+.kpi.acc .kv{color:var(--orange);}
+
+/* C · slim (franja fina) */
+.hero-C{align-items:center;gap:13px;background:linear-gradient(135deg,#fff,#f4fafd);border:1px solid var(--line);border-radius:14px;padding:11px 18px;margin-top:18px;box-shadow:0 6px 18px rgba(13,43,53,.05);}
+.hero-C .iso{width:34px;height:34px;}
+.hero-C .wm{font-size:20px;}
+.hero-C .sep{width:1px;height:24px;background:var(--line);}
+.hero-C .ctx{font-size:13px;font-weight:700;color:var(--deep);}
+.hero-C .ctx span{color:var(--muted);font-weight:500;}
+.hero-C .when{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:7px;}
+.hero-C .when b{color:var(--primary);}
+
+/* D · sin hero → logo compacto dentro de la barra (se activa con body.mode-D) */
+.bar-logo{display:none;align-items:center;gap:9px;padding-right:14px;margin-right:4px;border-right:1px solid var(--line);}
+.bar-logo .iso{width:34px;height:34px;}
+.bar-logo .wm{font-size:18px;}
+body.mode-D .bar-logo{display:flex;}
+
+/* ===== BARRA unificada (tabs + footer) — la que ya validamos ===== */
+.bar{margin-top:18px;}
+.bar-inner{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 14px 32px rgba(13,43,53,.09);overflow:hidden;}
+.tabs{display:flex;gap:10px;padding:8px;align-items:center;}
+.tab{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:14px;cursor:pointer;transition:background .2s;}
+.tab .ic{width:40px;height:40px;border-radius:11px;background:rgba(0,108,157,.08);color:var(--primary);display:grid;place-items:center;flex:0 0 auto;}
+.tab .ic svg{width:20px;height:20px;}
+.tab .tx{display:flex;flex-direction:column;min-width:0;}
+.tab .tt{font-size:14.5px;font-weight:800;color:var(--deep);white-space:nowrap;}
+.tab .ds{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;}
+.tab.on{background:linear-gradient(135deg,var(--primary),var(--cyan));box-shadow:0 10px 24px rgba(0,108,157,.3);}
+.tab.on .ic{background:rgba(255,255,255,.2);color:#fff;}
+.tab.on .tt{color:#fff;}.tab.on .ds{color:rgba(255,255,255,.82);}
+.tab:not(.on):hover{background:#f1f8fc;}
+.actChips{display:flex;align-items:center;gap:9px;padding:11px 15px 13px;border-top:1px solid var(--line);background:linear-gradient(180deg,#f7fbfd,#eef5fa);font-size:12.5px;font-weight:600;color:var(--muted);}
+.actChips svg{width:16px;height:16px;color:var(--cyan);}
+.actChips b{color:var(--deep);font-weight:700;}
+
+/* contenido */
+.seclabel{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--primary);margin:22px 4px 14px;display:flex;align-items:center;gap:10px;}
+.seclabel::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent);}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.card{height:200px;border-radius:18px;background:linear-gradient(160deg,#fff,#eef5fa);border:1px solid var(--line);position:relative;overflow:hidden;}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--cyan));}
+.card::after{content:attr(data-t);position:absolute;inset:0;display:grid;place-items:center;color:#b9cdd8;font-size:14px;font-weight:700;}
+
+/* control demo */
+.demo{position:fixed;bottom:18px;left:18px;z-index:120;display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 11px;box-shadow:0 10px 28px rgba(13,43,53,.16);}
+.demo span{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);}
+.demo .seg{display:inline-flex;background:#e7f0f5;border-radius:9px;padding:3px;gap:2px;}
+.demo .seg button{font-size:12px;font-weight:700;color:var(--muted);border:0;background:transparent;border-radius:7px;padding:7px 10px;cursor:pointer;transition:.2s;}
+.demo .seg button.on{background:#fff;color:var(--primary);box-shadow:0 2px 7px rgba(13,43,53,.12);}
+.demo .hint{font-size:11px;color:var(--muted);max-width:160px;line-height:1.3;}
+</style>
+</head>
+<body class="mode-B">
+<div class="topnav"><span class="mnu"></span><span class="logo"></span><b>ova DATA</b><span class="user">👤 juancamilobenjumea ▾</span></div>
+
+<div class="page">
+
+  <!-- A · ACTUAL -->
+  <div class="hero hero-A" data-h="A">
+    <span class="iso"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><g><path d="M12 2v5M12 17v5M2 12h5M17 12h5M5 5l3.5 3.5M15.5 15.5L19 19M19 5l-3.5 3.5M8.5 15.5L5 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g></svg></span>
+    <span class="wm">ova</span><span class="fiv">FIV</span>
+  </div>
+
+  <!-- B · RESUMEN EJECUTIVO -->
+  <div class="hero hero-B on" data-h="B">
+    <div class="top">
+      <span class="iso"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><g><path d="M12 2v5M12 17v5M2 12h5M17 12h5M5 5l3.5 3.5M15.5 15.5L19 19M19 5l-3.5 3.5M8.5 15.5L5 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g></svg></span>
+      <div class="htitle"><span class="t">Producción del laboratorio</span><span class="s">ova FIV · indicadores de fertilización in vitro</span></div>
+      <span class="when"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>Actualizado <b>hoy</b></span>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><span class="kl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/></svg>Procesos</span><span class="kv">1.240</span></div>
+      <div class="kpi acc"><span class="kl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12A10 10 0 1 1 12 2"/><path d="M22 2 12 12"/></svg>Conversión</span><span class="kv">32<small>%</small></span></div>
+      <div class="kpi"><span class="kl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>Embriones</span><span class="kv">3.580</span></div>
+      <div class="kpi"><span class="kl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5c2 0 3 1 4 3M20 5c-2 0-3 1-4 3"/><path d="M5 8a7 7 0 0 0 14 0"/></svg>Donadoras</span><span class="kv">412</span></div>
+    </div>
+  </div>
+
+  <!-- C · SLIM -->
+  <div class="hero hero-C" data-h="C">
+    <span class="iso"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><g><path d="M12 2v5M12 17v5M2 12h5M17 12h5M5 5l3.5 3.5M15.5 15.5L19 19M19 5l-3.5 3.5M8.5 15.5L5 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g></svg></span>
+    <span class="wm">ova</span><span class="fiv">FIV</span>
+    <span class="sep"></span>
+    <span class="ctx">Producción del laboratorio <span>· in vitro</span></span>
+    <span class="when"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>Actualizado <b>hoy</b></span>
+  </div>
+
+  <!-- BARRA unificada -->
+  <div class="bar">
+    <div class="bar-inner">
+      <div class="tabs">
+        <div class="bar-logo"><span class="iso"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><g><path d="M12 2v5M12 17v5M2 12h5M17 12h5M5 5l3.5 3.5M15.5 15.5L19 19M19 5l-3.5 3.5M8.5 15.5L5 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g></svg></span><span class="wm">ova</span></div>
+        <div class="tab on"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span><span class="tx"><span class="tt">Período</span><span class="ds">Indicadores y evolución</span></span></div>
+        <div class="tab"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 2l4 4M17 3l4 4-9 9-5 1 1-5z"/><path d="M9 11l-6 6a2 2 0 1 0 3 3l6-6"/></svg></span><span class="tx"><span class="tt">Aspirador</span><span class="ds">Eficiencia por operador</span></span></div>
+        <div class="tab"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 5c2 0 3 1 4 3M20 5c-2 0-3 1-4 3"/><path d="M5 8a7 7 0 0 0 14 0"/></svg></span><span class="tx"><span class="tt">Toro</span><span class="ds">Rendimiento por semental</span></span></div>
+        <div class="tab"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></span><span class="tx"><span class="tt">Ganaderías</span><span class="ds">Ranking y comparación</span></span></div>
+      </div>
+      <div class="actChips"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 3 7l9 5 9-5-9-5z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/></svg>Mostrando <b>todos los datos</b></div>
+    </div>
+  </div>
+
+  <div class="seclabel">Evolución del aspirador · todos los aspiradores</div>
+  <div class="grid"><div class="card" data-t="gráfico"></div><div class="card" data-t="gráfico"></div></div>
+  <div class="seclabel">Promedios del aspirador</div>
+  <div class="grid"><div class="card" data-t="gráfico"></div><div class="card" data-t="gráfico"></div></div>
+</div>
+
+<div class="demo">
+  <span>Hero</span>
+  <div class="seg" id="seg">
+    <button data-m="A">A · actual</button>
+    <button class="on" data-m="B">B · resumen</button>
+    <button data-m="C">C · slim</button>
+    <button data-m="D">D · integrado</button>
+  </div>
+  <span class="hint" id="hint">Resumen ejecutivo: KPIs headline (recomendado)</span>
+</div>
+
+<script>
+var HINTS={
+  A:'Actual: logo grande, fondo blanco. Branding fuerte, espacio desperdiciado.',
+  B:'Resumen ejecutivo: KPIs headline (recomendado). El espacio cuenta algo.',
+  C:'Slim: franja fina con contexto + fecha. Libera espacio vertical.',
+  D:'Integrado: sin hero; el logo va en la barra de tabs. Máximo espacio.'
+};
+var heroes=document.querySelectorAll('.hero');
+document.getElementById('seg').querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){
+  document.getElementById('seg').querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');
+  document.body.className='mode-'+b.dataset.m;
+  heroes.forEach(function(h){ h.classList.toggle('on', h.dataset.h===b.dataset.m); });  // D: ninguno on
+  document.getElementById('hint').textContent=HINTS[b.dataset.m];
+});});
+/* tabs demo */
+document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){
+  document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on');});t.classList.add('on');
+});});
+</script>
+</body>
+</html>

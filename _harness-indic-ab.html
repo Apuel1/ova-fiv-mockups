@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Harness motor §3 — barras A vs B (OVA_PERIODO_DATA mockeado)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="/apex/ova-dashboard.css">
+<style>
+  body{margin:0;background:linear-gradient(160deg,#dce8ef,#eef3f7);font-family:'Poppins',system-ui;padding:24px;}
+  .page{max-width:1100px;margin:0 auto;}
+  .tagn{font-size:11px;font-weight:700;color:#006C9D;background:#fff;border:1px solid #D7E3E8;border-radius:9px;padding:6px 11px;display:inline-block;margin-bottom:14px;}
+</style>
+</head>
+<body>
+<div class="page">
+  <span class="tagn">Harness · motor §3 (ova-dashboard.js) + OVA_PERIODO_DATA mockeado · barras A vs B</span>
+  <!-- shell igual al que emite region_indicadores_periodo_a.sql -->
+  <div class="ova-tot" id="ovaIndicA" data-abchart="indicA">
+    <div class="ova-seclabel">Indicadores por período <span class="n">&middot; promedio ponderado del período</span></div>
+    <div class="ova-grid">
+      <article class="ova-card ova-chart" data-metric="cultiv" data-pct="1" data-unit="Cultivados" data-denlabel="Viables"><span class="ova-topbar"></span>
+        <div class="ova-ch-head"><div class="ova-ch-tag"><span class="ova-ch-ic"></span><div><div class="ova-ch-ttl">Oocitos cultivables %</div><div class="ova-ch-sub">Cultivados (CIV) ÷ viables (MIV)</div></div></div><div class="ova-ch-avg"><span class="ova-ch-delta"></span><b class="avg">0</b><span>prom. período</span></div></div>
+        <div class="ova-chbody" style="display:contents"><div class="ova-empty">Cargando…</div></div></article>
+      <article class="ova-card ova-chart" data-metric="tasa" data-pct="1" data-unit="Embriones" data-denlabel="Cultivados"><span class="ova-topbar"></span>
+        <div class="ova-ch-head"><div class="ova-ch-tag"><span class="ova-ch-ic"></span><div><div class="ova-ch-ttl">Tasa de producción %</div><div class="ova-ch-sub">Embriones ÷ oocitos cultivados</div></div></div><div class="ova-ch-avg"><span class="ova-ch-delta"></span><b class="avg">0</b><span>prom. período</span></div></div>
+        <div class="ova-chbody" style="display:contents"><div class="ova-empty">Cargando…</div></div></article>
+      <article class="ova-card ova-chart" data-metric="viad" data-unit="Oocitos" data-denlabel="Donadoras"><span class="ova-topbar"></span>
+        <div class="ova-ch-head"><div class="ova-ch-tag"><span class="ova-ch-ic"></span><div><div class="ova-ch-ttl">Oocitos viables / donante</div><div class="ova-ch-sub">Viables (MIV) ÷ donadoras</div></div></div><div class="ova-ch-avg"><span class="ova-ch-delta"></span><b class="avg">0</b><span>prom. período</span></div></div>
+        <div class="ova-chbody" style="display:contents"><div class="ova-empty">Cargando…</div></div></article>
+    </div>
+  </div>
+</div>
+<script>
+/* mock de OVA_PERIODO_DATA con la estructura real (na/da CSV → el motor calcula v=num/den) */
+var DATA={
+  cultiv:{la:'2025-07,2025-08,2025-09,2025-10,2025-11,2025-12',na:'920,950,940,900,930,940',da:'1000,1000,1000,1000,1000,1000',
+          lb:'2025-01,2025-02,2025-03,2025-04,2025-05,2025-06',nb:'880,860,900,840,880,870',db:'1000,1000,1000,1000,1000,1000',pa:93,pb:87,pct:7,pctn:true},
+  tasa:{la:'2025-07,2025-08,2025-09,2025-10,2025-11,2025-12',na:'300,340,360,320,350,380',da:'1000,1000,1000,1000,1000,1000',
+        lb:'2025-01,2025-02,2025-03,2025-04,2025-05,2025-06',nb:'280,300,310,290,300,320',db:'1000,1000,1000,1000,1000,1000',pa:34,pb:30,pct:13,pctn:true},
+  viad:{la:'2025-07,2025-08,2025-09,2025-10,2025-11,2025-12',na:'560,440,440,480,520,600',da:'20,20,20,20,20,20',
+        lb:'2025-01,2025-02,2025-03,2025-04,2025-05,2025-06',nb:'480,400,380,420,460,440',db:'20,20,20,20,20,20',pa:25,pb:22,pct:14,pctn:false},
+  ad:'2025-07',ah:'2025-12',bd:'2025-01',bh:'2025-06',per:'MES'
+};
+window.apex={
+  jQuery:function(x){ if(typeof x==='function'){ if(document.readyState!=='loading'){x();}else{document.addEventListener('DOMContentLoaded',x);} } return {off:function(){return this;},on:function(){return this;}}; },
+  server:{ process:function(p,o){ if(p==='OVA_PERIODO_DATA') return Promise.resolve(DATA); return Promise.resolve({}); } },
+  item:function(){ return {getValue:function(){return '';},setValue:function(){}}; },
+  page:{ submit:function(){} }
+};
+</script>
+<script src="/apex/ova-dashboard.js"></script>
+</body>
+</html>

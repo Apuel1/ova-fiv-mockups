@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Card comparativa — 3 variantes prolijas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+:root{--primary:#006C9D;--cyan:#19A7C9;--deep:#0D2B35;--muted:#5B7480;--line:#D7E3E8;--orange:#EE3623;--ph:#9BB0B8;--bg:#eef3f7;--up:#0E9F6E;--ease:cubic-bezier(.3,.85,.3,1);}
+*{box-sizing:border-box;font-family:'Poppins','Segoe UI',system-ui,sans-serif;}
+body{margin:0;background:linear-gradient(160deg,#e7f0f5,var(--bg));color:var(--deep);padding:26px 20px 60px;}
+.wrap{max-width:1120px;margin:0 auto;}
+h1{font-size:18px;margin:0 0 4px;letter-spacing:-.4px;}
+.lead{color:var(--muted);font-size:12.5px;margin:0 0 26px;line-height:1.5;max-width:680px;}
+.variant{margin-bottom:30px;}
+.vh{display:flex;align-items:center;gap:10px;margin-bottom:13px;}
+.vh .n{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;background:linear-gradient(135deg,var(--primary),var(--cyan));flex:0 0 auto;}
+.vh .t{font-size:13.5px;font-weight:800;}
+.vh .t small{font-weight:500;color:var(--muted);font-size:11.5px;margin-left:6px;}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:620px;}
+
+/* ===== base card ===== */
+.tot{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px 18px;box-shadow:0 12px 30px rgba(13,43,53,.07);position:relative;}
+.tot .tic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--primary),var(--cyan));margin-bottom:12px;}
+.tot .tic svg{width:21px;height:21px;}
+.tot .lab{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);}
+.tot .sub{font-size:10.5px;color:var(--ph);margin-top:2px;}
+.num{font-weight:800;letter-spacing:-1.4px;line-height:1;color:var(--deep);}
+
+/* delta pill (compartido) */
+.delta{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;font-weight:800;border-radius:30px;padding:3px 9px;}
+.delta.up{color:var(--up);background:rgba(14,159,110,.1);}
+.delta.down{color:var(--orange);background:rgba(238,54,35,.1);}
+.delta svg{width:11px;height:11px;}
+
+/* ---- Variante 1 · meta-línea sutil ---- */
+.v1 .top{display:flex;align-items:center;gap:10px;}
+.v1 .num{font-size:32px;}
+.v1 .lab{margin-top:9px;}
+.v1 .foot{display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:11px;border-top:1px solid #f0f5f8;font-size:11.5px;color:var(--muted);}
+.v1 .foot .pv{font-weight:700;color:var(--deep);}
+.v1 .foot .tag{color:var(--ph);}
+
+/* ---- Variante 2 · transición de → a ---- */
+.v2 .delta{position:absolute;top:17px;right:18px;}
+.v2 .trans{display:flex;align-items:baseline;gap:9px;}
+.v2 .from{font-size:17px;font-weight:700;color:var(--ph);letter-spacing:-.5px;}
+.v2 .arr{color:var(--muted);display:flex;align-self:center;}
+.v2 .arr svg{width:16px;height:16px;}
+.v2 .num{font-size:30px;}
+.v2 .lab{margin-top:10px;}
+
+/* ---- Variante 3 · dos columnas ---- */
+.v3 .grid{display:flex;align-items:flex-end;gap:0;margin-bottom:4px;}
+.v3 .cur{flex:0 0 auto;}
+.v3 .cur .num{font-size:30px;}
+.v3 .cur .cap{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--primary);margin-top:4px;}
+.v3 .divi{width:1px;align-self:stretch;background:var(--line);margin:2px 16px;}
+.v3 .prev .pv{font-size:19px;font-weight:700;color:var(--ph);letter-spacing:-.5px;line-height:1;}
+.v3 .prev .cap{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ph);margin-top:4px;}
+.v3 .delta{position:absolute;top:17px;right:18px;}
+.v3 .lab{margin-top:11px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Card comparativa — 3 variantes prolijas</h1>
+  <p class="lead">Mismo dato (Embriones <b>486</b> vs <b>402</b> ↑ · Oocitos <b>19.316</b> vs <b>20.880</b> ↓). El número actual manda; el período anterior es contexto atenuado, el delta es el único acento de color. Decime el número.</p>
+
+  <!-- V1 -->
+  <div class="variant">
+    <div class="vh"><span class="n">1</span><span class="t">Meta-línea sutil<small>el anterior va al pie, en gris fino</small></span></div>
+    <div class="pair v1">
+      <div class="tot"><span class="tic" id="i1a"></span><div class="top"><span class="num">486</span><span class="delta up" id="d1a"></span></div><div class="lab">Embriones totales</div><div class="sub">Empacados + congelados</div><div class="foot"><span class="tag">Período anterior</span><span class="pv">402</span></div></div>
+      <div class="tot"><span class="tic" id="i1b"></span><div class="top"><span class="num">19.316</span><span class="delta down" id="d1b"></span></div><div class="lab">Oocitos totales</div><div class="sub">Madurados (MIV)</div><div class="foot"><span class="tag">Período anterior</span><span class="pv">20.880</span></div></div>
+    </div>
+  </div>
+
+  <!-- V2 -->
+  <div class="variant">
+    <div class="vh"><span class="n">2</span><span class="t">Transición “de → a”<small>cuenta el cambio: origen chico, destino grande</small></span></div>
+    <div class="pair v2">
+      <div class="tot"><span class="tic" id="i2a"></span><span class="delta up" id="d2a"></span><div class="trans"><span class="from">402</span><span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="num">486</span></div><div class="lab">Embriones totales</div><div class="sub">Empacados + congelados</div></div>
+      <div class="tot"><span class="tic" id="i2b"></span><span class="delta down" id="d2b"></span><div class="trans"><span class="from">20.880</span><span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="num">19.316</span></div><div class="lab">Oocitos totales</div><div class="sub">Madurados (MIV)</div></div>
+    </div>
+  </div>
+
+  <!-- V3 -->
+  <div class="variant">
+    <div class="vh"><span class="n">3</span><span class="t">Dos columnas<small>actual vs anterior, lado a lado con divisor</small></span></div>
+    <div class="pair v3">
+      <div class="tot"><span class="tic" id="i3a"></span><span class="delta up" id="d3a"></span><div class="grid"><div class="cur"><div class="num">486</div><div class="cap">Actual</div></div><div class="divi"></div><div class="prev"><div class="pv">402</div><div class="cap">Anterior</div></div></div><div class="lab">Embriones totales</div><div class="sub">Empacados + congelados</div></div>
+      <div class="tot"><span class="tic" id="i3b"></span><span class="delta down" id="d3b"></span><div class="grid"><div class="cur"><div class="num">19.316</div><div class="cap">Actual</div></div><div class="divi"></div><div class="prev"><div class="pv">20.880</div><div class="cap">Anterior</div></div></div><div class="lab">Oocitos totales</div><div class="sub">Madurados (MIV)</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var EMB='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="10" r="1.3" fill="currentColor" stroke="none"/></svg>';
+var OOC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>';
+var UP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
+var DN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
+['1a','2a','3a'].forEach(function(k){document.getElementById('i'+k).innerHTML=EMB;document.getElementById('d'+k).innerHTML=UP+'21%';});
+['1b','2b','3b'].forEach(function(k){document.getElementById('i'+k).innerHTML=OOC;document.getElementById('d'+k).innerHTML=DN+'7%';});
+</script>
+</body>
+</html>

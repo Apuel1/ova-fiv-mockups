@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Comprimir la zona de Filtros — 3 alternativas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+:root{--primary:#006C9D;--cyan:#19A7C9;--deep:#0D2B35;--muted:#5B7480;--line:#D7E3E8;--orange:#EE3623;--ph:#9BB0B8;--soft:#E3F1F6;--bg:#eef3f7;}
+*{box-sizing:border-box;font-family:'Poppins','Segoe UI',system-ui,sans-serif;}
+body{margin:0;background:linear-gradient(160deg,#dce8ef,var(--bg));color:var(--deep);padding:26px 18px 60px;}
+h1{font-size:19px;margin:0 0 4px;letter-spacing:-.4px;}
+.lead{color:var(--muted);font-size:13px;margin:0 0 24px;max-width:720px;line-height:1.5;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;align-items:start;}
+.opt{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 12px 30px rgba(13,43,53,.08);display:flex;flex-direction:column;}
+.opt-h{padding:13px 16px;border-bottom:1px solid #eef3f6;display:flex;align-items:center;gap:9px;}
+.opt-h .n{width:25px;height:25px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;background:linear-gradient(135deg,var(--primary),var(--cyan));flex:0 0 auto;}
+.opt-h .t{font-size:13px;font-weight:800;}
+.opt-h .t small{display:block;font-size:10px;font-weight:600;color:var(--muted);}
+.opt-b{padding:14px 16px;flex:1;}
+.zh{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.zh .zic{color:var(--primary);display:flex;}.zh .zic svg{width:15px;height:15px;}
+.zh .znm{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;}
+.zh .rule{flex:1;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--primary),var(--cyan) 45%,transparent);}
+.pc{display:flex;gap:14px;padding:11px 16px;border-top:1px solid #eef3f6;background:#f7fafc;font-size:11px;line-height:1.4;}
+.pc .col{flex:1;}.pc .lab{font-weight:800;text-transform:uppercase;letter-spacing:.5px;font-size:9px;margin-bottom:3px;}
+.pc .pro .lab{color:#0E9F6E;}.pc .con .lab{color:var(--orange);}.pc span{color:var(--muted);}
+
+/* combos base */
+.combo{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fff;cursor:pointer;}
+.combo .pre{color:var(--muted);display:flex;flex:0 0 auto;}.combo .pre svg{width:15px;height:15px;}
+.combo .v{flex:1;font-size:12.5px;color:var(--ph);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.combo .chev{color:var(--muted);flex:0 0 auto;}
+.combo .clr{display:none;width:16px;height:16px;border-radius:50%;background:rgba(238,54,35,.1);color:var(--orange);align-items:center;justify-content:center;font-size:10px;font-weight:800;flex:0 0 auto;}
+.combo.full{border-left:3px solid var(--cyan);background:rgba(25,167,201,.06);padding-left:8px;}
+.combo.full .v{color:var(--deep);font-weight:600;font-style:normal;}.combo.full .pre{color:var(--primary);}
+.combo.full .chev{display:none;}.combo.full .clr{display:flex;}
+.combo.locked{opacity:.5;background:#f6f9fa;}
+
+/* === A · grupos livianos (mini-rótulo, sin chip) === */
+.ga{margin-bottom:10px;}
+.ga-l{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.ga-l::after{content:"";flex:1;height:1px;background:var(--line);}
+.ga-l .b{color:var(--primary);}
+.ga-g{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.A .lab{font-size:9.5px;color:var(--muted);margin:0 0 3px 2px;}
+.A .field{min-width:0;}
+
+/* === B · combos 1 línea, sin grupos (label como placeholder) === */
+.B-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.B-grid .combo .v.lbl{color:var(--muted);font-style:normal;font-weight:500;}
+
+/* === C · pills === */
+.pills{display:flex;flex-wrap:wrap;gap:7px;}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;border-radius:30px;padding:6px 11px;cursor:pointer;white-space:nowrap;}
+.pill.empty{color:var(--muted);background:#fff;border:1px dashed var(--line);}
+.pill.empty .p{color:var(--cyan);font-weight:800;}
+.pill.full{color:#fff;background:linear-gradient(135deg,var(--primary),var(--cyan));font-weight:600;}
+.pill.full .k{opacity:.8;font-weight:500;}
+.pill.full .x{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.25);display:grid;place-items:center;font-size:9px;}
+.pill svg{width:13px;height:13px;}
+</style>
+</head>
+<body>
+<h1>Comprimir la zona de Filtros — 3 formas</h1>
+<p class="lead">Mismos 9 filtros (Ganadería y Donante elegidos), distinta densidad. El bloque de Período/parámetros queda igual; esto es solo la parte de <b>Filtros</b>. Decime el número.</p>
+
+<div class="grid">
+
+  <!-- A -->
+  <div class="opt A">
+    <div class="opt-h"><span class="n">1</span><span class="t">Grupos livianos<small>orden, pero sin el header pesado</small></span></div>
+    <div class="opt-b">
+      <div class="zh"><span class="zic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg></span><span class="znm">Filtros</span><span class="rule"></span></div>
+      <div class="ga"><div class="ga-l">Ubicación</div><div class="ga-g">
+        <div class="combo full"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l9-6 9 6v12"/></svg></span><span class="v">La Esperanza</span><span class="clr">&times;</span></div>
+        <div class="combo locked"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg></span><span class="v">Finca</span></div>
+      </div></div>
+      <div class="ga"><div class="ga-l">Genética <span class="b">· 1</span></div><div class="ga-g">
+        <div class="combo full"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8a7 7 0 0 0 14 0"/></svg></span><span class="v">BR-045</span><span class="clr">&times;</span></div>
+        <div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10z"/></svg></span><span class="v">Raza don.</span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8a7 7 0 0 0 14 0"/></svg></span><span class="v">Toro</span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10z"/></svg></span><span class="v">Raza toro</span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+      </div></div>
+      <div class="ga"><div class="ga-l">Equipo</div><div class="ga-g">
+        <div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></span><span class="v">Téc. OPU</span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></span><span class="v">Buscador</span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></span><span class="v">Téc. lab</span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+      </div></div>
+    </div>
+    <div class="pc"><div class="col pro"><div class="lab">Pro</div><span>Conserva el orden pero pesa mucho menos: mini-rótulo en vez de chip+header. Combos más juntos.</span></div><div class="col con"><div class="lab">Contra</div><span>Sigue habiendo "grupos", aunque sutiles.</span></div></div>
+  </div>
+
+  <!-- B -->
+  <div class="opt B">
+    <div class="opt-h"><span class="n">2</span><span class="t">Combos de 1 línea, sin grupos<small>el ícono dice el tipo</small></span></div>
+    <div class="opt-b">
+      <div class="zh"><span class="zic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg></span><span class="znm">Filtros</span><span class="rule"></span></div>
+      <div class="B-grid">
+        <div class="combo full"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l9-6 9 6v12"/></svg></span><span class="v">La Esperanza</span><span class="clr">&times;</span></div>
+        <div class="combo locked"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg></span><span class="v lbl">Finca</span></div>
+        <div class="combo full"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8a7 7 0 0 0 14 0"/></svg></span><span class="v">BR-045 · Brahman</span><span class="clr">&times;</span></div>
+        <div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10z"/></svg></span><span class="v lbl">Raza donante</span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8a7 7 0 0 0 14 0"/></svg></span><span class="v lbl">Toro</span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10z"/></svg></span><span class="v lbl">Raza toro</span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></span><span class="v lbl">Téc. OPU</span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></span><span class="v lbl">Téc. buscador</span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="combo"><span class="pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></span><span class="v lbl">Téc. lab</span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+      </div>
+    </div>
+    <div class="pc"><div class="col pro"><div class="lab">Pro</div><span>Lo más parejo y limpio: 9 combos iguales, 1 línea c/u, sin headers. El ícono + label dan el contexto.</span></div><div class="col con"><div class="lab">Contra</div><span>Se pierde el agrupado visual (todo al mismo nivel).</span></div></div>
+  </div>
+
+  <!-- C -->
+  <div class="opt C">
+    <div class="opt-h"><span class="n">3</span><span class="t">Pills / chips<small>lo más compacto</small></span></div>
+    <div class="opt-b">
+      <div class="zh"><span class="zic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg></span><span class="znm">Filtros</span><span class="rule"></span></div>
+      <div class="pills">
+        <span class="pill full"><span class="k">Ganadería:</span> La Esperanza<span class="x">&times;</span></span>
+        <span class="pill full"><span class="k">Donante:</span> BR-045<span class="x">&times;</span></span>
+        <span class="pill empty"><span class="p">+</span> Finca</span>
+        <span class="pill empty"><span class="p">+</span> Raza donante</span>
+        <span class="pill empty"><span class="p">+</span> Toro</span>
+        <span class="pill empty"><span class="p">+</span> Raza toro</span>
+        <span class="pill empty"><span class="p">+</span> Téc. OPU</span>
+        <span class="pill empty"><span class="p">+</span> Téc. buscador</span>
+        <span class="pill empty"><span class="p">+</span> Téc. lab</span>
+      </div>
+    </div>
+    <div class="pc"><div class="col pro"><div class="lab">Pro</div><span>Máxima compresión: los activos resaltan, los vacíos son chips chiquitos. Ocupa la mitad.</span></div><div class="col con"><div class="lab">Contra</div><span>Cada filtro abre un popover; menos "formulario", más interacción.</span></div></div>
+  </div>
+
+</div>
+</body>
+</html>

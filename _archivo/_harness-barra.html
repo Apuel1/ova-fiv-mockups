@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<title>Harness · barra unificada (valida buildBar/renderBar del motor real)</title>
+<link rel="stylesheet" href="../apex/ova-dashboard.css">
+<style>
+  body{margin:0;background:#eef6fb;font-family:Poppins,system-ui,sans-serif;}
+  .t-Header{position:fixed;top:0;left:0;right:0;height:48px;background:#0D2B35;z-index:100;}
+  .wrap{max-width:1180px;margin:0 auto;padding:60px 22px 0;}
+  .filler{height:1600px;}
+</style>
+</head><body>
+<div class="t-Header"></div>
+<div class="wrap">
+  <!-- hero actual (debe ocultarse con la variante D) -->
+  <div id="ovaHero" style="background:#fff;border:1px solid #ccd;border-radius:14px;padding:24px;margin-bottom:14px;font-weight:800;color:#0D2B35;">HERO actual (logo) — debería quedar OCULTO</div>
+  <!-- región "Filtros": el botón trigger (lo que emite region_filtros.sql) -->
+  <button type="button" class="ovaf-btn" id="ovafBtn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
+    Filtros<span class="ovaf-cnt ovaf-zero" id="ovafCnt">0</span>
+  </button>
+  <!-- el ul de tabs tal como lo deja ova-dashboard.js (ya con .ova-tabs) -->
+  <ul class="t-Tabs ova-tabs" style="position:relative">
+    <li class="t-Tabs-item is-active"><a class="t-Tabs-link"><span class="ova-tx"><span class="ova-nm">Período</span><span class="ova-ds">Indicadores y evolución</span></span></a></li>
+    <li class="t-Tabs-item"><a class="t-Tabs-link"><span class="ova-tx"><span class="ova-nm">Aspirador</span><span class="ova-ds">Eficiencia por operador</span></span></a></li>
+    <li class="t-Tabs-item"><a class="t-Tabs-link"><span class="ova-tx"><span class="ova-nm">Toro</span><span class="ova-ds">Rendimiento por semental</span></span></a></li>
+    <li class="t-Tabs-item"><a class="t-Tabs-link"><span class="ova-tx"><span class="ova-nm">Ganaderías</span><span class="ova-ds">Ranking y comparación</span></span></a></li>
+  </ul>
+  <div class="filler">contenido para scrollear…</div>
+</div>
+<script>
+/* mock mínimo de APEX para correr el motor real (region_filtros.sql) */
+var ITEMS={ P1_GANADERIA:'5', P1_RAZA_DONANTE:'2', P1_PERIODO_TIPO:'MES' };  // 2 filtros activos → probar chips
+var LOV={ ganaderia:[{r:'5',d:'La Esperanza'}], razadon:[{r:'2',d:'Brahman'}],
+  finca:[],donadora:[],toro:[],razatoro:[],tecnico_opu:[],tecnico_buscador:[],tecnico_lab:[] };
+window.apex={
+  jQuery:function(fn){ if(typeof fn==='function'){ document.readyState!=='loading'?fn():document.addEventListener('DOMContentLoaded',fn);} return window.apex.jQuery; },
+  item:function(id){ return { getValue:function(){return ITEMS[id]||'';}, setValue:function(v){ITEMS[id]=v;} }; },
+  server:{ process:function(name,data){ return Promise.resolve({ options:(LOV[data.x01]||[]) }); } },
+  page:{ submit:function(){ window.__submitCalled=true; } }
+};
+fetch('../apex/region_filtros.sql').then(function(r){return r.text();}).then(function(t){
+  var m=t.match(/<script>([\s\S]*?)<\/script>/);
+  var s=document.createElement('script'); s.textContent=m[1]; document.body.appendChild(s);
+  window.__injected=true;
+});
+</script>
+</body></html>

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OVA · Card de comparación — 5 alternativas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#006C9D; --cyan:#19A7C9; --deep:#0D2B35; --accent:#ED311D;
+  --muted:#6a8794; --success:#0E9F6E; --line:#d8e4ea;
+  --radius:22px;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#f3efe7;font-family:'Poppins',system-ui,sans-serif;color:var(--deep);padding:34px 28px 70px;}
+.head{max-width:1100px;margin:0 auto 30px;}
+.head h1{font-size:22px;font-weight:800;margin:0 0 6px;letter-spacing:-.3px;}
+.head p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.5;max-width:760px;}
+.grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:30px 26px;}
+.opt{}
+.opt-h{display:flex;align-items:center;gap:9px;margin-bottom:4px;}
+.opt-n{flex:0 0 auto;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--primary),var(--cyan));}
+.opt-t{font-size:13.5px;font-weight:800;color:var(--deep);}
+.opt-d{font-size:11.5px;color:var(--muted);line-height:1.45;margin:0 0 12px 33px;min-height:32px;}
+
+/* ===== base card (igual a la real) ===== */
+.card{position:relative;overflow:hidden;isolation:isolate;border-radius:var(--radius);
+  background:linear-gradient(155deg,#fff,#f1f8fc);border:1px solid rgba(255,255,255,.75);
+  box-shadow:0 12px 28px rgba(13,43,53,.09);padding:22px 22px 18px;}
+.card .top{position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--cyan),var(--primary));z-index:2;}
+.ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,var(--primary),var(--cyan));box-shadow:0 9px 20px rgba(0,108,157,.32);}
+.ic svg{width:24px;height:24px;}
+.num{font-size:38px;font-weight:800;letter-spacing:-1px;color:var(--deep);line-height:1;font-variant-numeric:tabular-nums;}
+.valrow{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-top:14px;}
+.delta{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:900;letter-spacing:-.2px;
+  color:var(--success);background:rgba(14,159,110,.13);box-shadow:inset 0 0 0 1px rgba(14,159,110,.22);
+  border-radius:30px;padding:4px 10px;}
+.delta svg{width:12px;height:12px;}
+.lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin-top:8px;}
+.sub{font-size:11px;color:var(--muted);margin-top:8px;}
+.prev-eye{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#9BB0B8;}
+.prev-val{font-size:19px;font-weight:700;color:var(--deep);line-height:1;font-variant-numeric:tabular-nums;}
+
+/* spark base */
+.spark{position:absolute;width:74px;height:34px;}
+.spark .line{fill:none;stroke:var(--cyan);stroke-width:2.2;}
+.spark .area{fill:url(#sg);}
+
+/* ============================================================ */
+/* OPCIÓN 1 — línea de fondo abajo (baseline), prev limpio arriba */
+.o1{padding-bottom:30px;}
+.o1 .irow{display:flex;align-items:flex-start;justify-content:space-between;}
+.o1 .prev{text-align:right;}
+.o1 .baseline{position:absolute;left:0;right:0;bottom:0;width:auto;height:30px;opacity:.6;z-index:0;}
+
+/* OPCIÓN 2 — mini-barras antes/ahora (comparación con sentido) */
+.o2 .irow{display:flex;align-items:flex-start;justify-content:space-between;}
+.o2 .bars{display:flex;align-items:flex-end;gap:8px;height:42px;}
+.o2 .bg{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.o2 .bar{width:16px;border-radius:5px 5px 0 0;}
+.o2 .bar.ant{background:#cdd9df;}
+.o2 .bar.now{background:linear-gradient(180deg,var(--cyan),var(--primary));}
+.o2 .bcap{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#9BB0B8;}
+
+/* OPCIÓN 3 — watermark detrás del número, prev limpio arriba */
+.o3 .irow{display:flex;align-items:flex-start;justify-content:space-between;}
+.o3 .prev{text-align:right;}
+.o3 .wm{position:absolute;left:8px;bottom:30px;width:160px;height:70px;opacity:.16;z-index:-1;}
+
+/* OPCIÓN 4 — "período ant." en su propio recuadro (mini-stat enmarcado) */
+.o4 .irow{display:flex;align-items:flex-start;justify-content:space-between;}
+.o4 .prevbox{display:flex;align-items:center;gap:9px;border:1px solid var(--line);background:rgba(255,255,255,.7);
+  border-radius:12px;padding:6px 11px;}
+.o4 .prevbox .mini{width:42px;height:20px;}
+.o4 .prevbox .pv{text-align:right;}
+
+/* OPCIÓN 5 — comparación en el footer (línea inferior), spark chico arriba */
+.o5 .irow{display:flex;align-items:flex-start;justify-content:space-between;}
+.o5 .spark.sm{position:relative;width:60px;height:26px;opacity:.85;}
+.o5 .foot{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:11px;border-top:1px solid var(--line);}
+.o5 .foot .fspark{width:40px;height:16px;opacity:.9;}
+.o5 .foot b{font-size:12.5px;font-weight:800;color:var(--deep);}
+.o5 .foot span{font-size:11px;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<!-- defs de gradiente del spark (compartido) -->
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#19A7C9" stop-opacity=".28"/><stop offset="1" stop-color="#19A7C9" stop-opacity="0"/></linearGradient>
+</defs></svg>
+
+<div class="head">
+  <h1>Card de comparación — 5 alternativas (todas distintas)</h1>
+  <p>Mismo dato de ejemplo en las 5: <b>Donadoras del período = 563</b>, comparado con el período anterior (<b>34</b>), variación <b>+1556%</b>, con su línea de tendencia. El problema a resolver: cuando comparás, la línea y el “período ant.” se peleaban el mismo lugar. Cada opción lo resuelve de una forma totalmente distinta. Decime cuál te gusta (o qué idea de cada una mezclar).</p>
+</div>
+
+<div class="grid">
+
+  <!-- ===================== OPCIÓN 1 ===================== -->
+  <div class="opt">
+    <div class="opt-h"><span class="opt-n">1</span><span class="opt-t">Línea de fondo (baseline abajo)</span></div>
+    <p class="opt-d">La tendencia baja a una línea suave a lo ancho del pie de la card. El “período ant.” se queda solo y limpio arriba a la derecha. Nada se superpone.</p>
+    <div class="card o1">
+      <span class="top"></span>
+      <div class="irow">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18v6a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/><path d="M3 11V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v4"/><circle cx="8" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="15" r="1" fill="currentColor" stroke="none"/></svg></div>
+        <div class="prev"><div class="prev-eye">período ant.</div><div class="prev-val">34</div></div>
+      </div>
+      <div class="valrow"><span class="num">563</span><span class="delta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>1556%</span></div>
+      <div class="lbl">Donadoras del período</div>
+      <div class="sub">Vacas aspiradas en el período</div>
+      <svg class="spark baseline" viewBox="0 0 74 34" preserveAspectRatio="none"><path class="area" d="M0,20 L13,16 L25,21 L37,12 L49,16 L61,9 L74,11 L74,34 L0,34 Z"/><path class="line" d="M0,20 L13,16 L25,21 L37,12 L49,16 L61,9 L74,11"/></svg>
+    </div>
+  </div>
+
+  <!-- ===================== OPCIÓN 2 ===================== -->
+  <div class="opt">
+    <div class="opt-h"><span class="opt-n">2</span><span class="opt-t">Mini-barras antes / ahora</span></div>
+    <p class="opt-d">Cambia la línea decorativa por algo CON sentido: dos barritas que muestran el salto real (antes vs ahora). Se ve la comparación de un vistazo.</p>
+    <div class="card o2">
+      <span class="top"></span>
+      <div class="irow">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18v6a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/><path d="M3 11V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v4"/><circle cx="8" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="15" r="1" fill="currentColor" stroke="none"/></svg></div>
+        <div class="bars">
+          <div class="bg"><div class="bar ant" style="height:9px"></div><div class="bcap">ant</div></div>
+          <div class="bg"><div class="bar now" style="height:40px"></div><div class="bcap">hoy</div></div>
+        </div>
+      </div>
+      <div class="valrow"><span class="num">563</span><span class="delta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>1556%</span></div>
+      <div class="lbl">Donadoras del período</div>
+      <div class="sub">Vacas aspiradas · <b style="color:var(--muted)">34</b> el período anterior</div>
+    </div>
+  </div>
+
+  <!-- ===================== OPCIÓN 3 ===================== -->
+  <div class="opt">
+    <div class="opt-h"><span class="opt-n">3</span><span class="opt-t">Watermark detrás del número</span></div>
+    <p class="opt-d">La tendencia se vuelve una marca de agua grande y tenue detrás del número gigante (donde un watermark queda bien). El “período ant.” limpio arriba.</p>
+    <div class="card o3">
+      <span class="top"></span>
+      <div class="irow">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18v6a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/><path d="M3 11V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v4"/><circle cx="8" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="15" r="1" fill="currentColor" stroke="none"/></svg></div>
+        <div class="prev"><div class="prev-eye">período ant.</div><div class="prev-val">34</div></div>
+      </div>
+      <div class="valrow"><span class="num">563</span><span class="delta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>1556%</span></div>
+      <div class="lbl">Donadoras del período</div>
+      <div class="sub">Vacas aspiradas en el período</div>
+      <svg class="spark wm" viewBox="0 0 74 34" preserveAspectRatio="none"><path class="area" d="M0,22 L13,18 L25,23 L37,12 L49,17 L61,8 L74,12 L74,34 L0,34 Z"/><path class="line" d="M0,22 L13,18 L25,23 L37,12 L49,17 L61,8 L74,12"/></svg>
+    </div>
+  </div>
+
+  <!-- ===================== OPCIÓN 4 ===================== -->
+  <div class="opt">
+    <div class="opt-h"><span class="opt-n">4</span><span class="opt-t">“Período ant.” en su recuadro</span></div>
+    <p class="opt-d">El valor de comparación tiene su propia superficie (un mini-recuadro), con una línea chica adentro. Queda separado y prolijo, sin pelearse con nada.</p>
+    <div class="card o4">
+      <span class="top"></span>
+      <div class="irow">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18v6a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/><path d="M3 11V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v4"/><circle cx="8" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="15" r="1" fill="currentColor" stroke="none"/></svg></div>
+        <div class="prevbox">
+          <svg class="spark mini" viewBox="0 0 74 34" preserveAspectRatio="none"><path class="line" d="M0,22 L18,18 L37,20 L55,11 L74,13"/></svg>
+          <div class="pv"><div class="prev-eye">ant.</div><div class="prev-val" style="font-size:16px">34</div></div>
+        </div>
+      </div>
+      <div class="valrow"><span class="num">563</span><span class="delta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>1556%</span></div>
+      <div class="lbl">Donadoras del período</div>
+      <div class="sub">Vacas aspiradas en el período</div>
+    </div>
+  </div>
+
+  <!-- ===================== OPCIÓN 5 ===================== -->
+  <div class="opt">
+    <div class="opt-h"><span class="opt-n">5</span><span class="opt-t">Comparación en el pie</span></div>
+    <p class="opt-d">Arriba queda la línea chica decorativa (como cuando NO comparás). La comparación baja a un renglón al pie, separado por una línea: claro y ordenado.</p>
+    <div class="card o5">
+      <span class="top"></span>
+      <div class="irow">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18v6a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/><path d="M3 11V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v4"/><circle cx="8" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="15" r="1" fill="currentColor" stroke="none"/></svg></div>
+        <svg class="spark sm" viewBox="0 0 74 34" preserveAspectRatio="none"><path class="area" d="M0,20 L18,16 L37,19 L55,11 L74,12 L74,34 L0,34 Z"/><path class="line" d="M0,20 L18,16 L37,19 L55,11 L74,12"/></svg>
+      </div>
+      <div class="valrow"><span class="num">563</span><span class="delta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>1556%</span></div>
+      <div class="lbl">Donadoras del período</div>
+      <div class="foot">
+        <span style="color:#9BB0B8;font-weight:700;text-transform:uppercase;font-size:9px;letter-spacing:.06em">período ant.</span>
+        <b>34</b><span>· antes de este período</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

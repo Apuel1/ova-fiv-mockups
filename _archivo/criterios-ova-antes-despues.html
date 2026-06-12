@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Criterios de diseño — antes / después</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+:root{
+  --primary:#006C9D;--cyan:#19A7C9;--deep:#0D2B35;--orange:#EE3623;--orange-2:#FF6E4D;
+  --muted:#6a8794;--line:rgba(0,108,157,.12);--bg:#eef3f7;
+  --ctx:#c3d0d8;        /* gris de contexto (lo nuevo): las series que NO cuentan la historia */
+  --ctx-d:#aebec8;
+}
+*{box-sizing:border-box;font-family:'Poppins','Segoe UI',system-ui,sans-serif;}
+body{margin:0;background:var(--bg);color:#1d3a44;-webkit-font-smoothing:antialiased;padding:28px;}
+h1{font-size:20px;margin:0 0 4px;letter-spacing:-.5px;color:var(--deep);}
+.lead{color:var(--muted);font-size:13.5px;margin:0 0 24px;max-width:760px;line-height:1.55;}
+.lead b{color:var(--primary);}
+
+.cols-head{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:8px;}
+.ch{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;padding:7px 14px;border-radius:9px;display:inline-flex;align-items:center;gap:8px;width:max-content;}
+.ch.now{color:var(--muted);background:#e3eaee;}
+.ch.new{color:#fff;background:linear-gradient(135deg,var(--primary),var(--cyan));}
+
+.row{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:14px;}
+@media(max-width:820px){.row,.cols-head{grid-template-columns:1fr;}}
+
+.sec{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--primary);margin:26px 0 12px;display:flex;align-items:center;gap:10px;}
+.sec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent);}
+
+/* card base estilo OVA */
+.card{position:relative;border-radius:18px;background:linear-gradient(160deg,#fff,#f4fafd);border:1px solid rgba(255,255,255,.8);box-shadow:0 10px 26px rgba(13,43,53,.08);overflow:hidden;padding:18px 20px;}
+.card .top{position:absolute;top:0;left:0;right:0;height:3px;}
+.card.now .top{background:var(--ctx-d);}
+.card.new .top{background:linear-gradient(90deg,var(--primary),var(--cyan));}
+
+/* header del chart */
+.chh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px;}
+.chh .tag{display:flex;align-items:center;gap:10px;}
+.chh .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;flex:0 0 auto;}
+.now .chh .ic{background:var(--ctx-d);}
+.new .chh .ic{background:linear-gradient(135deg,var(--primary),var(--cyan));box-shadow:0 7px 15px rgba(0,108,157,.26);}
+.chh .ttl{font-size:14px;font-weight:800;color:var(--deep);line-height:1.2;}
+.chh .sub{font-size:11px;font-weight:600;color:var(--muted);margin-top:2px;}
+.chh .avg{text-align:right;flex:0 0 auto;}
+.chh .avg b{font-size:22px;font-weight:900;letter-spacing:-.8px;line-height:1;font-variant-numeric:tabular-nums;}
+.now .chh .avg b{color:var(--deep);}
+.new .chh .avg b{color:var(--orange);}
+.chh .avg span{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-top:3px;}
+
+/* plot */
+.plot{position:relative;height:180px;padding-left:30px;}
+.gl{position:absolute;left:30px;right:0;top:0;bottom:24px;z-index:0;}
+.gl i{position:absolute;left:0;right:0;height:1px;background:var(--line);}
+.gl i:first-child{background:rgba(13,43,53,.18);}
+.gl i b{position:absolute;left:-30px;top:-7px;font-size:9px;font-weight:600;color:var(--muted);font-style:normal;font-variant-numeric:tabular-nums;}
+.bars{position:absolute;left:30px;right:0;top:0;bottom:24px;display:flex;align-items:flex-end;gap:10px;z-index:1;}
+.bar{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative;}
+.bar .fill{width:clamp(14px,60%,30px);height:0;border-radius:6px 6px 3px 3px;transition:height 1s cubic-bezier(.2,.8,.25,1);}
+.now .bar .fill{background:linear-gradient(180deg,var(--cyan),var(--primary));}                /* HOY: todas iguales, gritan en azul */
+.new .bar .fill{background:linear-gradient(180deg,var(--ctx),var(--ctx-d));}                    /* PROP: contexto en gris */
+.new .bar.peak .fill{background:linear-gradient(180deg,var(--orange-2),var(--orange));box-shadow:0 4px 10px rgba(238,54,35,.25);}  /* el pico = acento */
+.now .bar.peak .fill{background:linear-gradient(180deg,var(--orange-2),var(--orange));}
+.bar .val{position:absolute;top:0;transform:translateY(-130%);font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .4s .7s;}
+.bar.in .val{opacity:1;}
+.now .bar .val{color:var(--deep);}
+.new .bar .val{color:var(--muted);}
+.new .bar.peak .val{color:var(--orange);font-weight:800;}
+.bar .lbl{position:absolute;bottom:-21px;font-size:9.5px;font-weight:600;color:var(--muted);}
+/* promedio */
+.avgline{position:absolute;left:30px;right:0;height:0;z-index:2;transform-origin:left;transform:scaleX(0);transition:transform .8s .5s ease;}
+.now .avgline{border-top:1.5px dashed var(--ctx-d);}
+.new .avgline{border-top:1.6px dashed var(--orange);}
+.avgline b{position:absolute;right:0;top:-8px;font-size:9px;font-weight:700;font-style:normal;font-variant-numeric:tabular-nums;padding:0 5px;border-radius:5px;}
+.now .avgline b{color:var(--muted);background:#eef3f7;}
+.new .avgline b{color:var(--orange);background:rgba(255,248,240,.95);}
+
+/* KPI card */
+.kpi{padding:20px 22px;}
+.kpi.now .lab{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);display:flex;align-items:center;gap:8px;}
+.kpi.now .lab .d{width:30px;height:30px;border-radius:9px;background:var(--ctx-d);display:grid;place-items:center;color:#fff;}
+.kpi.now .num{font-size:38px;font-weight:800;color:var(--deep);letter-spacing:-1.5px;margin-top:10px;line-height:1;font-variant-numeric:tabular-nums;}
+.kpi.now .foot{font-size:11px;color:var(--muted);margin-top:8px;}
+/* propuesta: insight + número protagonista + % explícito */
+.kpi.new .pill{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--primary);background:rgba(0,108,157,.08);padding:5px 11px;border-radius:30px;}
+.kpi.new .big{display:flex;align-items:baseline;gap:4px;margin-top:14px;}
+.kpi.new .big b{font-size:64px;font-weight:900;letter-spacing:-3px;line-height:.85;color:var(--deep);font-variant-numeric:tabular-nums;}
+.kpi.new .big .pct{font-size:30px;font-weight:800;color:var(--orange);letter-spacing:-1px;}
+.kpi.new .ins{font-size:13px;font-weight:600;color:var(--deep);margin-top:12px;}
+.kpi.new .ins em{font-style:normal;color:var(--orange);font-weight:800;}
+.kpi.new .ctxn{font-size:11px;color:var(--muted);margin-top:5px;}
+
+/* anotaciones */
+.notes{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:6px;}
+@media(max-width:820px){.notes{grid-template-columns:1fr;}}
+.note{font-size:11.5px;line-height:1.5;}
+.note.now{color:var(--muted);}
+.note.new{color:#33525e;}
+.note b{font-weight:800;}
+.note.new b{color:var(--primary);}
+.note .x{color:#b08;}
+.tagline{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;padding:2px 7px;border-radius:5px;margin-right:6px;}
+.now .tagline{display:none;}
+</style>
+</head>
+<body>
+<h1>OVA · cómo cambiarían las regiones con los criterios</h1>
+<p class="lead">Izquierda = <b>cómo está hoy</b> · Derecha = <b>con los criterios</b> (destaque+gris, título=insight, % explícito, barras desde cero). Mismo dato, misma estética de marca — cambia <b>dónde va el color y qué se resalta</b>. Nada de esto toca los rankings (siguen siendo tabla, por el req del cliente).</p>
+
+<div class="cols-head">
+  <span class="ch now">● Hoy</span>
+  <span class="ch new">✦ Con los criterios</span>
+</div>
+
+<div class="sec">1 · Chart de barras — color destaque + gris</div>
+<div class="row">
+  <div class="card now"><span class="top"></span>
+    <div class="chh"><div class="tag"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/></svg></span><div><div class="ttl">Oocitos por proceso</div><div class="sub">últimos 6 meses</div></div></div>
+      <div class="avg"><b>20.7</b><span>promedio</span></div></div>
+    <div class="plot" id="plotNow"></div>
+  </div>
+  <div class="card new"><span class="top"></span>
+    <div class="chh"><div class="tag"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/></svg></span><div><div class="ttl">Oocitos por proceso</div><div class="sub">pico en Abril · prom 20.7</div></div></div>
+      <div class="avg"><b>25</b><span>máx · Abr</span></div></div>
+    <div class="plot" id="plotNew"></div>
+  </div>
+</div>
+<div class="notes">
+  <div class="note now">Las 6 barras gritan en azul/cyan → todas compiten, el ojo no sabe dónde mirar. El promedio en gris claro casi no se ve.</div>
+  <div class="note new"><span class="tagline" style="background:rgba(0,108,157,.1);color:var(--primary)">destaque+gris</span>Contexto en <b>gris</b>, el <b class="x" style="color:var(--orange)">pico</b> y la <b class="x" style="color:var(--orange)">línea de promedio</b> en acento. El ojo va directo al dato que cuenta. <b>Mismo gráfico, menos ruido.</b></div>
+</div>
+
+<div class="sec">2 · KPI de conversión — título = insight + % explícito</div>
+<div class="row">
+  <div class="card now kpi"><span class="top"></span>
+    <div class="lab"><span class="d"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12A10 10 0 1 1 12 2"/><path d="M22 2 12 12"/></svg></span>Tasa de producción de embriones</div>
+    <div class="num">0,32</div>
+    <div class="foot">ratio embriones / oocitos cultivados</div>
+  </div>
+  <div class="card new kpi"><span class="top"></span>
+    <span class="pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12A10 10 0 1 1 12 2"/><path d="M22 2 12 12"/></svg>Conversión</span>
+    <div class="big"><b id="kpiNum">0</b><span class="pct">%</span></div>
+    <div class="ins">1 de cada 3 procesos llega a <em>embrión</em></div>
+    <div class="ctxn">embriones / oocitos cultivados · solo procesos con producción</div>
+  </div>
+</div>
+<div class="notes">
+  <div class="note now">Título describe la métrica técnica ("tasa de producción"). El valor en ratio crudo (0,32) no se lee como porcentaje de un vistazo.</div>
+  <div class="note new"><span class="tagline" style="background:rgba(238,54,35,.1);color:var(--orange)">título=insight</span><span class="tagline" style="background:rgba(0,108,157,.1);color:var(--primary)">% explícito</span>El número <b>protagonista</b> con <b>%</b> claro, label corto ("Conversión") y una <b>frase-insight</b> que dice qué significa. Check #1 y #11.</div>
+</div>
+
+<script>
+var DATA=[{m:'Ene',v:18},{m:'Feb',v:22},{m:'Mar',v:16},{m:'Abr',v:25},{m:'May',v:20},{m:'Jun',v:23}];
+var MAX=28, AVG=20.7, PEAK=3;
+function grid(){var h='';[28,21,14,7,0].forEach(function(t){h+='<i style="bottom:'+(t/MAX*100)+'%"><b>'+t+'</b></i>';});return h;}
+function bars(){return DATA.map(function(d,i){return '<div class="bar'+(i===PEAK?' peak':'')+'"><span class="val">'+d.v+'</span><span class="lbl">'+d.m+'</span><div class="fill" data-h="'+(d.v/MAX*100)+'"></div></div>';}).join('');}
+function plot(id){
+  var el=document.getElementById(id);
+  el.innerHTML='<div class="gl">'+grid()+'</div><div class="bars">'+bars()+'</div>'+
+    '<div class="avgline" style="bottom:'+(AVG/MAX*100)+'%"><b>prom '+AVG+'</b></div>';
+}
+plot('plotNow'); plot('plotNew');
+// animar entrada (una vez)
+requestAnimationFrame(function(){requestAnimationFrame(function(){
+  document.querySelectorAll('.fill').forEach(function(f){f.style.height=f.dataset.h+'%';});
+  document.querySelectorAll('.bar').forEach(function(b){b.classList.add('in');});
+  document.querySelectorAll('.avgline').forEach(function(a){a.style.transform='scaleX(1)';});
+});});
+// contar el KPI hasta 32
+var n=document.getElementById('kpiNum'), cur=0;
+var iv=setInterval(function(){cur+=2; if(cur>=32){cur=32;clearInterval(iv);} n.textContent=cur;},34);
+</script>
+</body>
+</html>

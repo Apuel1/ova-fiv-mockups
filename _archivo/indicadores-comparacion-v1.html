@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OVA · Indicadores + Cards con comparación A vs B (v1)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+:root{--primary:#006C9D;--cyan:#19A7C9;--deep:#0D2B35;--muted:#5B7480;--line:#D7E3E8;--orange:#EE3623;--ph:#9BB0B8;--soft:#E3F1F6;--bg:#eef3f7;--up:#0E9F6E;--ease:cubic-bezier(.3,.85,.3,1);}
+*{box-sizing:border-box;font-family:'Poppins','Segoe UI',system-ui,sans-serif;}
+body{margin:0;background:linear-gradient(160deg,#e7f0f5,var(--bg));color:var(--deep);padding:24px 20px 60px;}
+.wrap{max-width:1180px;margin:0 auto;}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
+h1{font-size:18px;margin:0;letter-spacing:-.4px;}
+.top .lead{color:var(--muted);font-size:12.5px;margin:0;flex:1;min-width:220px;line-height:1.5;}
+/* toggle comparar */
+.tog{display:inline-flex;align-items:center;gap:10px;padding:9px 14px;border-radius:13px;border:1px solid var(--line);background:#fff;cursor:pointer;box-shadow:0 6px 16px rgba(13,43,53,.08);font-size:12.5px;font-weight:700;}
+.tog .sw{width:40px;height:23px;border-radius:20px;background:#cdd9df;position:relative;transition:background .22s;flex:0 0 auto;}
+.tog .sw::after{content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .22s;}
+.tog.on .sw{background:linear-gradient(135deg,var(--primary),var(--cyan));}
+.tog.on .sw::after{transform:translateX(17px);}
+.tog .dotA{width:9px;height:9px;border-radius:50%;background:var(--primary);}
+.tog .dotB{width:9px;height:9px;border-radius:50%;background:var(--orange);}
+
+.sect{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--primary);display:flex;align-items:center;gap:10px;margin:26px 0 13px;}
+.sect::after{content:"";flex:1;height:1px;background:var(--line);}
+
+/* ===== indicadores (barras) ===== */
+.indic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;}
+.card{background:linear-gradient(160deg,#fff,#f6fbfd);border:1px solid var(--line);border-radius:18px;padding:16px 17px 14px;box-shadow:0 12px 30px rgba(13,43,53,.07);}
+.ch{display:flex;align-items:flex-start;gap:11px;margin-bottom:6px;}
+.ch .ic{width:34px;height:34px;border-radius:10px;flex:0 0 auto;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--primary),var(--cyan));}
+.ch .ic svg{width:18px;height:18px;}
+.ch .tt{font-size:13.5px;font-weight:800;line-height:1.15;}
+.ch .ds{font-size:10.5px;color:var(--muted);}
+.ch .big{margin-left:auto;text-align:right;line-height:1;}
+.ch .big .n{font-size:26px;font-weight:800;letter-spacing:-1px;}
+.ch .big .lab{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
+/* badge delta */
+.delta{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:800;border-radius:30px;padding:2px 8px;margin-top:5px;}
+.delta.up{color:var(--up);background:rgba(14,159,110,.1);}
+.delta.down{color:var(--orange);background:rgba(238,54,35,.1);}
+.delta svg{width:11px;height:11px;}
+.delta .vs{font-weight:600;opacity:.7;font-size:9.5px;margin-left:2px;}
+
+/* plot de barras */
+.plot{margin-top:12px;height:150px;position:relative;border-bottom:1.5px solid var(--line);}
+.gl{position:absolute;left:0;right:0;border-top:1px dashed rgba(0,108,157,.1);}
+.avg{position:absolute;left:0;right:0;border-top:1.5px dashed var(--orange);opacity:.55;}
+.avg b{position:absolute;right:0;top:-8px;font-size:8.5px;font-weight:800;color:var(--orange);background:var(--bg);padding:0 3px;}
+.bars{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:space-around;gap:3px;padding:0 4px;}
+.slot{flex:1;height:100%;display:flex;align-items:flex-end;justify-content:center;gap:3px;min-width:0;}
+.bar{width:46%;max-width:26px;border-radius:6px 6px 0 0;position:relative;transition:height .7s var(--ease);}
+.bar.a{background:linear-gradient(180deg,var(--cyan),var(--primary));}
+.bar.b{background:linear-gradient(180deg,#ff7a5c,var(--orange));}
+.slot:not(.cmp) .bar.b{display:none;}
+.slot.cmp .bar{max-width:17px;}
+.bar .vv{position:absolute;top:-15px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:800;white-space:nowrap;}
+.bar.a .vv{color:var(--primary);}.bar.b .vv{color:var(--orange);}
+.xlabels{display:flex;justify-content:space-around;gap:3px;padding:6px 4px 0;}
+.xlabels .x{flex:1;text-align:center;font-size:9px;color:var(--muted);min-width:0;}
+.xlabels .x small{display:block;font-size:8px;color:var(--orange);font-weight:600;}
+.xlabels .x small.hide{display:none;}
+
+/* ===== cards de totales ===== */
+.tot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.tot{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 17px;box-shadow:0 12px 30px rgba(13,43,53,.07);position:relative;overflow:hidden;}
+.tot .irow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px;}
+.tot .tic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--primary),var(--cyan));flex:0 0 auto;}
+.tot .tic svg{width:22px;height:22px;}
+/* dato de comparación: valor del período anterior, a la altura del ícono */
+.tot .prev{text-align:right;line-height:1;}
+.tot .prev .pv{font-size:19px;font-weight:700;color:var(--deep);letter-spacing:-.5px;}
+.tot .prev .pc{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ph);margin-top:4px;}
+.tot .row{display:flex;align-items:baseline;gap:9px;}
+.tot .num{font-size:30px;font-weight:800;letter-spacing:-1.2px;line-height:1;}
+.tot .lab{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:7px;}
+.tot .sub{font-size:10.5px;color:var(--ph);margin-top:2px;}
+
+@media(prefers-reduced-motion:reduce){.bar{transition:none;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Indicadores + Cards con comparación A vs B</h1></div>
+    <p class="lead">Azul = <b style="color:var(--primary)">período actual (A)</b> · Rojo = <b style="color:var(--orange)">período comparado (B)</b>. El badge muestra cuánto subió/bajó. Tocá el switch para ver normal ↔ comparación.</p>
+    <div class="tog" id="tog"><span class="dotA"></span><span class="sw"></span><span class="dotB"></span>Comparar A vs B</div>
+  </div>
+
+  <div class="sect">Indicadores por período</div>
+  <div class="indic-grid" id="indics"></div>
+
+  <div class="sect">Cards de totales · con delta vs período anterior</div>
+  <div class="tot-grid" id="tots"></div>
+</div>
+
+<script>
+var MESES=['Ene','Feb','Mar','Abr','May','Jun'], MESESB=['Jul','Ago','Sep','Oct','Nov','Dic'];
+function arrow(up){return up
+  ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>'
+  :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';}
+function delta(a,b,suf){var d=b===0?0:Math.round((a-b)/b*100);var up=d>=0;
+  return '<span class="delta '+(up?'up':'down')+'">'+arrow(up)+Math.abs(d)+'%'+(suf===null?'':'<span class="vs">'+(suf||'vs B')+'</span>')+'</span>';}
+
+/* ---- indicadores ---- */
+var INDIC=[
+  {tt:'Oocitos cultivables %',ds:'Cultivados (CIV) ÷ viables (MIV)',unit:'%',ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>',
+    A:[92,95,94,90,93,94], B:[88,86,90,84,88,87]},
+  {tt:'Oocitos viables / donante',ds:'Viables (MIV) ÷ donadoras',unit:'',ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="10" r="1.3" fill="currentColor" stroke="none"/><circle cx="14" cy="14" r="1" fill="currentColor" stroke="none"/></svg>',
+    A:[28,22,22,24,26,30], B:[24,20,19,21,23,22]}
+];
+function renderIndics(cmp){
+  var box=document.getElementById('indics'); box.innerHTML='';
+  INDIC.forEach(function(d){
+    var avgA=Math.round(d.A.reduce(function(s,x){return s+x;},0)/d.A.length);
+    var avgB=Math.round(d.B.reduce(function(s,x){return s+x;},0)/d.B.length);
+    var maxv=Math.max.apply(null,d.A.concat(cmp?d.B:[]))*1.18;
+    var bars='', xl='';
+    d.A.forEach(function(va,i){var vb=d.B[i];
+      bars+='<div class="slot'+(cmp?' cmp':'')+'">'
+        +'<div class="bar a" style="height:'+(va/maxv*100)+'%"><span class="vv">'+va+(d.unit||'')+'</span></div>'
+        +'<div class="bar b" style="height:'+(vb/maxv*100)+'%"><span class="vv">'+vb+(d.unit||'')+'</span></div></div>';
+      xl+='<div class="x">'+MESES[i]+'<small class="'+(cmp?'':'hide')+'">'+MESESB[i]+'</small></div>';
+    });
+    var gl=''; for(var g=1;g<=3;g++){gl+='<div class="gl" style="bottom:'+(g/4*100)+'%"></div>';}
+    var avgLine='<div class="avg" style="bottom:'+(avgA/maxv*100)+'%"><b>prom '+avgA+(d.unit||'')+'</b></div>';
+    box.insertAdjacentHTML('beforeend',
+      '<div class="card"><div class="ch"><span class="ic">'+d.ic+'</span>'
+      +'<div><div class="tt">'+d.tt+'</div><div class="ds">'+d.ds+'</div>'
+      +(cmp?delta(avgA,avgB):'')+'</div>'
+      +'<div class="big"><div class="n">'+avgA+(d.unit||'')+'</div><div class="lab">prom. período A</div></div></div>'
+      +'<div class="plot">'+gl+avgLine+'<div class="bars">'+bars+'</div></div>'
+      +'<div class="xlabels">'+xl+'</div></div>');
+  });
+}
+
+/* ---- cards de totales ---- */
+var TOT=[
+  {lab:'Procesos totales',sub:'OPU procesados',A:110,B:98,ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3c0 6 16 6 16 12M20 3c0 6-16 6-16 12M5 7h14M5 17h14"/></svg>'},
+  {lab:'Embriones totales',sub:'Empacados + congelados',A:486,B:402,ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="10" r="1.3" fill="currentColor" stroke="none"/></svg>'},
+  {lab:'Oocitos totales',sub:'Madurados (MIV)',A:19316,B:20880,ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/></svg>'},
+  {lab:'Donadoras totales',sub:'Vacas aspiradas',A:587,B:540,ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg>'}
+];
+var SPARK='<svg width="46" height="20" viewBox="0 0 46 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 15l8-4 7 3 9-9 7 4 7-6"/></svg>';
+function renderTots(cmp){
+  var box=document.getElementById('tots'); box.innerHTML='';
+  TOT.forEach(function(d){
+    box.insertAdjacentHTML('beforeend',
+      '<div class="tot">'
+      +'<div class="irow"><span class="tic">'+d.ic+'</span>'
+      +(cmp?'<div class="prev"><div class="pv">'+d.B.toLocaleString('es-CO')+'</div><div class="pc">anterior</div></div>':'')+'</div>'
+      +'<div class="row"><div class="num">'+d.A.toLocaleString('es-CO')+'</div>'+(cmp?delta(d.A,d.B,null):'')+'</div>'
+      +'<div class="lab">'+d.lab+'</div><div class="sub">'+d.sub+'</div>'
+      +'</div>');
+  });
+}
+
+var cmp=false;
+function render(){renderIndics(cmp);renderTots(cmp);}
+document.getElementById('tog').addEventListener('click',function(){cmp=!cmp;this.classList.toggle('on',cmp);render();});
+render();
+</script>
+</body>
+</html>

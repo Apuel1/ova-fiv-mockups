@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OVA · Evolución A/B (líneas) — canónico</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* =============================================================================
+   CANÓNICO · Evolución A/B (líneas temporales)
+   Tema: comparación A vs B en gráficos de evolución (gemelo de comparacion-ab.html
+   pero para LÍNEAS en vez de barras). Modos como ESTADOS internos (toggle), no
+   como archivos sueltos.
+     · Modo simple   (CMP off): 1 línea azul A + área, recortada al rango A.
+     · Modo comparar (CMP on) : línea azul A (sólida) + línea roja B (punteada),
+                                 alineadas por índice ordinal (B = mismo span que A).
+   Paleta = la del dashboard: A #19A7C9 (cyan) · B #ED311D (accent). Mismo rojo
+   que .ova-abbar.b de las barras A/B → identidad consistente.
+   ========================================================================== */
+:root{
+  --ova-primary:#006C9D; --ova-primary-d:#005C9D; --ova-cyan:#19A7C9; --ova-cyan-2:#3FC6E0;
+  --ova-deep:#0D2B35; --ova-accent:#ED311D; --ova-orange-2:#FF6E4D;
+  --ova-text:#1d3a44; --ova-muted:#6a8794; --ova-line:rgba(0,108,157,.12);
+  --ova-radius:22px; --ova-trans:.45s cubic-bezier(.2,.85,.25,1);
+  --a:var(--ova-cyan); --b:var(--ova-accent);
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;padding:clamp(18px,3vw,42px);font-family:'Poppins','Segoe UI',system-ui,sans-serif;
+  color:var(--ova-text);-webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(1200px 600px at 12% -8%,rgba(25,167,201,.10),transparent 60%),
+    radial-gradient(1000px 520px at 105% 4%,rgba(237,49,29,.06),transparent 55%),
+    linear-gradient(180deg,#eef6fb,#e3eef5);
+  min-height:100vh;
+}
+
+/* ---------- barra superior demo (simula el drawer: toggle + rangos) ---------- */
+.demo-bar{
+  max-width:1180px;margin:0 auto 26px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;
+  padding:16px 20px;border-radius:18px;background:rgba(255,255,255,.72);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 30px rgba(13,43,53,.08);
+}
+.demo-bar h1{margin:0;font-size:clamp(15px,1.6vw,18px);font-weight:800;letter-spacing:-.3px;color:var(--ova-deep);flex:1 1 auto;}
+.demo-bar h1 b{background:linear-gradient(120deg,var(--ova-primary),var(--ova-cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+/* switch */
+.sw{display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none;font-size:13px;font-weight:700;color:var(--ova-deep);}
+.sw input{display:none;}
+.sw .track{width:46px;height:26px;border-radius:30px;background:#c9d8df;position:relative;transition:background .3s;flex:0 0 auto;box-shadow:inset 0 1px 3px rgba(13,43,53,.18);}
+.sw .track::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(13,43,53,.3);transition:left .3s cubic-bezier(.3,.9,.3,1);}
+.sw input:checked + .track{background:linear-gradient(135deg,var(--ova-primary),var(--ova-cyan));}
+.sw input:checked + .track::after{left:23px;}
+/* leyenda A/B */
+.legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+.lg{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--ova-text);}
+.lg .dot{width:26px;height:0;border-top:3px solid var(--a);border-radius:3px;flex:0 0 auto;}
+.lg.b .dot{border-top:3px solid var(--b);}
+.lg .rng{color:var(--ova-muted);font-weight:600;font-variant-numeric:tabular-nums;}
+.demo-bar .seg{display:inline-flex;background:#eaf3f8;border:1px solid var(--ova-line);border-radius:12px;padding:3px;gap:2px;}
+.demo-bar .seg button{border:0;background:transparent;font:inherit;font-size:12px;font-weight:700;color:var(--ova-muted);padding:6px 12px;border-radius:9px;cursor:pointer;transition:.25s;}
+.demo-bar .seg button.on{background:#fff;color:var(--ova-primary);box-shadow:0 4px 10px rgba(0,108,157,.14);}
+.legend.off{display:none;}
+
+/* ---------- grilla de cards (reusa .ova-line del dashboard) ---------- */
+.ova-tot{max-width:1180px;margin:0 auto;text-align:left;}
+.ova-seclabel{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--ova-primary);margin:0 0 14px 2px;display:flex;align-items:center;gap:9px;}
+.ova-seclabel::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--ova-line),transparent);}
+.ova-seclabel .n{color:var(--ova-muted);font-weight:600;letter-spacing:.3px;text-transform:none;}
+.ova-duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:clamp(16px,2vw,24px);}
+
+.ova-card{position:relative;border-radius:var(--ova-radius);overflow:hidden;isolation:isolate;background:linear-gradient(160deg,#fff,#f4fafd);border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 28px rgba(13,43,53,.09);padding:20px 20px 16px;}
+.ova-topbar{position:absolute;top:0;left:0;right:0;height:3px;z-index:4;background:linear-gradient(90deg,var(--ova-primary),var(--ova-cyan));}
+
+.ova-l-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:6px;}
+.ova-l-tag{display:flex;align-items:center;gap:12px;min-width:0;}
+.ova-l-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;flex:0 0 auto;background:linear-gradient(135deg,var(--ova-primary),var(--ova-cyan));box-shadow:0 7px 16px rgba(0,108,157,.26);}
+.ova-l-ttl{font-size:14.5px;font-weight:800;color:var(--ova-deep);line-height:1.2;}
+.ova-l-sub{font-size:11px;font-weight:600;color:var(--ova-muted);margin-top:2px;}
+.ova-l-tot{text-align:right;flex:0 0 auto;}
+.ova-l-tot b.tot{font-size:clamp(26px,3vw,32px);font-weight:900;letter-spacing:-1.2px;color:var(--ova-deep);line-height:1;font-variant-numeric:tabular-nums;display:block;}
+.ova-l-tot .eb{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--ova-muted);margin-top:3px;}
+/* delta pill (junto al total) — mismo lenguaje que las cards de barras */
+.ova-l-delta{display:inline-flex;align-items:center;gap:3px;margin-top:8px;padding:4px 10px 4px 8px;border-radius:30px;font-size:11.5px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;}
+.ova-l-delta svg{width:12px;height:12px;}
+.ova-l-delta.up{color:#0a8f5b;background:rgba(14,159,110,.12);}
+.ova-l-delta.dn{color:#d23b2e;background:rgba(237,49,29,.10);}
+.ova-l-delta .prev{color:var(--ova-muted);font-weight:600;margin-left:5px;}
+.ova-l-delta.hide{display:none;}
+
+/* plot */
+.ova-lplot{position:relative;margin-top:18px;padding-left:34px;}
+.ova-glines{position:relative;height:170px;}
+.ova-glines i{position:absolute;left:0;right:0;height:1px;background:var(--ova-line);}
+.ova-glines i b{position:absolute;left:-34px;top:-7px;font-size:9px;font-weight:600;color:var(--ova-muted);font-style:normal;font-variant-numeric:tabular-nums;}
+.ova-draw{position:absolute;left:34px;right:0;top:0;height:170px;}
+.ova-lsvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+.ova-lsvg path{fill:none;}
+.ova-lsvg .area{opacity:0;}
+.ova-lsvg .line{stroke:url(#gA);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;}
+.ova-lsvg .lineB{stroke:var(--b);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;opacity:.92;}
+.ova-dots{position:absolute;left:34px;right:0;top:0;height:170px;pointer-events:none;}
+.ova-dot{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--a);border:2px solid #fff;transform:translate(-50%,50%) scale(0);opacity:0;transition:transform .4s cubic-bezier(.2,1.4,.4,1),opacity .4s;box-shadow:0 1px 4px rgba(0,108,157,.35);pointer-events:auto;}
+.ova-dot.in{transform:translate(-50%,50%) scale(1);opacity:1;}
+.ova-dot.b{background:var(--b);width:7px;height:7px;box-shadow:0 1px 4px rgba(237,49,29,.35);}
+.ova-dot.peak{width:11px;height:11px;background:#fff;border:2.8px solid var(--a);box-shadow:0 0 0 5px rgba(25,167,201,.14),0 2px 8px rgba(0,108,157,.4);}
+.ova-dot .tip{position:absolute;bottom:170%;left:50%;transform:translateX(-50%) translateY(4px);background:var(--ova-deep);color:#fff;padding:8px 11px;border-radius:11px;font-size:11px;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;transition:.22s;box-shadow:0 10px 24px rgba(13,43,53,.3);z-index:6;line-height:1.5;}
+.ova-dot .tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--ova-deep);}
+.ova-dot:hover .tip{opacity:1;transform:translateX(-50%) translateY(0);}
+.ova-dot .tip i{font-style:normal;display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:6px;vertical-align:middle;}
+.ova-dot .tip i.a{background:var(--a);} .ova-dot .tip i.b{background:var(--b);}
+.ova-dot .tip .d{display:block;margin-top:3px;font-weight:800;}
+.ova-dot .tip .d.up{color:#5ee0a4;} .ova-dot .tip .d.dn{color:#ff8b7e;}
+.ova-dot .pkval{position:absolute;bottom:135%;left:50%;transform:translateX(-50%);font-size:12px;font-weight:800;color:var(--ova-primary);white-space:nowrap;}
+.ova-xlabels{position:relative;height:18px;margin-top:8px;}
+.ova-xlabels span{position:absolute;transform:translateX(-50%);font-size:10px;font-weight:600;color:var(--ova-muted);white-space:nowrap;font-variant-numeric:tabular-nums;}
+
+.foot{max-width:1180px;margin:26px auto 0;font-size:11.5px;color:var(--ova-muted);line-height:1.7;}
+.foot b{color:var(--ova-text);}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <h1>Evolución <b>A vs B</b> · prototipo canónico</h1>
+  <div class="seg" id="perSeg">
+    <button data-per="SEMANA">Semana</button>
+    <button data-per="MES" class="on">Mes</button>
+    <button data-per="AÑO">Año</button>
+  </div>
+  <label class="sw"><input type="checkbox" id="cmpToggle"><span class="track"></span>Comparar A vs B</label>
+  <div class="legend off" id="legend">
+    <span class="lg a"><span class="dot"></span>A <span class="rng">ene–jun 26</span></span>
+    <span class="lg b"><span class="dot"></span>B <span class="rng">jul–dic 25</span></span>
+  </div>
+</div>
+
+<div class="ova-tot">
+  <div class="ova-seclabel">Evolución por período <span class="n" id="modeLbl">· período único</span></div>
+  <div class="ova-duo" id="duo"></div>
+</div>
+
+<div class="foot">
+  <b>Cómo se lee:</b> en modo simple, una sola línea azul (rango A) con su área. Al activar <b>Comparar</b>,
+  aparece la línea roja sólida (rango B, mismo span que A, alineada por índice) y el chip de variación junto al total.
+  Cada punto muestra A, B y Δ% al pasar el mouse. · Azul A <b>#19A7C9</b> · Rojo B <b>#ED311D</b> (idéntico a las barras A/B).
+</div>
+
+<script>
+/* ---- datos demo (2 charts: Procesos + Embriones), por modo de período ---- */
+var DATA = {
+  MES: {
+    labelsA:['Ene','Feb','Mar','Abr','May','Jun'], labelsB:['Jul','Ago','Sep','Oct','Nov','Dic'],
+    proc:{ a:[12,15,18,22,27,30], b:[8,10,9,14,16,19] },
+    emb :{ a:[140,180,210,260,300,355], b:[90,120,110,160,190,205] }
+  },
+  SEMANA: {
+    labelsA:['S18','S19','S20','S21','S22','S23','S24'], labelsB:['S11','S12','S13','S14','S15','S16','S17'],
+    proc:{ a:[3,5,4,7,6,9,8], b:[2,3,4,3,5,4,6] },
+    emb :{ a:[40,55,48,80,72,96,90], b:[28,36,44,30,52,40,60] }
+  },
+  'AÑO': {
+    labelsA:['2024','2025','2026'], labelsB:['2021','2022','2023'],
+    proc:{ a:[80,124,162], b:[40,60,72] },
+    emb :{ a:[900,1340,1620], b:[420,600,720] }
+  }
+};
+var CHARTS = [
+  { key:'proc', ttl:'Procesos por período', sub:'OPU procesados en cada período', unit:'procesos',
+    ic:'<path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>' },
+  { key:'emb', ttl:'Embriones producidos', sub:'Empacados + congelados + descartados', unit:'embriones',
+    ic:'<circle cx="12" cy="12" r="8.5"/><path d="M20.5 12a8.5 8.5 0 0 1-17 0"/><circle cx="9" cy="10" r="1.2" fill="currentColor" stroke="none"/><circle cx="14" cy="14" r=".9" fill="currentColor" stroke="none"/>' }
+];
+
+var fmt=function(n,d){return Number(n).toLocaleString('es-CO',{minimumFractionDigits:d||0,maximumFractionDigits:d||0});};
+var niceStep=function(range,ticks){var rough=range/ticks;var exp=Math.floor(Math.log10(rough));var f=rough/Math.pow(10,exp);var nf=f<1.5?1:f<3?2:f<7?5:10;return nf*Math.pow(10,exp);};
+/* curva suave MONÓTONA (Fritsch-Carlson): pasa exacto por cada punto y NO sobrepasa
+   el rango de los datos → la línea queda pegada a los dots aunque la serie suba y baje.
+   Devuelve 'M x0,y0 C ...' (cúbicas). */
+function smooth(P){
+  var n=P.length;
+  if(n<2) return n?('M '+P[0].x.toFixed(1)+','+P[0].y.toFixed(1)):'';
+  if(n===2) return 'M '+P[0].x.toFixed(1)+','+P[0].y.toFixed(1)+' L '+P[1].x.toFixed(1)+','+P[1].y.toFixed(1);
+  var dx=[],dy=[],sl=[],i;
+  for(i=0;i<n-1;i++){ dx[i]=P[i+1].x-P[i].x; dy[i]=P[i+1].y-P[i].y; sl[i]=dy[i]/dx[i]; }
+  var m=[]; m[0]=sl[0]; m[n-1]=sl[n-2];
+  for(i=1;i<n-1;i++){ m[i]=(sl[i-1]*sl[i]<=0)?0:(sl[i-1]+sl[i])/2; }
+  for(i=0;i<n-1;i++){
+    if(sl[i]===0){ m[i]=0; m[i+1]=0; }
+    else { var a=m[i]/sl[i], b=m[i+1]/sl[i], s=a*a+b*b; if(s>9){ var t=3/Math.sqrt(s); m[i]=t*a*sl[i]; m[i+1]=t*b*sl[i]; } }
+  }
+  var d='M '+P[0].x.toFixed(1)+','+P[0].y.toFixed(1);
+  for(i=0;i<n-1;i++){
+    var c1x=P[i].x+dx[i]/3,   c1y=P[i].y+m[i]*dx[i]/3;
+    var c2x=P[i+1].x-dx[i]/3, c2y=P[i+1].y-m[i+1]*dx[i]/3;
+    d+=' C '+c1x.toFixed(1)+','+c1y.toFixed(1)+' '+c2x.toFixed(1)+','+c2y.toFixed(1)+' '+P[i+1].x.toFixed(1)+','+P[i+1].y.toFixed(1);
+  }
+  return d;
+}
+
+var state={per:'MES',cmp:false};
+
+function shell(c){
+  return '<article class="ova-card ova-line" data-key="'+c.key+'">'
+    +'<span class="ova-topbar"></span>'
+    +'<div class="ova-l-head"><div class="ova-l-tag"><span class="ova-l-ic">'
+      +'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+c.ic+'</svg>'
+      +'</span><div><div class="ova-l-ttl">'+c.ttl+'</div><div class="ova-l-sub">'+c.sub+'</div></div></div>'
+      +'<div class="ova-l-tot"><b class="tot">0</b><span class="eb">total período</span><span class="ova-l-delta hide"></span></div>'
+    +'</div>'
+    +'<div class="ova-lbody"></div>'
+  +'</article>';
+}
+
+function deltaPill(el,sumA,sumB){
+  if(!state.cmp){ el.className='ova-l-delta hide'; el.innerHTML=''; return; }
+  var pct = sumB>0 ? (sumA-sumB)/sumB*100 : (sumA>0?100:0);
+  var up = pct>=0;
+  var arrow = up ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14l5-5 5 5"/></svg>'
+                 : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5"/></svg>';
+  el.className='ova-l-delta '+(up?'up':'dn');
+  el.innerHTML=arrow+(up?'+':'')+fmt(pct,1)+'%<span class="prev">vs '+fmt(sumB,0)+'</span>';
+}
+
+function buildLine(card){
+  var c = CHARTS.filter(function(x){return x.key===card.dataset.key;})[0];
+  var d = DATA[state.per];
+  var A = d[c.key].a.slice(), B = d[c.key].b.slice();
+  var labels = d.labelsA, labelsB = d.labelsB;
+  var body = card.querySelector('.ova-lbody');
+  var totEl = card.querySelector('.tot');
+  var delEl = card.querySelector('.ova-l-delta');
+  var n=A.length;
+  var sumA=A.reduce(function(a,b){return a+b;},0), sumB=B.reduce(function(a,b){return a+b;},0);
+
+  var pool = state.cmp ? A.concat(B) : A;
+  var mxv=Math.max.apply(null,pool);
+  var rawMax=mxv>0?mxv:1, step=niceStep(rawMax,4), max=Math.ceil(rawMax/step)*step, nLines=Math.max(2,Math.round(max/step));
+  var maxIdx=A.indexOf(Math.max.apply(null,A)), ldec=step<1?1:0;
+
+  body.innerHTML=''
+    +'<div class="ova-lplot"><div class="ova-glines"></div>'
+    +'<div class="ova-draw"><svg class="ova-lsvg" viewBox="0 0 100 100" preserveAspectRatio="none">'
+      +'<defs>'
+        +'<linearGradient id="gA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#19A7C9"/><stop offset="1" stop-color="#006C9D"/></linearGradient>'
+        +'<linearGradient id="ag_'+c.key+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#19A7C9" stop-opacity=".26"/><stop offset="1" stop-color="#19A7C9" stop-opacity="0"/></linearGradient>'
+      +'</defs>'
+      +'<path class="area" fill="url(#ag_'+c.key+')"/>'
+      +(state.cmp?'<path class="lineB"/>':'')
+      +'<path class="line"/>'
+    +'</svg><div class="ova-dots"></div></div>'
+    +'<div class="ova-xlabels"></div></div>';
+
+  // delta pill (el total lo cuenta el loop de animación, sincronizado con el trazo)
+  delEl = card.querySelector('.ova-l-delta');
+  deltaPill(delEl, sumA, sumB);
+  totEl.textContent='0';
+
+  var gl=body.querySelector('.ova-glines');
+  for(var i=0;i<=nLines;i++){var y=i/nLines;var ln=document.createElement('i');ln.style.bottom=(y*100)+'%';var bb=document.createElement('b');bb.textContent=fmt(step*i,ldec);ln.appendChild(bb);gl.appendChild(ln);}
+
+  var draw=body.querySelector('.ova-draw'), svg=body.querySelector('.ova-lsvg');
+  var lineEl=body.querySelector('.line'), areaEl=body.querySelector('.area'), lineBEl=body.querySelector('.lineB');
+  var dotsBox=body.querySelector('.ova-dots'), xl=body.querySelector('.ova-xlabels');
+
+  function px(i){return (n===1?50:i/(n-1)*100);}
+
+  /* ---- coords en píxeles: los dots se anclan a ESTAS mismas coords que la curva → pixel-perfect ---- */
+  var PA=[], PB=[], W=0, H=0;
+  function computeP(){
+    W=draw.clientWidth; H=draw.clientHeight;
+    PA=A.map(function(v,i){return {x:(n===1?W/2:i/(n-1)*W), y:H-(v/max)*H};});
+    PB=state.cmp?B.map(function(v,i){return {x:(n===1?W/2:i/(n-1)*W), y:H-(v/max)*H};}):[];
+  }
+  function paint(){
+    if(!W||!H) return 0;
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    var spA=smooth(PA);
+    lineEl.setAttribute('d',spA);
+    areaEl.setAttribute('d','M '+PA[0].x.toFixed(1)+','+H+' L'+spA.slice(1)+' L '+PA[n-1].x.toFixed(1)+','+H+' Z');
+    if(state.cmp && lineBEl) lineBEl.setAttribute('d',smooth(PB));
+    return lineEl.getTotalLength();
+  }
+
+  /* ---- crear dots (ocultos) + x-labels; se posicionan luego con placeDots() en px ---- */
+  var dotsA=[], dotsB=[];
+  A.forEach(function(v,i){
+    var d2=document.createElement('div'); d2.className='ova-dot'+(i===maxIdx&&!state.cmp?' peak':'');
+    var tip;
+    if(state.cmp){
+      var bv=B[i], dp=bv>0?(v-bv)/bv*100:(v>0?100:0), up=dp>=0;
+      tip='<i class="a"></i>A · '+labels[i]+': <b>'+fmt(v,0)+'</b><br><i class="b"></i>B · '+labelsB[i]+': <b>'+fmt(bv,0)+'</b>'
+         +'<span class="d '+(up?'up':'dn')+'">'+(up?'▲ +':'▼ ')+fmt(dp,1)+'%</span>';
+    } else {
+      tip='<i class="a"></i>'+labels[i]+': <b>'+fmt(v,0)+'</b> '+c.unit;
+    }
+    d2.innerHTML='<div class="tip">'+tip+'</div>'+(i===maxIdx&&!state.cmp?'<div class="pkval">'+fmt(v,0)+'</div>':'');
+    dotsBox.appendChild(d2); dotsA.push(d2);
+    var sp=document.createElement('span'); sp.style.left=px(i)+'%'; sp.textContent=labels[i]; xl.appendChild(sp);
+  });
+  if(state.cmp) B.forEach(function(v,i){
+    var d2=document.createElement('div'); d2.className='ova-dot b';
+    d2.innerHTML='<div class="tip"><i class="b"></i>B · '+labelsB[i]+': <b>'+fmt(v,0)+'</b> '+c.unit+'</div>';
+    dotsBox.appendChild(d2); dotsB.push(d2);
+  });
+  function placeDots(){
+    A.forEach(function(v,i){ dotsA[i].style.left=PA[i].x.toFixed(1)+'px'; dotsA[i].style.bottom=(H-PA[i].y).toFixed(1)+'px'; });
+    if(state.cmp) B.forEach(function(v,i){ dotsB[i].style.left=PB[i].x.toFixed(1)+'px'; dotsB[i].style.bottom=(H-PB[i].y).toFixed(1)+'px'; });
+  }
+
+  /* ---- longitud del path en una x dada (x monótona en la curva) → revelar cada dot cuando el frente del trazo lo alcanza ---- */
+  function lenAtX(pathEl, targetX, total){
+    var lo=0, hi=total, mid, xx;
+    for(var k=0;k<20;k++){ mid=(lo+hi)/2; xx=pathEl.getPointAtLength(mid).x; if(xx<targetX) lo=mid; else hi=mid; }
+    return (lo+hi)/2;
+  }
+
+  computeP(); var L=paint(); placeDots();
+
+  if(L){
+    var dur=1500, easeOut=function(p){return 1-Math.pow(1-p,3);};
+    var LB=(state.cmp&&lineBEl)?lineBEl.getTotalLength():0;
+    var sA=PA.map(function(p){return lenAtX(lineEl,p.x,L);});
+    var sB=(state.cmp&&lineBEl)?PB.map(function(p){return lenAtX(lineBEl,p.x,LB);}):[];
+    lineEl.style.transition='none'; lineEl.style.strokeDasharray=L; lineEl.style.strokeDashoffset=L;
+    if(lineBEl){ lineBEl.style.transition='none'; lineBEl.style.strokeDasharray=LB; lineBEl.style.strokeDashoffset=LB; lineBEl.style.opacity=.92; }
+    var doneA=[], doneB=[], t0=performance.now();
+    (function frame(now){
+      var p=Math.min((now-t0)/dur,1), e=easeOut(p);
+      var drawnA=L*e; lineEl.style.strokeDashoffset=(L-drawnA);
+      for(var i=0;i<sA.length;i++){ if(!doneA[i] && drawnA>=sA[i]-0.5){ doneA[i]=1; dotsA[i].classList.add('in'); } }
+      if(lineBEl){ var drawnB=LB*e; lineBEl.style.strokeDashoffset=(LB-drawnB);
+        for(var j=0;j<sB.length;j++){ if(!doneB[j] && drawnB>=sB[j]-0.5){ doneB[j]=1; dotsB[j].classList.add('in'); } } }
+      areaEl.style.opacity=(state.cmp?0.35:1)*Math.min(1,e*1.15);
+      totEl.textContent=fmt(sumA*e,0);
+      if(p<1) requestAnimationFrame(frame);
+    })(performance.now());
+  } else {
+    dotsA.forEach(function(d2){d2.classList.add('in');}); dotsB.forEach(function(d2){d2.classList.add('in');});
+    areaEl.style.opacity=state.cmp?0.35:1; totEl.textContent=fmt(sumA,0);
+  }
+
+  if(window.ResizeObserver){ if(card._ro)card._ro.disconnect(); card._ro=new ResizeObserver(function(){
+    computeP(); var l=paint(); placeDots();
+    if(l){ lineEl.style.transition='none'; lineEl.style.strokeDasharray=l; lineEl.style.strokeDashoffset=0;
+      if(lineBEl){ var lb=lineBEl.getTotalLength(); lineBEl.style.transition='none'; lineBEl.style.strokeDasharray=lb; lineBEl.style.strokeDashoffset=0; } }
+  }); card._ro.observe(draw); }
+}
+
+function renderAll(){
+  var duo=document.getElementById('duo');
+  duo.innerHTML=CHARTS.map(shell).join('');
+  document.getElementById('legend').className='legend'+(state.cmp?'':' off');
+  document.getElementById('modeLbl').textContent=state.cmp?'· comparando A vs B':'· período único';
+  duo.querySelectorAll('.ova-line').forEach(buildLine);
+}
+
+document.getElementById('cmpToggle').addEventListener('change',function(e){ state.cmp=e.target.checked; renderAll(); });
+document.getElementById('perSeg').addEventListener('click',function(e){
+  var b=e.target.closest('button'); if(!b)return;
+  this.querySelectorAll('button').forEach(function(x){x.classList.remove('on');}); b.classList.add('on');
+  state.per=b.dataset.per; renderAll();
+});
+renderAll();
+</script>
+</body>
+</html>

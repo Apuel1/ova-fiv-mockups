@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OVA · Ganaderías — comparación multi-serie (canónico)</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* =============================================================================
+   CANÓNICO · Tab Ganaderías — comparación multi-serie (líneas)
+   Concepto: el usuario elige N ganaderías (chips) y se superponen como líneas, cada
+   una con su color, + "Media del lab" como referencia gris punteada. 4 métricas:
+   Procesos, Oocitos (MIV), Embriones (GREATEST), Conversión %. Reusa la base de líneas
+   ya validada (curva monótona Fritsch-Carlson, dots pixel-perfect, draw progresivo).
+   Paleta de series = marca OVA. Donadoras va aparte (barras agrupadas) — acá foco en el patrón.
+   ========================================================================== */
+:root{
+  --ova-primary:#006C9D; --ova-primary-d:#005C9D; --ova-cyan:#19A7C9; --ova-cyan-2:#3FC6E0;
+  --ova-deep:#0D2B35; --ova-accent:#ED311D; --ova-success:#0E9F6E;
+  --ova-text:#1d3a44; --ova-muted:#6a8794; --ova-line:rgba(0,108,157,.12);
+  --ova-radius:22px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;padding:clamp(18px,3vw,40px);font-family:'Poppins','Segoe UI',system-ui,sans-serif;
+  color:var(--ova-text);-webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(1200px 600px at 10% -8%,rgba(25,167,201,.10),transparent 60%),
+    radial-gradient(1000px 520px at 108% 2%,rgba(0,108,157,.07),transparent 55%),
+    linear-gradient(180deg,#eef6fb,#e3eef5);
+  min-height:100vh;
+}
+
+/* ---------- selector de ganaderías (chips) ---------- */
+.gsel{
+  max-width:1240px;margin:0 auto 24px;padding:18px 20px;border-radius:18px;
+  background:rgba(255,255,255,.74);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 30px rgba(13,43,53,.08);
+}
+.gsel h1{margin:0 0 4px;font-size:clamp(16px,1.8vw,20px);font-weight:800;letter-spacing:-.4px;color:var(--ova-deep);}
+.gsel h1 b{background:linear-gradient(120deg,var(--ova-primary),var(--ova-cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.gsel .sub{font-size:12.5px;color:var(--ova-muted);margin-bottom:14px;}
+.chips{display:flex;flex-wrap:wrap;gap:9px;align-items:center;}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none;
+  font-size:13px;font-weight:700;color:var(--ova-muted);
+  padding:8px 14px;border-radius:30px;background:#fff;border:1.5px solid var(--ova-line);
+  transition:.22s;
+}
+.chip .dot{width:10px;height:10px;border-radius:50%;background:#cfdbe2;transition:.22s;flex:0 0 auto;}
+.chip:hover{border-color:var(--ova-cyan);}
+.chip.on{color:var(--ova-deep);border-color:transparent;box-shadow:0 4px 12px rgba(13,43,53,.12);}
+.chip.on .dot{box-shadow:0 0 0 3px rgba(0,0,0,.04);}
+.chip.media.on{background:#f1f5f7;}
+.chip.media .dot{background:var(--ova-muted);border:1px dashed #fff;}
+
+/* ---------- grilla de charts ---------- */
+.wrap{max-width:1240px;margin:0 auto;}
+.seclbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--ova-primary);margin:0 0 14px 2px;display:flex;align-items:center;gap:9px;}
+.seclbl::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--ova-line),transparent);}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:clamp(16px,2vw,22px);}
+
+.card{position:relative;border-radius:var(--ova-radius);overflow:hidden;isolation:isolate;background:linear-gradient(160deg,#fff,#f4fafd);border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 28px rgba(13,43,53,.09);padding:20px 22px 16px;}
+.card .topbar{position:absolute;top:0;left:0;right:0;height:3px;z-index:4;background:linear-gradient(90deg,var(--ova-primary),var(--ova-cyan));}
+.c-head{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+.c-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;flex:0 0 auto;background:linear-gradient(135deg,var(--ova-primary),var(--ova-cyan));box-shadow:0 7px 16px rgba(0,108,157,.26);}
+.c-ttl{font-size:14.5px;font-weight:800;color:var(--ova-deep);line-height:1.2;}
+.c-sub{font-size:11px;font-weight:600;color:var(--ova-muted);margin-top:2px;}
+
+/* plot (mismo box-model que §4 de la app) */
+.lplot{position:relative;margin-top:16px;height:200px;}
+.glines,.draw{position:absolute;left:38px;right:8px;top:6px;bottom:24px;}
+.glines i{position:absolute;left:0;right:0;height:1px;background:var(--ova-line);}
+.glines i:first-child{background:rgba(13,43,53,.18);}
+.glines i b{position:absolute;left:-38px;top:-7px;font-size:9px;font-weight:600;color:var(--ova-muted);font-style:normal;font-variant-numeric:tabular-nums;}
+.lsvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+.lsvg path{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+.lsvg path.media{stroke-width:2;stroke-dasharray:5 5;opacity:.7;}
+.dots{position:absolute;inset:0;pointer-events:none;}
+.dot{position:absolute;width:8px;height:8px;border-radius:50%;border:1.5px solid #fff;transform:translate(-50%,50%) scale(0);opacity:0;transition:transform .25s cubic-bezier(.2,1.4,.4,1),opacity .35s,box-shadow .2s;box-shadow:0 0 0 1px rgba(13,43,53,.22),0 1px 3px rgba(13,43,53,.35);}
+.dot.in{transform:translate(-50%,50%) scale(1);opacity:1;}
+.dot.hl{transform:translate(-50%,50%) scale(1.5);box-shadow:0 0 0 2px #fff,0 0 0 3.5px rgba(13,43,53,.28),0 2px 9px rgba(13,43,53,.42);z-index:7;}
+/* hover COMPARTIDO por período (resuelve dots superpuestos) */
+.xhair{position:absolute;top:0;bottom:0;width:1px;background:linear-gradient(var(--ova-cyan),rgba(25,167,201,0));opacity:0;transform:translateX(-50%);pointer-events:none;transition:opacity .12s;z-index:5;}
+.hit{position:absolute;top:0;bottom:0;z-index:6;cursor:crosshair;}
+.stip{position:fixed;transform:translate(-50%,-100%);background:var(--ova-deep);color:#fff;padding:9px 12px;border-radius:11px;font-size:11px;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;box-shadow:0 14px 30px rgba(13,43,53,.4);z-index:9999;min-width:128px;}
+.stip .h{font-weight:800;font-size:11.5px;margin-bottom:5px;color:#bfe6f3;letter-spacing:.3px;}
+.stip .r{display:flex;align-items:center;gap:7px;line-height:1.75;}
+.stip .r i{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+.stip .r .nm{flex:1;padding-right:14px;}
+.stip .r .vv{font-weight:800;font-variant-numeric:tabular-nums;}
+.xlabels{position:absolute;left:38px;right:8px;bottom:0;height:18px;}
+.xlabels span{position:absolute;transform:translateX(-50%);font-size:10px;font-weight:600;color:var(--ova-muted);white-space:nowrap;font-variant-numeric:tabular-nums;}
+.empty{height:200px;display:grid;place-items:center;color:var(--ova-muted);font-size:13px;font-weight:600;}
+
+.foot{max-width:1240px;margin:24px auto 0;font-size:11.5px;color:var(--ova-muted);line-height:1.7;}
+.foot b{color:var(--ova-text);}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="gsel">
+  <h1>Ganaderías · <b>comparación</b></h1>
+  <div class="sub">Elegí las ganaderías a comparar. Cada una es una línea; "Media del lab" es la referencia (gris punteada).</div>
+  <div class="chips" id="chips"></div>
+</div>
+
+<div class="wrap">
+  <div class="seclbl">Comparación por período <span id="lblsel" style="color:var(--ova-muted);font-weight:600;text-transform:none;letter-spacing:.2px;"></span></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="foot">
+  <b>Cómo se lee:</b> tocá los chips para sumar/quitar ganaderías. Pasá el mouse por una <b>fecha</b> (no por un punto): el tooltip muestra
+  <b>todas las ganaderías de esa fecha juntas</b>, así no se pierde nada aunque dos líneas coincidan. Procesos = OPU distintos · Oocitos = MIV ·
+  Embriones = GREATEST(FER_EMB, desagregado) · Conversión = embriones ÷ oocitos cultivados (%).
+</div>
+
+<script>
+/* ---- paleta de series (marca OVA) ---- */
+var PALETTE = ['#006C9D','#19A7C9','#ED311D','#0E9F6E','#8B5CF6','#F59E0B'];
+var MEDIA_COLOR = '#6a8794';
+var LABELS = ['Ene','Feb','Mar','Abr','May','Jun'];
+
+/* ---- ganaderías demo, con series por métrica ---- */
+var GANADERIAS = [
+  { id:'g1', name:'Crecento Inv.', proc:[8,11,13,12,15,17], ooc:[180,240,300,280,360,420], emb:[20,32,40,38,55,70], conv:[11,13,13,14,15,17] },
+  { id:'g2', name:'El Vergel',     proc:[5,6,8,9,7,10],      ooc:[110,130,170,200,160,230], emb:[10,14,20,26,18,30], conv:[9,11,12,13,11,13] },
+  { id:'g3', name:'La Tosca',      proc:[12,14,11,16,18,15], ooc:[300,340,280,400,460,380], emb:[40,48,36,60,72,55], conv:[13,14,13,15,16,14] },
+  { id:'g4', name:'El Rubí',       proc:[3,4,5,4,6,7],       ooc:[70,90,110,100,130,150],   emb:[6,9,12,10,15,18],  conv:[8,10,11,10,12,12] }
+];
+/* media del lab por métrica (promedio simple demo) */
+function mediaSerie(metric){ return LABELS.map(function(_,i){ var s=0; GANADERIAS.forEach(function(g){s+=g[metric][i];}); return Math.round(s/GANADERIAS.length); }); }
+
+var CHARTS = [
+  { key:'proc', ttl:'Procesos', sub:'OPU distintos por período', dec:0, suf:'',
+    ic:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>' },
+  { key:'ooc', ttl:'Oocitos', sub:'Recuperados (MIV) por período', dec:0, suf:'',
+    ic:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 4 6 7 6 10a6 6 0 0 1-12 0c0-3 2-6 6-10z"/></svg>' },
+  { key:'emb', ttl:'Embriones', sub:'Producidos por período', dec:0, suf:'',
+    ic:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M20.5 12a8.5 8.5 0 0 1-17 0"/></svg>' },
+  { key:'conv', ttl:'Conversión', sub:'Embriones ÷ oocitos cult. (%)', dec:0, suf:'%',
+    ic:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6"/></svg>' }
+];
+
+var fmt=function(n,d){return Number(n).toLocaleString('es-CO',{minimumFractionDigits:d||0,maximumFractionDigits:d||0});};
+var niceStep=function(range,ticks){var rough=range/ticks||1;var exp=Math.floor(Math.log10(rough));var f=rough/Math.pow(10,exp);var nf=f<1.5?1:f<3?2:f<7?5:10;return nf*Math.pow(10,exp);};
+/* curva monótona (Fritsch-Carlson) — no overshoot */
+function smooth(P){
+  var n=P.length,i;
+  if(n<2) return n?('M '+P[0].x.toFixed(1)+','+P[0].y.toFixed(1)):'';
+  if(n===2) return 'M '+P[0].x.toFixed(1)+','+P[0].y.toFixed(1)+' L '+P[1].x.toFixed(1)+','+P[1].y.toFixed(1);
+  var dx=[],dy=[],sl=[];
+  for(i=0;i<n-1;i++){dx[i]=P[i+1].x-P[i].x;dy[i]=P[i+1].y-P[i].y;sl[i]=dy[i]/dx[i];}
+  var m=[];m[0]=sl[0];m[n-1]=sl[n-2];
+  for(i=1;i<n-1;i++){m[i]=(sl[i-1]*sl[i]<=0)?0:(sl[i-1]+sl[i])/2;}
+  for(i=0;i<n-1;i++){if(sl[i]===0){m[i]=0;m[i+1]=0;}else{var a=m[i]/sl[i],b=m[i+1]/sl[i],s=a*a+b*b;if(s>9){var t=3/Math.sqrt(s);m[i]=t*a*sl[i];m[i+1]=t*b*sl[i];}}}
+  var d='M '+P[0].x.toFixed(1)+','+P[0].y.toFixed(1);
+  for(i=0;i<n-1;i++){var c1x=P[i].x+dx[i]/3,c1y=P[i].y+m[i]*dx[i]/3,c2x=P[i+1].x-dx[i]/3,c2y=P[i+1].y-m[i+1]*dx[i]/3;
+    d+=' C '+c1x.toFixed(1)+','+c1y.toFixed(1)+' '+c2x.toFixed(1)+','+c2y.toFixed(1)+' '+P[i+1].x.toFixed(1)+','+P[i+1].y.toFixed(1);}
+  return d;
+}
+function lenAtX(p,tx,L){var lo=0,hi=L,m,x;for(var k=0;k<20;k++){m=(lo+hi)/2;x=p.getPointAtLength(m).x;if(x<tx)lo=m;else hi=m;}return (lo+hi)/2;}
+
+/* estado: ganaderías seleccionadas + media on/off */
+var sel = { g1:true, g2:false, g3:true, g4:false }, mediaOn = true;
+
+function activeSeries(metric){
+  var out=[];
+  GANADERIAS.forEach(function(g,i){ if(sel[g.id]) out.push({ name:g.name, color:PALETTE[i%PALETTE.length], vals:g[metric], media:false }); });
+  if(mediaOn) out.push({ name:'Media del lab', color:MEDIA_COLOR, vals:mediaSerie(metric), media:true });
+  return out;
+}
+
+/* tooltip ÚNICO en <body> (portal) — fixed, fuera del card → ningún overflow lo recorta */
+function gtip(){ if(!window._gtip){ var t=document.createElement('div'); t.className='stip'; document.body.appendChild(t); window._gtip=t; } return window._gtip; }
+
+function buildChart(card, chart){
+  var series = activeSeries(chart.key);
+  var body = card.querySelector('.c-body');
+  if(!series.length){ body.innerHTML='<div class="empty">Elegí al menos una ganadería</div>'; return; }
+  var n = LABELS.length;
+  var allv = series.reduce(function(a,s){return a.concat(s.vals);},[]);
+  var mxv = Math.max.apply(null, allv.concat([0]));
+  var step = niceStep(mxv>0?mxv:1,4), max = Math.ceil((mxv>0?mxv:1)/step)*step, nLines=Math.max(2,Math.round(max/step));
+  if(chart.suf==='%'&&max>100){max=100;step=20;nLines=5;}
+
+  // scaffold
+  var defs='';
+  body.innerHTML='<div class="lplot"><div class="glines"></div><div class="draw"><svg class="lsvg" preserveAspectRatio="none"></svg><div class="dots"></div></div><div class="xlabels"></div></div>';
+  var gl=body.querySelector('.glines');
+  for(var g2=0;g2<=nLines;g2++){var ln=document.createElement('i');ln.style.bottom=(g2/nLines*100)+'%';var bb=document.createElement('b');bb.textContent=fmt(step*g2,chart.dec)+chart.suf;ln.appendChild(bb);gl.appendChild(ln);}
+  var draw=body.querySelector('.draw'), svg=body.querySelector('.lsvg'), dotsBox=body.querySelector('.dots'), xl=body.querySelector('.xlabels');
+  var W=draw.clientWidth, H=draw.clientHeight;
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+
+  // x labels
+  for(var k=0;k<n;k++){var sp=document.createElement('span');sp.style.left=(n===1?50:k/(n-1)*100)+'%';sp.textContent=LABELS[k];xl.appendChild(sp);}
+
+  // por serie: path + dots
+  series.forEach(function(s, si){
+    var P = s.vals.map(function(v,i){return {x:(n===1?W/2:i/(n-1)*W), y:H-(v/max)*H};});
+    var path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', smooth(P));
+    path.setAttribute('stroke', s.color);
+    if(s.media) path.setAttribute('class','media');
+    svg.appendChild(path);
+    // dots
+    s.vals.forEach(function(v,i){
+      var d=document.createElement('div'); d.className='dot';
+      d.style.left=P[i].x.toFixed(1)+'px'; d.style.bottom=(H-P[i].y).toFixed(1)+'px';
+      d.style.background=s.color; if(s.media) d.style.borderColor=s.color;
+      dotsBox.appendChild(d); d._serie=si; d._ix=i;   /* _ix = índice de período, para el hover compartido */
+    });
+    // animación de trazo + dots sincronizados
+    var L=path.getTotalLength();
+    var sNodes=P.map(function(p){return lenAtX(path,p.x,L);});
+    path.style.strokeDasharray=L; path.style.strokeDashoffset=L; path.style.transition='none';
+    var dotsOfSerie=[].slice.call(dotsBox.querySelectorAll('.dot')).filter(function(d){return d._serie===si;});
+    var done=[], t0=performance.now(), dur=1200, delay=si*120;
+    (function frame(now){
+      var p=Math.min(Math.max(0,(now-t0-delay))/dur,1), e=1-Math.pow(1-p,3), drawn=L*e;
+      path.style.strokeDashoffset=L-drawn;
+      for(var i=0;i<sNodes.length;i++){ if(!done[i]&&drawn>=sNodes[i]-0.5){done[i]=1; if(dotsOfSerie[i])dotsOfSerie[i].classList.add('in');} }
+      if(p<1) requestAnimationFrame(frame);
+    })(performance.now());
+  });
+
+  /* ---- hover COMPARTIDO por período: una franja por fecha; muestra TODAS las series de esa fecha
+          (resuelve dots superpuestos: aunque dos líneas coincidan, el tooltip lista las dos) ---- */
+  var xhair=document.createElement('div'); xhair.className='xhair'; draw.appendChild(xhair);
+  var xpos=function(i){return n===1?W/2:i/(n-1)*W;};
+  function showTip(i,x){
+    xhair.style.left=x+'px'; xhair.style.opacity=1;
+    var t=gtip();
+    var rows=series.map(function(s){return {name:s.name,color:s.color,v:s.vals[i]};}).sort(function(a,b){return b.v-a.v;});
+    t.innerHTML='<div class="h">'+LABELS[i]+'</div>'+rows.map(function(r){
+      return '<div class="r"><i style="background:'+r.color+'"></i><span class="nm">'+r.name+'</span><span class="vv">'+fmt(r.v,chart.dec)+chart.suf+'</span></div>';
+    }).join('');
+    /* posición FIXED respecto al viewport (portal en body) → no lo recorta el card */
+    var dr=draw.getBoundingClientRect();
+    t.style.left=Math.max(90,Math.min(window.innerWidth-90, dr.left+x))+'px';
+    t.style.top=(dr.top-8)+'px';
+    t.style.opacity=1;
+    var box=dotsBox.querySelectorAll('.dot'); for(var k=0;k<box.length;k++){ box[k].classList.toggle('hl', box[k]._ix===i); }
+  }
+  function hideTip(){ xhair.style.opacity=0; if(window._gtip) window._gtip.style.opacity=0; var box=dotsBox.querySelectorAll('.dot'); for(var k=0;k<box.length;k++) box[k].classList.remove('hl'); }
+  for(var hi=0;hi<n;hi++){(function(i){
+    var x=xpos(i), prev=(i===0?x:xpos(i-1)), next=(i===n-1?x:xpos(i+1));
+    var hit=document.createElement('div'); hit.className='hit';
+    var l=(x+prev)/2, rgt=(x+next)/2; hit.style.left=l+'px'; hit.style.width=Math.max(10,rgt-l)+'px';
+    hit.addEventListener('mouseenter',function(){showTip(i,x);});
+    hit.addEventListener('mouseleave',hideTip);
+    draw.appendChild(hit);
+  })(hi);}
+}
+
+function renderChips(){
+  var box=document.getElementById('chips'); box.innerHTML='';
+  GANADERIAS.forEach(function(g,i){
+    var c=document.createElement('div'); c.className='chip'+(sel[g.id]?' on':'');
+    c.innerHTML='<span class="dot" style="background:'+(sel[g.id]?PALETTE[i%PALETTE.length]:'#cfdbe2')+'"></span>'+g.name;
+    c.onclick=function(){ sel[g.id]=!sel[g.id]; renderChips(); renderAll(); };
+    box.appendChild(c);
+  });
+  var m=document.createElement('div'); m.className='chip media'+(mediaOn?' on':'');
+  m.innerHTML='<span class="dot"></span>Media del lab';
+  m.onclick=function(){ mediaOn=!mediaOn; renderChips(); renderAll(); };
+  box.appendChild(m);
+}
+
+function renderAll(){
+  var grid=document.getElementById('grid');
+  grid.innerHTML=CHARTS.map(function(c){
+    return '<article class="card" data-key="'+c.key+'"><span class="topbar"></span>'
+      +'<div class="c-head"><span class="c-ic">'+c.ic+'</span><div><div class="c-ttl">'+c.ttl+'</div><div class="c-sub">'+c.sub+'</div></div></div>'
+      +'<div class="c-body"></div></article>';
+  }).join('');
+  var nsel=GANADERIAS.filter(function(g){return sel[g.id];}).length;
+  document.getElementById('lblsel').textContent='· '+nsel+' ganadería'+(nsel===1?'':'s')+(mediaOn?' + media':'');
+  grid.querySelectorAll('.card').forEach(function(card){
+    var c=CHARTS.filter(function(x){return x.key===card.dataset.key;})[0];
+    buildChart(card, c);
+  });
+}
+
+renderChips();
+renderAll();
+window.addEventListener('resize', function(){ clearTimeout(window._rt); window._rt=setTimeout(renderAll,200); });
+</script>
+</body>
+</html>
